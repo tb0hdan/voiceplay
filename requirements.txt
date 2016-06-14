@@ -1,0 +1,7 @@
+google-api-python-client
+kaptan
+pyaudio
+pylast
+requests
+SpeechRecognition
+youtube_dl

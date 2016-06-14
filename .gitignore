@@ -80,6 +80,8 @@ celerybeat-schedule
 
 # virtualenv
 venv/
+.venv
+.virtualenv
 ENV/
 
 # Spyder project settings
@@ -87,3 +89,11 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# local files
+config.yaml
+*.mp3
+*.m4a
+*.webm
+*.part
+state.txt
