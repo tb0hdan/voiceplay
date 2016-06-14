@@ -2,6 +2,7 @@
 #-*- coding: utf-8 -*-
 ''' VoicePlay main module '''
 
+import json
 import kaptan
 import pylast
 import re
@@ -11,6 +12,68 @@ import subprocess
 from apiclient.discovery import build
 from apiclient.errors import HttpError
 
+class MyParser(object):
+    '''
+    Parse text using nltk
+    '''
+    known_actions = {'play': {'^play some music by (.+)$': 'shuffle_artist',
+                              '^play top tracks by (.+)$': 'top_tracks_artist',
+                              '^play [^(top tracks|some music)](.+) by (.+)$': 'single_track_artist'}}
+
+    def __init__(self, wake_word='vicki'):
+        self.wake_word = wake_word
+        self.normalize_phrases = self.load_phrases(self.wake_word)
+
+    @staticmethod
+    def load_phrases(wake_word, normalize_file='normalize.json'):
+        with open(normalize_file, 'rb') as normalize_fh:
+            data = json.loads(normalize_fh.read())
+        return data[wake_word]
+
+    def normalize(self, sentence):
+        message = sentence.lower()
+        result = message
+        # first pass
+        for phrase in self.normalize_phrases:
+            if message.startswith(phrase):
+                result = re.sub(r'^%s' % phrase, self.normalize_phrases[phrase], message)
+        if result != message:
+            message = result
+        # second pass
+        for phrase in self.normalize_phrases:
+            reg = '{0} {1}'.format(self.wake_word, phrase)
+            if message.startswith(reg):
+                result = re.sub(r'^%s' % reg, self.normalize_phrases[reg], message)
+        return result
+
+    def parse(self, message):
+        result = self.normalize(message)
+        start = False
+        action_phrase = []
+        for word in result.split(' '):
+            if word == self.wake_word:
+                continue
+            # confirm proper type
+            if self.known_actions.get(word):
+                start = True
+            if start and word:
+                action_phrase.append(word)
+        action_phrase = ' '.join(action_phrase)
+        return action_phrase
+
+    def get_action_type(self, action_phrase):
+        action = action_phrase.split(' ')[0]
+        if self.known_actions.get(action, None) is None:
+            raise ValueError('Unknown action %r in phrase %r' % (action, action_phrase))
+        action_type = None
+        for reg in self.known_actions.get(action):
+            if re.match(reg, action_phrase) is not None:
+                action_type = self.known_actions[action][reg]
+                break
+        if action_phrase and action_phrase.startswith('play') and not action_type:
+            reg = '^play (.+)$'
+            action_type = 'track_number_artist'
+        return action_type, reg, action_phrase
 
 class VoicePlayLastFm(object):
     '''
@@ -99,6 +162,7 @@ class Vicki(object):
         self.cfg_data = config.configuration_data
         self.rec = sr.Recognizer()
         self.lfm = VoicePlayLastFm()
+        self.parser = MyParser()
 
     def run_play_cmd(self, phrase):
         '''
@@ -109,7 +173,12 @@ class Vicki(object):
         if not phrase:
             return
         key = str(phrase.split(' ')[0])
-        if len(phrase.split(' ')) == 1 and key in self.numbers:
+        if len(phrase.split(' ')) == 1:
+            arr = [v for v in self.numbers if self.numbers[v]['name'] == key]
+            if key in self.numbers:
+                key = key
+            elif arr:
+                key = arr[0]
             adj = self.numbers[key]['adjective']
             artist = self.get_track_by_number(key)[0]
             TextToSpeech.say('Playing %s track by %s' % (adj, artist))
@@ -205,17 +274,24 @@ class Vicki(object):
         subprocess.call(['youtube-dl', '-q', '-x', '--no-post-overwrites', '--audio-format',
                          'mp3', '--exec', 'mplayer {}; rm -f {}', 'https://youtu.be/%s' % vid])
 
-    def play_from_message(self, message):
-        '''
-        Parse and play track from message
-        '''
-        track = re.sub(r'^[W|w|V|v]ic?k(i|ed)?\s(p?[L|l]?ate|[P|p]?lay|[B|b]?lade)\s+', '', message)
-        print ('Track: %s' % track)
-        self.run_play_cmd(track)
+    def play_from_parser(self, message):
+        parsed = self.parser.parse(message)
+        action_type, reg, action_phrase = self.parser.get_action_type(parsed)
+        if action_type == 'single_track_artist':
+            track, artist = re.match(reg, action_phrase).groups()
+            self.play_full_track('%s - %s' % (artist, track))
+        elif action_type == 'top_tracks_artist':
+            artist = re.match(reg, action_phrase).groups()[0]
+            self.run_play_cmd(artist)
+        elif action_type == 'shuffle_artist':
+            artist = re.match(reg, action_phrase).groups()[0]
+            TextToSpeech.say('Shuffle is not supported yet')
+        elif action_type == 'track_number_artist':
+            number = re.match(reg, action_phrase).groups()[0]
+            self.run_play_cmd(number)
 
 
 if __name__ == '__main__':
-    keywords = ['vicki', 'wiki', 'wicked', 'vk', 'we can', 'wickedly']
     vicki = Vicki()
     while True:
         with sr.Microphone() as source:
@@ -235,8 +311,9 @@ if __name__ == '__main__':
             TextToSpeech.say(msg)
             print('{0}; {1}'.format(msg, e))
             result = None
-        if result and [res for res in keywords if result.lower().startswith(res)]:
-            vicki.play_from_message(result)
+        if result:
+            print result
+            vicki.play_from_parser(result)
         elif result and result.lower() in ['shutdown']:
             msg = 'Vicki is shutting down, see you later'
             TextToSpeech.say(msg)
