@@ -39,11 +39,11 @@ class MyParser(object):
                 result = re.sub(r'^%s' % phrase, self.normalize_phrases[phrase], message)
         if result != message:
             message = result
+        #
         # second pass
         for phrase in self.normalize_phrases:
-            reg = '{0} {1}'.format(self.wake_word, phrase)
-            if message.startswith(reg):
-                result = re.sub(r'^%s' % reg, self.normalize_phrases[reg], message)
+            if message.startswith(phrase):
+                result = re.sub(r'^%s' % phrase, self.normalize_phrases[phrase], message)
         return result
 
     def parse(self, message):
