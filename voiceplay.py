@@ -8,8 +8,8 @@ import logging
 import pylast
 import re
 import speech_recognition as sr
-import subprocess
 import sys
+import time
 
 from apiclient.discovery import build
 from apiclient.errors import HttpError
@@ -141,9 +141,16 @@ class TextToSpeech(object):
     '''
     TODO: Add other systems
     '''
-    @classmethod
-    def say(cls, message):
-        subprocess.call(['say', '-v', 'Vicki', message], shell=False)
+    base = 'com.apple.speech.synthesis.voice'
+    def __init__(self, voice='Vicki'):
+        from AppKit import NSSpeechSynthesizer
+        self.voice = self.base + '.' + voice
+        self.speech = NSSpeechSynthesizer.alloc().initWithVoice_(self.voice)
+
+    def say(self, message):
+        self.speech.startSpeakingString_(message)
+        while self.speech.isSpeaking():
+            time.sleep(0.5)
 
 
 class Vicki(object):
@@ -229,7 +236,7 @@ class Vicki(object):
             if num == number:
                 tid = idx
                 break
-        print 'Playing track: %s - %s' % (number, tid)
+        self.logger.warning('Playing track: %s - %s', number, tid)
         with open('state.txt', 'rb') as file_handle:
             lines = file_handle.read()
         for idx, line in enumerate(lines.splitlines()):
@@ -249,7 +256,7 @@ class Vicki(object):
             if num == number:
                 tid = idx
                 break
-        print 'Getting track: %s - %s' % (number, tid)
+        self.logger.warning('Getting track: %s - %s', number, tid)
         with open('state.txt', 'rb') as file_handle:
             lines = file_handle.read()
         for idx, line in enumerate(lines.splitlines()):
@@ -315,36 +322,39 @@ class Vicki(object):
             number = re.match(reg, action_phrase).groups()[0]
             self.run_play_cmd(number)
 
+    def run_forever(self):
+        self.TTS = TextToSpeech()
+        while True:
+            with sr.Microphone() as source:
+                msg = 'Vicki is listening'
+                self.TTS.say(msg)
+                self.logger.warning(msg)
+                audio = self.rec.listen(source)
+            try:
+                result = self.rec.recognize_google(audio)
+            except sr.UnknownValueError:
+                msg = 'Vicki could not understand audio'
+                self.TTS.say(msg)
+                self.logger.warning(msg)
+                result = None
+            except sr.RequestError as e:
+                msg = 'Recognition error'
+                self.TTS.say(msg)
+                self.logger.warning('{0}; {1}'.format(msg, e))
+                result = None
+            if result:
+                self.logger.warning(result)
+                self.play_from_parser(result)
+            elif result and result.lower() in ['shutdown']:
+                msg = 'Vicki is shutting down, see you later'
+                self.TTS.say(msg)
+                self.logger.warning(msg)
+                break
+            elif result:
+                msg = 'Vicki thinks you said ' + result
+                self.TTS.say(msg)
+                self.logger.warning(msg)
 
 if __name__ == '__main__':
     vicki = Vicki()
-    while True:
-        with sr.Microphone() as source:
-            msg = 'Vicki is listening'
-            TextToSpeech.say(msg)
-            print(msg)
-            audio = vicki.rec.listen(source)
-        try:
-            result = vicki.rec.recognize_google(audio)
-        except sr.UnknownValueError:
-            msg = 'Vicki could not understand audio'
-            TextToSpeech.say(msg)
-            print(msg)
-            result = None
-        except sr.RequestError as e:
-            msg = 'Recognition error'
-            TextToSpeech.say(msg)
-            print('{0}; {1}'.format(msg, e))
-            result = None
-        if result:
-            print result
-            vicki.play_from_parser(result)
-        elif result and result.lower() in ['shutdown']:
-            msg = 'Vicki is shutting down, see you later'
-            TextToSpeech.say(msg)
-            print(msg)
-            break
-        elif result:
-            msg = 'Vicki thinks you said ' + result
-            TextToSpeech.say(msg)
-            print(msg)
+    vicki.run_forever()
