@@ -202,7 +202,7 @@ class Vicki(object):
                 key = arr[0]
             adj = self.numbers[key]['adjective']
             artist = self.get_track_by_number(key)[0]
-            TextToSpeech.say('Playing %s track by %s' % (adj, artist))
+            self.TTS.say('Playing %s track by %s' % (adj, artist))
             # play track with track number
             self.play_track_by_number(key)
         else:
@@ -210,7 +210,7 @@ class Vicki(object):
                 tracks = self.lfm.get_top_tracks(self.lfm.get_corrected_artist(phrase))[:10]
                 numerized = ', '.join(self.lfm.numerize(tracks))
                 reply = re.sub(r'^(.+)\.\s\d\:\s', '1: ', numerized)
-                TextToSpeech.say('Here are some top tracks by %s: %s' % (phrase,
+                self.TTS.say('Here are some top tracks by %s: %s' % (phrase,
                                                                          reply))
                 # record track numbers
                 self.store_tracks(tracks)
@@ -317,7 +317,7 @@ class Vicki(object):
             self.run_play_cmd(artist)
         elif action_type == 'shuffle_artist':
             artist = re.match(reg, action_phrase).groups()[0]
-            TextToSpeech.say('Shuffle is not supported yet')
+            self.TTS.say('Shuffle is not supported yet')
         elif action_type == 'track_number_artist':
             number = re.match(reg, action_phrase).groups()[0]
             self.run_play_cmd(number)
