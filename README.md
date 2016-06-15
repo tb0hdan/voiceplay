@@ -1,5 +1,7 @@
-# voiceplay (proof of concept)
-Voice controlled console playback (OSX only so far)
+voiceplay (proof of concept) - Voice controlled console playback (OSX only so far)
+
+- [INSTALLATION](#installation)
+- [COPYRIGHT](#copyright)
 
 ## Installation
 
@@ -35,3 +37,9 @@ Then say:
 ```
 Vicki play Michael Jackson beat it
 ```
+
+# COPYRIGHT
+
+voiceplay is released into the public domain by the copyright holders.
+
+This README file was originally written by [Bohdan Turkynewych](https://github.com/tb0hdan) and is likewise released into the public domain.

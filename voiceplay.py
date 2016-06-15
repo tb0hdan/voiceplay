@@ -4,13 +4,18 @@
 
 import json
 import kaptan
+import logging
 import pylast
 import re
 import speech_recognition as sr
 import subprocess
+import sys
 
 from apiclient.discovery import build
 from apiclient.errors import HttpError
+from youtube_dl import YoutubeDL
+
+
 
 class MyParser(object):
     '''
@@ -157,12 +162,21 @@ class Vicki(object):
                '10': {'name': 'ten', 'adjective': 'tenth'}}
 
     def __init__(self, cfg_file='config.yaml'):
+        # logger is the earliest bird
+        self.init_logger()
+        #
         config = kaptan.Kaptan()
         config.import_config(cfg_file)
         self.cfg_data = config.configuration_data
         self.rec = sr.Recognizer()
         self.lfm = VoicePlayLastFm()
         self.parser = MyParser()
+
+    def init_logger(self, name='voiceplay'):
+        self.logger = logging.getLogger(name)
+        handler = logging.StreamHandler(sys.stderr)
+        self.logger.addHandler(handler)
+
 
     def run_play_cmd(self, phrase):
         '''
@@ -265,14 +279,25 @@ class Vicki(object):
                 videos.append([search_result["snippet"]["title"], search_result["id"]["videoId"]])
         return videos
 
+    def download_hook(self, response):
+        if response['status'] == 'finished':
+            self.logger.warning('Done downloading, now converting ...')
+
     def play_full_track(self, trackname):
         '''
         Play full track
         '''
         results = self.youtube_search(trackname)
         vid = results[0][1]
-        subprocess.call(['youtube-dl', '-q', '-x', '--no-post-overwrites', '--audio-format',
-                         'mp3', '--exec', 'mplayer {}; rm -f {}', 'https://youtu.be/%s' % vid])
+        ydl_opts = {'keepvideo': False, 'verbose': False, 'format': 'bestaudio/best', 'quiet': True,
+         'postprocessors': [{'preferredcodec': 'mp3', 'preferredquality': '5', u'nopostoverwrites': True, u'key': u'FFmpegExtractAudio'},
+                            {u'exec_cmd': u'mplayer {}; rm -f {}', u'key': u'ExecAfterDownload'}],
+         'logger': self.logger,
+         'progress_hooks': [self.download_hook]}
+
+        with YoutubeDL(ydl_opts) as ydl:
+            ydl.download(['https://youtu.be/%s' % vid])
+
 
     def play_from_parser(self, message):
         parsed = self.parser.parse(message)
