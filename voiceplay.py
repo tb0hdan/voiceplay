@@ -321,6 +321,17 @@ class Vicki(object):
         elif action_type == 'track_number_artist':
             number = re.match(reg, action_phrase).groups()[0]
             self.run_play_cmd(number)
+        else:
+            msg = 'Vicki thinks you said ' + message
+            self.TTS.say(msg)
+            self.logger.warning(msg)
+
+    def process_request(self, request):
+        try:
+            self.play_from_parser(request)
+        except Exception as exc:
+            self.logger.error(exc)
+            self.TTS.say('Vicki could not process your request')
 
     def run_forever(self):
         self.TTS = TextToSpeech()
@@ -343,17 +354,12 @@ class Vicki(object):
                 self.logger.warning('{0}; {1}'.format(msg, e))
                 result = None
             if result:
-                self.logger.warning(result)
-                self.play_from_parser(result)
+                self.process_request(result)
             elif result and result.lower() in ['shutdown']:
                 msg = 'Vicki is shutting down, see you later'
                 self.TTS.say(msg)
                 self.logger.warning(msg)
                 break
-            elif result:
-                msg = 'Vicki thinks you said ' + result
-                self.TTS.say(msg)
-                self.logger.warning(msg)
 
 if __name__ == '__main__':
     vicki = Vicki()
