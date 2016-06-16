@@ -194,8 +194,8 @@ class Vicki(object):
         if not phrase:
             return
         key = str(phrase.split(' ')[0])
-        if len(phrase.split(' ')) == 1:
-            arr = [v for v in self.numbers if self.numbers[v]['name'] == key]
+        arr = [v for v in self.numbers if self.numbers[v]['name'] == key]
+        if len(phrase.split(' ')) == 1 and arr:
             if key in self.numbers:
                 key = key
             elif arr:
@@ -259,6 +259,7 @@ class Vicki(object):
         self.logger.warning('Getting track: %s - %s', number, tid)
         with open('state.txt', 'rb') as file_handle:
             lines = file_handle.read()
+        full_track = ''
         for idx, line in enumerate(lines.splitlines()):
             if idx == tid - 1:
                 full_track = line
@@ -309,6 +310,7 @@ class Vicki(object):
     def play_from_parser(self, message):
         parsed = self.parser.parse(message)
         action_type, reg, action_phrase = self.parser.get_action_type(parsed)
+        self.logger.warning('Action type: %s' % action_type)
         if action_type == 'single_track_artist':
             track, artist = re.match(reg, action_phrase).groups()
             self.play_full_track('%s - %s' % (artist, track))
