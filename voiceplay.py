@@ -333,6 +333,7 @@ class Vicki(object):
             self.run_play_cmd(artist)
         elif action_type == 'shuffle_artist':
             artist = re.match(reg, action_phrase).groups()[0]
+            self.TTS.say('Shuffling %s' % artist)
             self.run_shuffle_artist(artist)
         elif action_type == 'track_number_artist':
             number = re.match(reg, action_phrase).groups()[0]
