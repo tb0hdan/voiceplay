@@ -1,5 +1,7 @@
 google-api-python-client
+ipython
 kaptan
+monotonic
 pyaudio
 pylast
 requests

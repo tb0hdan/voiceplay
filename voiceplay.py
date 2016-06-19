@@ -2,10 +2,16 @@
 #-*- coding: utf-8 -*-
 ''' VoicePlay main module '''
 
+__version__ = '0.0.1'
+
+import argparse
 import json
 import kaptan
 import logging
+import os
 import pylast
+import random
+random.seed()
 import re
 import speech_recognition as sr
 import sys
@@ -16,10 +22,9 @@ from apiclient.errors import HttpError
 from youtube_dl import YoutubeDL
 
 
-
 class MyParser(object):
     '''
-    Parse text using nltk
+    Parse text commands
     '''
     known_actions = {'play': {'^play some music by (.+)$': 'shuffle_artist',
                               '^play top tracks by (.+)$': 'top_tracks_artist',
@@ -178,6 +183,8 @@ class Vicki(object):
         self.rec = sr.Recognizer()
         self.lfm = VoicePlayLastFm()
         self.parser = MyParser()
+        self.TTS = TextToSpeech()
+
 
     def init_logger(self, name='voiceplay'):
         self.logger = logging.getLogger(name)
@@ -194,7 +201,7 @@ class Vicki(object):
         if not phrase:
             return
         key = str(phrase.split(' ')[0])
-        arr = [v for v in self.numbers if self.numbers[v]['name'] == key]
+        arr = [v for v in self.numbers if self.numbers[v]['name'] == key or self.numbers.get(key)]
         if len(phrase.split(' ')) == 1 and arr:
             if key in self.numbers:
                 key = key
@@ -216,6 +223,13 @@ class Vicki(object):
                 self.store_tracks(tracks)
             else:
                 self.play_full_track(phrase)
+
+    def run_shuffle_artist(self, artist):
+        if self.lfm.get_query_type(artist) == 'artist':
+            tracks = self.lfm.get_top_tracks(self.lfm.get_corrected_artist(artist))
+            random.shuffle(tracks)
+            for track in tracks:
+                self.play_full_track(track)
 
     @staticmethod
     def store_tracks(tracks):
@@ -319,7 +333,7 @@ class Vicki(object):
             self.run_play_cmd(artist)
         elif action_type == 'shuffle_artist':
             artist = re.match(reg, action_phrase).groups()[0]
-            self.TTS.say('Shuffle is not supported yet')
+            self.run_shuffle_artist(artist)
         elif action_type == 'track_number_artist':
             number = re.match(reg, action_phrase).groups()[0]
             self.run_play_cmd(number)
@@ -336,7 +350,6 @@ class Vicki(object):
             self.TTS.say('Vicki could not process your request')
 
     def run_forever(self):
-        self.TTS = TextToSpeech()
         while True:
             with sr.Microphone() as source:
                 msg = 'Vicki is listening'
@@ -363,6 +376,35 @@ class Vicki(object):
                 self.logger.warning(msg)
                 break
 
+class MyArgumentParser(object):
+    '''
+    Parse command line arguments
+    '''
+    def __init__(self):
+        self.parser = argparse.ArgumentParser(description='VoicePlay')
+
+    def configure(self):
+        self.parser.add_argument('-c', action="store_true", default=False, dest='console',
+                            help='Start console')
+        self.parser.add_argument('--version', action='version', version='%(prog)s ' +  __version__)
+
+    def parse(self, argv=None):
+        argv = sys.argv if not argv else argv
+        result = self.parser.parse_args(argv[1:])
+        if result.console:
+            from IPython import Config
+            from IPython.terminal.embed import InteractiveShellEmbed
+            config = Config()
+            # basic configuration
+            config.TerminalInteractiveShell.confirm_exit = False
+            #
+            embed = InteractiveShellEmbed(config=config, banner1='')
+            embed.mainloop()
+        else:
+            vicki = Vicki()
+            vicki.run_forever()
+
 if __name__ == '__main__':
-    vicki = Vicki()
-    vicki.run_forever()
+    parser = MyArgumentParser()
+    parser.configure()
+    parser.parse()
