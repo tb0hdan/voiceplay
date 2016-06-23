@@ -40,13 +40,13 @@ Available modes
 Vicki play beat it by Michael Jackson
 ```
 
-### Single track from top tracks
+### Single track from top tracks (1-10)
 
 ```
 Vicki play top tracks by Michael Jackson
 ```
 
-Then select track number:
+Then select track number (1-10)
 
 ```
 Vicki play one
