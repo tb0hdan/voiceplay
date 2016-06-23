@@ -27,9 +27,11 @@ Sample is provided for convenience.
 cp config.yaml.sample config.yaml
 ```
 
-Paste Google API key into config.yaml and enable Youtube data api.
+Register at [https://console.developers.google.com](https://console.developers.google.com) and then
+paste Google API key (for Server) into config.yaml and enable Youtube data api.
 
-Paste Last.fm API key and secret into config.yaml
+Register at [http://www.last.fm/api](http://www.last.fm/api) and then
+paste Last.fm API key and secret into config.yaml
 
 
 ## Run
