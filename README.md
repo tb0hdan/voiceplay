@@ -18,7 +18,7 @@ brew install ffmpeg mplayer portaudio
 ```
 git clone https://github.com/tb0hdan/voiceplay
 cd voiceplay
-pip install -r requirements.txt
+sudo pip install -r requirements.txt
 ```
 
 ## Configuration
