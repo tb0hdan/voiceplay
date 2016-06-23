@@ -7,6 +7,8 @@ voiceplay (proof of concept) - Voice controlled console playback (OSX only so fa
 
 ### System dependencies
 
+Please make sure you have XCode installed prior to proceeding with other steps.
+
 ```
 brew install ffmpeg mplayer portaudio
 ```
