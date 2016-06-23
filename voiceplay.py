@@ -28,7 +28,7 @@ class MyParser(object):
     '''
     known_actions = {'play': {'^play some music by (.+)$': 'shuffle_artist',
                               '^play top tracks by (.+)$': 'top_tracks_artist',
-                              '^play [^(top tracks|some music)](.+) by (.+)$': 'single_track_artist'}}
+                              '^play (.+) by (.+)$': 'single_track_artist'}}
 
     def __init__(self, wake_word='vicki'):
         self.wake_word = wake_word
@@ -337,6 +337,7 @@ class Vicki(object):
             self.run_shuffle_artist(artist)
         elif action_type == 'track_number_artist':
             number = re.match(reg, action_phrase).groups()[0]
+            self.logger.warning(number)
             self.run_play_cmd(number)
         else:
             msg = 'Vicki thinks you said ' + message
