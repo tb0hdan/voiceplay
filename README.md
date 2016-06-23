@@ -11,9 +11,11 @@ voiceplay (proof of concept) - Voice controlled console playback (OSX only so fa
 brew install ffmpeg mplayer portaudio
 ```
 
-### Application dependencies
+### Application and dependencies
 
 ```
+git clone https://github.com/tb0hdan/voiceplay
+cd voiceplay
 pip install -r requirements.txt
 ```
 
@@ -21,9 +23,13 @@ pip install -r requirements.txt
 
 Sample is provided for convenience.
 
-### Paste google api key into config.yaml and enable youtube data api.
+```
+cp config.yaml.sample config.yaml
+```
 
-### Paste last.fm key and secret into config.yaml
+Paste Google API key into config.yaml and enable Youtube data api.
+
+Paste Last.fm API key and secret into config.yaml
 
 
 ## Run
