@@ -14,6 +14,8 @@ import random
 random.seed()
 import re
 import speech_recognition as sr
+# Having subprocess here makes me sad ;-(
+import subprocess
 import sys
 import time
 
@@ -28,6 +30,7 @@ class MyParser(object):
     '''
     known_actions = {'play': [{'^play some music by (.+)$': 'shuffle_artist'},
                               {'^play top tracks by (.+)$': 'top_tracks_artist'},
+                              {'^play (.+)?my library$': 'shuffle_local_library'},
                               {'^play (.+) by (.+)$': 'single_track_artist'}]}
 
     def __init__(self, wake_word='vicki'):
@@ -321,6 +324,16 @@ class Vicki(object):
         with YoutubeDL(ydl_opts) as ydl:
             ydl.download(['https://youtu.be/%s' % vid])
 
+    def play_local_library(self, message):
+        fnames = []
+        library = os.path.expanduser('~/Music')
+        for root, dirs, files in os.walk(library, topdown=False):
+            for name in files:
+                if name.lower().endswith('.mp3'):
+                    fnames.append(os.path.join(root, name))
+        random.shuffle(fnames)
+        for fname in fnames:
+            subprocess.call(['mplayer', fname])
 
     def play_from_parser(self, message):
         parsed = self.parser.parse(message)
@@ -340,6 +353,10 @@ class Vicki(object):
             number = re.match(reg, action_phrase).groups()[0]
             self.logger.warning(number)
             self.run_play_cmd(number)
+        elif action_type == 'shuffle_local_library':
+            msg = re.match(reg, action_phrase).groups()[0]
+            self.logger.warning(msg)
+            self.play_local_library(msg)
         else:
             msg = 'Vicki thinks you said ' + message
             self.TTS.say(msg)
