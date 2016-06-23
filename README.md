@@ -58,6 +58,11 @@ Vicki play one
 Vicki play some music by Michael Jackson
 ```
 
+### Shuffle local library (~/Music, .mp3 only)
+
+```
+Vicki play my library
+```
 
 
 
