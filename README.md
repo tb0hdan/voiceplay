@@ -32,11 +32,35 @@ Sample is provided for convenience.
 python ./voiceplay.py
 ```
 
-Then say:
+Available modes
+
+### Single track
 
 ```
-Vicki play Michael Jackson beat it
+Vicki play beat it by Michael Jackson
 ```
+
+### Single track from top tracks
+
+```
+Vicki play top tracks by Michael Jackson
+```
+
+Then select track number:
+
+```
+Vicki play one
+```
+
+### Shuffle top tracks
+
+```
+Vicki play some music by Michael Jackson
+```
+
+
+
+
 
 # COPYRIGHT
 

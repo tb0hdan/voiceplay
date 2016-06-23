@@ -26,9 +26,9 @@ class MyParser(object):
     '''
     Parse text commands
     '''
-    known_actions = {'play': {'^play some music by (.+)$': 'shuffle_artist',
-                              '^play top tracks by (.+)$': 'top_tracks_artist',
-                              '^play (.+) by (.+)$': 'single_track_artist'}}
+    known_actions = {'play': [{'^play some music by (.+)$': 'shuffle_artist'},
+                              {'^play top tracks by (.+)$': 'top_tracks_artist'},
+                              {'^play (.+) by (.+)$': 'single_track_artist'}]}
 
     def __init__(self, wake_word='vicki'):
         self.wake_word = wake_word
@@ -76,9 +76,10 @@ class MyParser(object):
         if self.known_actions.get(action, None) is None:
             raise ValueError('Unknown action %r in phrase %r' % (action, action_phrase))
         action_type = None
-        for reg in self.known_actions.get(action):
+        for regs in self.known_actions.get(action):
+            reg = regs.keys()[0]
             if re.match(reg, action_phrase) is not None:
-                action_type = self.known_actions[action][reg]
+                action_type = regs[reg]
                 break
         if action_phrase and action_phrase.startswith('play') and not action_type:
             reg = '^play (.+)$'
@@ -184,7 +185,7 @@ class Vicki(object):
         self.lfm = VoicePlayLastFm()
         self.parser = MyParser()
         self.TTS = TextToSpeech()
-
+        self.logger.warning('Vicki init completed')
 
     def init_logger(self, name='voiceplay'):
         self.logger = logging.getLogger(name)
@@ -248,7 +249,7 @@ class Vicki(object):
         track = ''
         for idx, num in enumerate(sorted(self.numbers)):
             if num == number:
-                tid = idx
+                tid = idx if idx > 1 else idx + 1
                 break
         self.logger.warning('Playing track: %s - %s', number, tid)
         with open('state.txt', 'rb') as file_handle:
@@ -268,7 +269,7 @@ class Vicki(object):
         track = ''
         for idx, num in enumerate(sorted(self.numbers)):
             if num == number:
-                tid = idx
+                tid = idx if idx > 1 else idx + 1
                 break
         self.logger.warning('Getting track: %s - %s', number, tid)
         with open('state.txt', 'rb') as file_handle:
@@ -393,6 +394,7 @@ class MyArgumentParser(object):
     def parse(self, argv=None):
         argv = sys.argv if not argv else argv
         result = self.parser.parse_args(argv[1:])
+        vicki = Vicki()
         if result.console:
             from IPython import Config
             from IPython.terminal.embed import InteractiveShellEmbed
@@ -403,7 +405,6 @@ class MyArgumentParser(object):
             embed = InteractiveShellEmbed(config=config, banner1='')
             embed.mainloop()
         else:
-            vicki = Vicki()
             vicki.run_forever()
 
 if __name__ == '__main__':
