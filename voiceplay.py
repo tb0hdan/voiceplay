@@ -30,6 +30,7 @@ class MyParser(object):
     '''
     known_actions = {'play': [{'^play some music by (.+)$': 'shuffle_artist'},
                               {'^play top tracks by (.+)$': 'top_tracks_artist'},
+                              {'^play top tracks in (.+)$': 'top_tracks_geo'},
                               {'^play (.+)?my library$': 'shuffle_local_library'},
                               {'^play (.+) by (.+)$': 'single_track_artist'}]}
 
@@ -100,6 +101,17 @@ class VoicePlayLastFm(object):
 
         self.network = pylast.LastFMNetwork(api_key=cfg_data['lastfm']['key'],
                                             api_secret=cfg_data['lastfm']['secret'])
+
+    def get_top_tracks_geo(self, country_code='united states'):
+        '''
+        Country name: ISO 3166-1
+        '''
+        top_tracks = []
+        tracks = self.network.get_geo_top_tracks(country_code)
+        for track in tracks:
+            top_tracks.append(track.item.artist.name + ' - ' + track.item.title)
+        return top_tracks
+
 
     def get_top_tracks(self, artist):
         '''
@@ -235,6 +247,12 @@ class Vicki(object):
             for track in tracks:
                 self.play_full_track(track)
 
+    def run_top_tracks_geo(self, country):
+        tracks = self.lfm.get_top_tracks_geo(country)
+        random.shuffle(tracks)
+        for track in tracks:
+            self.play_full_track(track)
+
     @staticmethod
     def store_tracks(tracks):
         '''
@@ -357,6 +375,10 @@ class Vicki(object):
             msg = re.match(reg, action_phrase).groups()[0]
             self.logger.warning(msg)
             self.play_local_library(msg)
+        elif action_type == 'top_tracks_geo':
+            country = re.match(reg, action_phrase).groups()[0]
+            self.TTS.say('Playing top track for country %s' % country)
+            self.run_top_tracks_geo(country)
         else:
             msg = 'Vicki thinks you said ' + message
             self.TTS.say(msg)
