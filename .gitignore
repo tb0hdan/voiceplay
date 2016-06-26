@@ -92,6 +92,7 @@ ENV/
 
 # local files
 config.yaml
+config.yaml.bkp
 *.mp3
 *.m4a
 *.webm
