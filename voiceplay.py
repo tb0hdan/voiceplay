@@ -30,7 +30,7 @@ class MyParser(object):
     '''
     known_actions = {'play': [{'^play some music by (.+)$': 'shuffle_artist'},
                               {'^play top tracks by (.+)$': 'top_tracks_artist'},
-                              {'^play top tracks in (.+)$': 'top_tracks_geo'},
+                              {'^play top tracks(?:\sin\s(.+))?$': 'top_tracks_geo'},
                               {'^play (.+)?my library$': 'shuffle_local_library'},
                               {'^play (.+) by (.+)$': 'single_track_artist'}]}
 
@@ -102,7 +102,7 @@ class VoicePlayLastFm(object):
         self.network = pylast.LastFMNetwork(api_key=cfg_data['lastfm']['key'],
                                             api_secret=cfg_data['lastfm']['secret'])
 
-    def get_top_tracks_geo(self, country_code='united states'):
+    def get_top_tracks_geo(self, country_code):
         '''
         Country name: ISO 3166-1
         '''
@@ -112,6 +112,15 @@ class VoicePlayLastFm(object):
             top_tracks.append(track.item.artist.name + ' - ' + track.item.title)
         return top_tracks
 
+    def get_top_tracks_global(self):
+        '''
+        Global top tracks (chart)
+        '''
+        top_tracks = []
+        tracks = self.network.get_top_tracks()
+        for track in tracks:
+            top_tracks.append(track.item.artist.name + ' - ' + track.item.title)
+        return top_tracks
 
     def get_top_tracks(self, artist):
         '''
@@ -248,7 +257,10 @@ class Vicki(object):
                 self.play_full_track(track)
 
     def run_top_tracks_geo(self, country):
-        tracks = self.lfm.get_top_tracks_geo(country)
+        if country:
+            tracks = self.lfm.get_top_tracks_geo(country)
+        else:
+            tracks = self.lfm.get_top_tracks_global()
         random.shuffle(tracks)
         for track in tracks:
             self.play_full_track(track)
@@ -377,7 +389,11 @@ class Vicki(object):
             self.play_local_library(msg)
         elif action_type == 'top_tracks_geo':
             country = re.match(reg, action_phrase).groups()[0]
-            self.TTS.say('Playing top track for country %s' % country)
+            if country:
+                msg = 'Playing top track for country %s' % country
+            else:
+                msg = 'Playing global top tracks'
+            self.TTS.say(msg)
             self.run_top_tracks_geo(country)
         else:
             msg = 'Vicki thinks you said ' + message

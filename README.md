@@ -74,10 +74,16 @@ Vicki play some music by Michael Jackson
 Vicki play my library
 ```
 
-### Shuffle top tracks in some country
+### Shuffle top tracks (global or country)
 
 ```
 Vicki play top tracks in united states
+```
+
+or just
+
+```
+Vicki play top tracks
 ```
 
 
