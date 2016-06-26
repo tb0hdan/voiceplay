@@ -6,4 +6,4 @@ PyAudio==0.2.9
 pylast==1.6.0
 requests==2.9.1
 SpeechRecognition==3.4.6
-youtube-dl==2016.6.23.1
+youtube-dl==2016.6.25
