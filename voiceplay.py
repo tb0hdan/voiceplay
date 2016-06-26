@@ -106,32 +106,23 @@ class VoicePlayLastFm(object):
         '''
         Country name: ISO 3166-1
         '''
-        top_tracks = []
         tracks = self.network.get_geo_top_tracks(country_code)
-        for track in tracks:
-            top_tracks.append(track.item.artist.name + ' - ' + track.item.title)
-        return top_tracks
+        return self.trackarize(tracks)
 
     def get_top_tracks_global(self):
         '''
         Global top tracks (chart)
         '''
-        top_tracks = []
         tracks = self.network.get_top_tracks()
-        for track in tracks:
-            top_tracks.append(track.item.artist.name + ' - ' + track.item.title)
-        return top_tracks
+        return self.trackarize(tracks)
 
     def get_top_tracks(self, artist):
         '''
         Get top tracks by artist
         '''
-        top_tracks = []
         aobj = pylast.Artist(artist, self.network)
         tracks = aobj.get_top_tracks()
-        for track in tracks:
-            top_tracks.append(track.item.artist.name + ' - ' + track.item.title)
-        return top_tracks
+        return self.trackarize(tracks)
 
     def get_corrected_artist(self, artist):
         '''
@@ -155,6 +146,16 @@ class VoicePlayLastFm(object):
         else:
             reply = 'artist_track'
         return reply
+
+    @staticmethod
+    def trackarize(array):
+        '''
+        Convert lastfm track entities to track names
+        '''
+        top_tracks = []
+        for track in array:
+            top_tracks.append(track.item.artist.name + ' - ' + track.item.title)
+        return top_tracks
 
     @staticmethod
     def numerize(array):
