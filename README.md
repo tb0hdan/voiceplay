@@ -74,6 +74,11 @@ Vicki play some music by Michael Jackson
 Vicki play my library
 ```
 
+### Shuffle top tracks in some country
+
+```
+Vicki play top tracks in united states
+```
 
 
 
