@@ -14,13 +14,15 @@ import random
 random.seed()
 import re
 import speech_recognition as sr
-# Having subprocess here makes me sad ;-(
+# Having subprocess here makes me feel sad ;-(
 import subprocess
 import sys
 import time
+import vimeo
 
 from apiclient.discovery import build
 from apiclient.errors import HttpError
+from urllib import quote
 from youtube_dl import YoutubeDL
 
 
@@ -336,6 +338,24 @@ class Vicki(object):
                 videos.append([search_result["snippet"]["title"], search_result["id"]["videoId"]])
         return videos
 
+    def vimeo_search(self, query, max_results=25):
+        '''
+        Run vimeo search
+        '''
+        client = vimeo.VimeoClient(token=self.cfg_data['vimeo']['token'],
+                                          key=self.cfg_data['vimeo']['key'],
+                                          secret=self.cfg_data['vimeo']['secret'])
+        response = client.get('/videos?query=%s' % quote(query))
+        result = json.loads(response.text).get('data', [])
+        videos = []
+        for video in result:
+            vid = video.get('uri', '').split('/videos/')[1]
+            title = video.get('name', '')
+            if not title.lower().startswith(query.lower()):
+                continue
+            videos.append([title, vid])
+        return videos
+
     def download_hook(self, response):
         if response['status'] == 'finished':
             self.logger.warning('Done downloading, now converting ...')
@@ -344,8 +364,15 @@ class Vicki(object):
         '''
         Play full track
         '''
-        results = self.youtube_search(trackname)
-        vid = results[0][1]
+        results = self.vimeo_search(trackname)
+        if results:
+            vid = results[0][1]
+            baseurl = 'https://vimeo.com/'
+        else:
+            results = self.youtube_search(trackname)
+            vid = results[0][1]
+            baseurl = 'https://youtu.be/'
+
         ydl_opts = {'keepvideo': False, 'verbose': False, 'format': 'bestaudio/best', 'quiet': True,
          'postprocessors': [{'preferredcodec': 'mp3', 'preferredquality': '5', u'nopostoverwrites': True, u'key': u'FFmpegExtractAudio'},
                             {u'exec_cmd': u'mplayer {}; rm -f {}', u'key': u'ExecAfterDownload'}],
@@ -353,7 +380,8 @@ class Vicki(object):
          'progress_hooks': [self.download_hook]}
 
         with YoutubeDL(ydl_opts) as ydl:
-            ydl.download(['https://youtu.be/%s' % vid])
+            self.logger.warning('Using source url %s', baseurl + vid)
+            ydl.download([baseurl + vid])
 
     def play_local_library(self, message):
         fnames = []

@@ -1,7 +1,10 @@
 voiceplay (proof of concept) - Voice controlled console playback (OSX only so far)
 
 - [INSTALLATION](#installation)
+- [CONFIGURATION](#configuration)
+- [USAGE](#usage)
 - [COPYRIGHT](#copyright)
+
 
 ## Installation
 
@@ -35,8 +38,11 @@ paste Google API key (for Server) into config.yaml and enable Youtube data api.
 Register at [http://www.last.fm/api](http://www.last.fm/api) and then
 paste Last.fm API key and secret into config.yaml
 
+Register at [https://developer.vimeo.com](https://developer.vimeo.com) and then
+paste client id(key), token and secret into config.yaml
 
-## Run
+
+## Usage
 
 ```
 python ./voiceplay.py

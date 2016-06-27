@@ -1,6 +1,9 @@
 google:
    key: abc
+vimeo:
+   key: def
+   secret: ghi
+   token: jkl
 lastfm:
-   key: jkl
-   secret: mno
-
+   key: mno
+   secret: pqr
