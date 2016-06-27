@@ -1,3 +1,4 @@
+dailymotion==0.2.2
 google-api-python-client==1.5.1
 ipython==4.2.0
 kaptan==0.5.8

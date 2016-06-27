@@ -22,6 +22,8 @@ import vimeo
 
 from apiclient.discovery import build
 from apiclient.errors import HttpError
+from dailymotion import Dailymotion
+from math import trunc
 from urllib import quote
 from youtube_dl import YoutubeDL
 
@@ -219,7 +221,6 @@ class Vicki(object):
         handler = logging.StreamHandler(sys.stderr)
         self.logger.addHandler(handler)
 
-
     def run_play_cmd(self, phrase):
         '''
         Run play command
@@ -323,20 +324,41 @@ class Vicki(object):
             track = 'unknown'
         return artist, track
 
-
-    def youtube_search(self, query, max_results=25):
+    def dailymotion_search(self, query, max_results=25):
         '''
-        Run youtube search
+        Run dailymotion search
         '''
-        youtube = build('youtube', 'v3', developerKey=self.cfg_data['google']['key'])
-        search_response = youtube.search().list(q=query,
-                                                part="id,snippet",
-                                                maxResults=max_results).execute()
+        MAX_RESULTS = 100
+        client = Dailymotion()
+        client.set_grant_type('password',
+                              api_key=self.cfg_data['dailymotion']['key'],
+                              api_secret=self.cfg_data['dailymotion']['secret'],
+                              info={'username': self.cfg_data['dailymotion']['username'],
+                                    'password': self.cfg_data['dailymotion']['password']},
+                              scope=['userinfo'])
+        results = []
+        pages = trunc(max_results/MAX_RESULTS)
+        pages = pages if pages > 0 else 1
+        dquery = {'search': query,
+                 'fields':'id,title',
+                 'limit': MAX_RESULTS}
+        i = 0
+        while i < pages:
+            response = client.get('/videos', dquery)
+            results += response.get('list', [])
+            i += 1
+            if not response.get('has_more', False):
+                break
         videos = []
-        for search_result in search_response.get("items", []):
-            if search_result["id"]["kind"] == "youtube#video":
-                videos.append([search_result["snippet"]["title"], search_result["id"]["videoId"]])
+        for result in results:
+            vid = result.get('id')
+            title = result.get('title')
+            if not title.lower().startswith(query.lower()):
+                continue
+            videos.append([title, vid])
         return videos
+
+
 
     def vimeo_search(self, query, max_results=25):
         '''
@@ -356,6 +378,20 @@ class Vicki(object):
             videos.append([title, vid])
         return videos
 
+    def youtube_search(self, query, max_results=25):
+        '''
+        Run youtube search
+        '''
+        youtube = build('youtube', 'v3', developerKey=self.cfg_data['google']['key'])
+        search_response = youtube.search().list(q=query,
+                                                part="id,snippet",
+                                                maxResults=max_results).execute()
+        videos = []
+        for search_result in search_response.get("items", []):
+            if search_result["id"]["kind"] == "youtube#video":
+                videos.append([search_result["snippet"]["title"], search_result["id"]["videoId"]])
+        return videos
+
     def download_hook(self, response):
         if response['status'] == 'finished':
             self.logger.warning('Done downloading, now converting ...')
@@ -369,6 +405,11 @@ class Vicki(object):
             vid = results[0][1]
             baseurl = 'https://vimeo.com/'
         else:
+            results = self.dailymotion_search(trackname)
+            vid = results[0][1]
+            baseurl = 'http://www.dailymotion.com/video/'
+        # fallback
+        if not results:
             results = self.youtube_search(trackname)
             vid = results[0][1]
             baseurl = 'https://youtu.be/'

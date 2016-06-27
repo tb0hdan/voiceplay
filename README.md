@@ -32,14 +32,18 @@ Sample is provided for convenience.
 cp config.yaml.sample config.yaml
 ```
 
-Register at [https://console.developers.google.com](https://console.developers.google.com) and then
-paste Google API key (for Server) into config.yaml and enable Youtube data api.
 
 Register at [http://www.last.fm/api](http://www.last.fm/api) and then
 paste Last.fm API key and secret into config.yaml
 
+Register at [https://developer.dailymotion.com](https://developer.dailymotion.com) and then
+paste DailyMotion key, secret, username, password into config.yaml
+
 Register at [https://developer.vimeo.com](https://developer.vimeo.com) and then
 paste client id(key), token and secret into config.yaml
+
+Register at [https://console.developers.google.com](https://console.developers.google.com) and then
+paste Google API key (for Server) into config.yaml and enable Youtube data api.
 
 
 ## Usage

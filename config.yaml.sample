@@ -1,9 +1,14 @@
-google:
+dailymotion:
    key: abc
-vimeo:
-   key: def
-   secret: ghi
-   token: jkl
-lastfm:
+   secret: def
+   username: ghi
+   password: jkl
+google:
    key: mno
-   secret: pqr
+vimeo:
+   key: pqr
+   secret: stu
+   token: vwx
+lastfm:
+   key: yz0
+   secret: yz1
