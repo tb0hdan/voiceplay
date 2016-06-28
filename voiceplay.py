@@ -2,8 +2,6 @@
 #-*- coding: utf-8 -*-
 ''' VoicePlay main module '''
 
-__version__ = '0.0.1'
-
 import argparse
 import json
 import kaptan
@@ -27,16 +25,18 @@ from math import trunc
 from urllib import quote
 from youtube_dl import YoutubeDL
 
+__version__ = '0.1.0'
 
 class MyParser(object):
     '''
     Parse text commands
     '''
-    known_actions = {'play': [{'^play some music by (.+)$': 'shuffle_artist'},
-                              {'^play top tracks by (.+)$': 'top_tracks_artist'},
-                              {'^play top tracks(?:\sin\s(.+))?$': 'top_tracks_geo'},
-                              {'^play (.+)?my library$': 'shuffle_local_library'},
-                              {'^play (.+) by (.+)$': 'single_track_artist'}]}
+    known_actions = {'play': [{r'^play (.+) station$': 'station_artist'},
+                              {r'^play some music by (.+)$': 'shuffle_artist'},
+                              {r'^play top tracks by (.+)$': 'top_tracks_artist'},
+                              {r'^play top tracks(?:\sin\s(.+))?$': 'top_tracks_geo'},
+                              {r'^play (.+)?my library$': 'shuffle_local_library'},
+                              {r'^play (.+) by (.+)$': 'single_track_artist'}]}
 
     def __init__(self, wake_word='vicki'):
         self.wake_word = wake_word
@@ -44,11 +44,17 @@ class MyParser(object):
 
     @staticmethod
     def load_phrases(wake_word, normalize_file='normalize.json'):
+        '''
+        Load normalization phrases
+        '''
         with open(normalize_file, 'rb') as normalize_fh:
             data = json.loads(normalize_fh.read())
         return data[wake_word]
 
     def normalize(self, sentence):
+        '''
+        Run normalization
+        '''
         message = sentence.lower()
         result = message
         # first pass
@@ -65,6 +71,9 @@ class MyParser(object):
         return result
 
     def parse(self, message):
+        '''
+        Parse incoming message
+        '''
         result = self.normalize(message)
         start = False
         action_phrase = []
@@ -76,10 +85,13 @@ class MyParser(object):
                 start = True
             if start and word:
                 action_phrase.append(word)
-        action_phrase = ' '.join(action_phrase)
-        return action_phrase
+        response = ' '.join(action_phrase)
+        return response
 
     def get_action_type(self, action_phrase):
+        '''
+        Get action type depending on incoming message
+        '''
         action = action_phrase.split(' ')[0]
         if self.known_actions.get(action, None) is None:
             raise ValueError('Unknown action %r in phrase %r' % (action, action_phrase))
@@ -125,6 +137,14 @@ class VoicePlayLastFm(object):
         Get top tracks by artist
         '''
         aobj = pylast.Artist(artist, self.network)
+        tracks = aobj.get_top_tracks()
+        return self.trackarize(tracks)
+
+    def get_station(self, station):
+        '''
+        Get station
+        '''
+        aobj = pylast.Tag(station, self.network)
         tracks = aobj.get_top_tracks()
         return self.trackarize(tracks)
 
@@ -183,6 +203,9 @@ class TextToSpeech(object):
         self.speech = NSSpeechSynthesizer.alloc().initWithVoice_(self.voice)
 
     def say(self, message):
+        '''
+        Read aloud message
+        '''
         self.speech.startSpeakingString_(message)
         while self.speech.isSpeaking():
             time.sleep(0.5)
@@ -213,10 +236,13 @@ class Vicki(object):
         self.rec = sr.Recognizer()
         self.lfm = VoicePlayLastFm()
         self.parser = MyParser()
-        self.TTS = TextToSpeech()
+        self.tts = TextToSpeech()
         self.logger.warning('Vicki init completed')
 
     def init_logger(self, name='voiceplay'):
+        '''
+        Initialize logger
+        '''
         self.logger = logging.getLogger(name)
         handler = logging.StreamHandler(sys.stderr)
         self.logger.addHandler(handler)
@@ -238,7 +264,7 @@ class Vicki(object):
                 key = arr[0]
             adj = self.numbers[key]['adjective']
             artist = self.get_track_by_number(key)[0]
-            self.TTS.say('Playing %s track by %s' % (adj, artist))
+            self.tts.say('Playing %s track by %s' % (adj, artist))
             # play track with track number
             self.play_track_by_number(key)
         else:
@@ -246,14 +272,17 @@ class Vicki(object):
                 tracks = self.lfm.get_top_tracks(self.lfm.get_corrected_artist(phrase))[:10]
                 numerized = ', '.join(self.lfm.numerize(tracks))
                 reply = re.sub(r'^(.+)\.\s\d\:\s', '1: ', numerized)
-                self.TTS.say('Here are some top tracks by %s: %s' % (phrase,
-                                                                         reply))
+                self.tts.say('Here are some top tracks by %s: %s' % (phrase,
+                                                                     reply))
                 # record track numbers
                 self.store_tracks(tracks)
             else:
                 self.play_full_track(phrase)
 
     def run_shuffle_artist(self, artist):
+        '''
+        Shuffle artist tracks
+        '''
         if self.lfm.get_query_type(artist) == 'artist':
             tracks = self.lfm.get_top_tracks(self.lfm.get_corrected_artist(artist))
             random.shuffle(tracks)
@@ -261,6 +290,9 @@ class Vicki(object):
                 self.play_full_track(track)
 
     def run_top_tracks_geo(self, country):
+        '''
+        Shuffle location tracks
+        '''
         if country:
             tracks = self.lfm.get_top_tracks_geo(country)
         else:
@@ -328,7 +360,7 @@ class Vicki(object):
         '''
         Run dailymotion search
         '''
-        MAX_RESULTS = 100
+        maxresults = 100
         client = Dailymotion()
         client.set_grant_type('password',
                               api_key=self.cfg_data['dailymotion']['key'],
@@ -337,11 +369,11 @@ class Vicki(object):
                                     'password': self.cfg_data['dailymotion']['password']},
                               scope=['userinfo'])
         results = []
-        pages = trunc(max_results/MAX_RESULTS)
+        pages = trunc(max_results/maxresults)
         pages = pages if pages > 0 else 1
         dquery = {'search': query,
-                 'fields':'id,title',
-                 'limit': MAX_RESULTS}
+                  'fields':'id,title',
+                  'limit': maxresults}
         i = 0
         while i < pages:
             response = client.get('/videos', dquery)
@@ -358,15 +390,13 @@ class Vicki(object):
             videos.append([title, vid])
         return videos
 
-
-
     def vimeo_search(self, query, max_results=25):
         '''
         Run vimeo search
         '''
         client = vimeo.VimeoClient(token=self.cfg_data['vimeo']['token'],
-                                          key=self.cfg_data['vimeo']['key'],
-                                          secret=self.cfg_data['vimeo']['secret'])
+                                   key=self.cfg_data['vimeo']['key'],
+                                   secret=self.cfg_data['vimeo']['secret'])
         response = client.get('/videos?query=%s' % quote(query))
         result = json.loads(response.text).get('data', [])
         videos = []
@@ -393,6 +423,9 @@ class Vicki(object):
         return videos
 
     def download_hook(self, response):
+        '''
+        YDL download hook
+        '''
         if response['status'] == 'finished':
             self.logger.warning('Done downloading, now converting ...')
 
@@ -414,20 +447,24 @@ class Vicki(object):
             vid = results[0][1]
             baseurl = 'https://youtu.be/'
 
-        ydl_opts = {'keepvideo': False, 'verbose': False, 'format': 'bestaudio/best', 'quiet': True,
-         'postprocessors': [{'preferredcodec': 'mp3', 'preferredquality': '5', u'nopostoverwrites': True, u'key': u'FFmpegExtractAudio'},
-                            {u'exec_cmd': u'mplayer {}; rm -f {}', u'key': u'ExecAfterDownload'}],
-         'logger': self.logger,
-         'progress_hooks': [self.download_hook]}
+        ydl_opts = {'keepvideo': False, 'verbose': False, 'format': 'bestaudio/best',
+                    'quiet': True,
+                    'postprocessors': [{'preferredcodec': 'mp3', 'preferredquality': '5',
+                                        'nopostoverwrites': True, 'key': 'FFmpegExtractAudio'},
+                                       {'exec_cmd': 'mplayer {}; rm -f {}',
+                                        'key': 'ExecAfterDownload'}],
+                    'logger': self.logger,
+                    'progress_hooks': [self.download_hook]}
 
         with YoutubeDL(ydl_opts) as ydl:
             self.logger.warning('Using source url %s', baseurl + vid)
             ydl.download([baseurl + vid])
 
-    def play_local_library(self, message):
+    @staticmethod
+    def play_local_library(message):
         fnames = []
         library = os.path.expanduser('~/Music')
-        for root, dirs, files in os.walk(library, topdown=False):
+        for root, _, files in os.walk(library, topdown=False):
             for name in files:
                 if name.lower().endswith('.mp3'):
                     fnames.append(os.path.join(root, name))
@@ -435,10 +472,22 @@ class Vicki(object):
         for fname in fnames:
             subprocess.call(['mplayer', fname])
 
+    def play_station(self, station):
+        '''
+        Play top tracks for station
+        '''
+        tracks = self.lfm.get_station(station)
+        random.shuffle(tracks)
+        for track in tracks:
+            self.play_full_track(track)
+
     def play_from_parser(self, message):
+        '''
+        Process incoming message
+        '''
         parsed = self.parser.parse(message)
         action_type, reg, action_phrase = self.parser.get_action_type(parsed)
-        self.logger.warning('Action type: %s' % action_type)
+        self.logger.warning('Action type: %s', action_type)
         if action_type == 'single_track_artist':
             track, artist = re.match(reg, action_phrase).groups()
             self.play_full_track('%s - %s' % (artist, track))
@@ -447,7 +496,7 @@ class Vicki(object):
             self.run_play_cmd(artist)
         elif action_type == 'shuffle_artist':
             artist = re.match(reg, action_phrase).groups()[0]
-            self.TTS.say('Shuffling %s' % artist)
+            self.tts.say('Shuffling %s' % artist)
             self.run_shuffle_artist(artist)
         elif action_type == 'track_number_artist':
             number = re.match(reg, action_phrase).groups()[0]
@@ -463,44 +512,54 @@ class Vicki(object):
                 msg = 'Playing top track for country %s' % country
             else:
                 msg = 'Playing global top tracks'
-            self.TTS.say(msg)
+            self.tts.say(msg)
             self.run_top_tracks_geo(country)
+        elif action_type == 'station_artist':
+            station = re.match(reg, action_phrase).groups()[0]
+            self.tts.say('Playing %s station' % station)
+            self.play_station(station)
         else:
             msg = 'Vicki thinks you said ' + message
-            self.TTS.say(msg)
+            self.tts.say(msg)
             self.logger.warning(msg)
 
     def process_request(self, request):
+        '''
+        process request
+        '''
         try:
             self.play_from_parser(request)
         except Exception as exc:
             self.logger.error(exc)
-            self.TTS.say('Vicki could not process your request')
+            self.tts.say('Vicki could not process your request')
 
     def run_forever(self):
+        '''
+        Main loop
+        '''
         while True:
             with sr.Microphone() as source:
                 msg = 'Vicki is listening'
-                self.TTS.say(msg)
+                self.tts.say(msg)
                 self.logger.warning(msg)
                 audio = self.rec.listen(source)
             try:
                 result = self.rec.recognize_google(audio)
             except sr.UnknownValueError:
                 msg = 'Vicki could not understand audio'
-                self.TTS.say(msg)
+                self.tts.say(msg)
                 self.logger.warning(msg)
                 result = None
             except sr.RequestError as e:
                 msg = 'Recognition error'
-                self.TTS.say(msg)
+                self.tts.say(msg)
                 self.logger.warning('{0}; {1}'.format(msg, e))
                 result = None
             if result:
                 self.process_request(result)
             elif result and result.lower() in ['shutdown']:
                 msg = 'Vicki is shutting down, see you later'
-                self.TTS.say(msg)
+                self.tts.say(msg)
                 self.logger.warning(msg)
                 break
 
@@ -512,11 +571,17 @@ class MyArgumentParser(object):
         self.parser = argparse.ArgumentParser(description='VoicePlay')
 
     def configure(self):
+        '''
+        Configure argument parser
+        '''
         self.parser.add_argument('-c', action="store_true", default=False, dest='console',
-                            help='Start console')
+                                 help='Start console')
         self.parser.add_argument('--version', action='version', version='%(prog)s ' +  __version__)
 
     def parse(self, argv=None):
+        '''
+        Parse command line arguments
+        '''
         argv = sys.argv if not argv else argv
         result = self.parser.parse_args(argv[1:])
         vicki = Vicki()
