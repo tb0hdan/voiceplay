@@ -11,6 +11,7 @@ import pylast
 import random
 random.seed()
 import re
+import requests
 import speech_recognition as sr
 # Having subprocess here makes me feel sad ;-(
 import subprocess
@@ -20,6 +21,7 @@ import vimeo
 
 from apiclient.discovery import build
 from apiclient.errors import HttpError
+from bs4 import BeautifulSoup
 from dailymotion import Dailymotion
 from math import trunc
 from urllib import quote
@@ -421,6 +423,44 @@ class Vicki(object):
             if search_result["id"]["kind"] == "youtube#video":
                 videos.append([search_result["snippet"]["title"], search_result["id"]["videoId"]])
         return videos
+
+    def pleer_search(self, query, max_results=25):
+        term = quote(query)
+        url = 'http://pleer.com/search?page=1&q=%s&sort_mode=0&sort_by=0&quality=all&onlydata=true' % quote(query)
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0',
+                   'Accept': 'application/json, text/javascript, */*; q=0.01',
+                   'Accept-Language': 'en-US,en;q=0.5',
+                   'X-Requested-With': 'XMLHttpRequest',
+                   'Referer': 'http://pleer.com/search?q=%s' % term}
+        r = requests.get(url, headers=headers)
+        result = json.loads(r.text).get('html', '')
+        soup = BeautifulSoup(''.join(result), 'html.parser')
+        tracks = []
+        for el in soup.findAll(lambda tag: tag.name == 'div' and tag.a and tag.a['href'] == '#'):
+            tg = el.findParent()
+            if not tg.name == 'li':
+                continue
+            title = '%s - %s' % (tg.get('singer'), tg.get('song'))
+            aid = tg.get('link')
+            tracks.append([title, aid])
+        return tracks
+
+    def pleer_download(self, track_id, filename, chunk_size=8196):
+        '''
+        Download track
+        '''
+        url = 'http://pleer.com/site_api/files/get_url'
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0',
+                   'Accept': 'application/json, text/javascript, */*; q=0.01',
+                   'Accept-Language': 'en-US,en;q=0.5',
+                   'X-Requested-With': 'XMLHttpRequest',
+                   'Referer': 'http://pleer.com/en/download/page/%s' % track_id}
+        reply = requests.post(url, data={'action': 'download', 'id': track_id})
+        result = json.loads(reply.text).get('track_link')
+        r = requests.get(result, headers=headers, stream=True)
+        with open(filename, 'wb') as fd:
+            for chunk in r.iter_content(chunk_size):
+                fd.write(chunk)
 
     def download_hook(self, response):
         '''
