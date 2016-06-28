@@ -96,6 +96,17 @@ or just
 Vicki play top tracks
 ```
 
+### Shuffle genre (station)
+
+```
+Vicki play edm station
+```
+
+or
+
+```
+Vicki play melodic death metal station
+```
 
 
 # COPYRIGHT
