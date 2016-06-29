@@ -3,7 +3,7 @@ voiceplay (proof of concept) - Voice controlled console playback (OSX only so fa
 - [INSTALLATION](#installation)
 - [CONFIGURATION](#configuration)
 - [USAGE](#usage)
-- [CONSOLE MODE](#console mode (advanced))
+- [CONSOLE MODE](#console-mode-advanced)
 - [COPYRIGHT](#copyright)
 
 
