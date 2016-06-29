@@ -108,6 +108,20 @@ or
 Vicki play melodic death metal station
 ```
 
+## Console mode (advanced)
+
+```
+./voiceplay -c
+```
+
+then run (or any other command from list above)
+
+```
+vicki.play_from_parser('Vicki play some music by atb')
+```
+
+
+
 
 # COPYRIGHT
 

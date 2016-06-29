@@ -24,6 +24,7 @@ from apiclient.errors import HttpError
 from bs4 import BeautifulSoup
 from dailymotion import Dailymotion
 from math import trunc
+from tempfile import mkstemp
 from urllib import quote
 from youtube_dl import YoutubeDL
 
@@ -473,14 +474,17 @@ class Vicki(object):
         '''
         Play full track
         '''
-        results = self.vimeo_search(trackname)
-        if results:
-            vid = results[0][1]
-            baseurl = 'https://vimeo.com/'
-        else:
-            results = self.dailymotion_search(trackname)
-            vid = results[0][1]
-            baseurl = 'http://www.dailymotion.com/video/'
+        vid = None
+        baseurl = None
+        sources = [{'method': self.pleer_search, 'baseurl': 'http://pleer.com/en/download/page/'},
+                   {'method': self.vimeo_search, 'baseurl': 'https://vimeo.com/'},
+                   {'method': self.dailymotion_search, 'baseurl': 'http://www.dailymotion.com/video/'}]
+        for source in sources:
+            results = source.get('method')(trackname)
+            if results:
+                vid = results[0][1]
+                baseurl = source.get('baseurl')
+                break
         # fallback
         if not results:
             results = self.youtube_search(trackname)
@@ -496,9 +500,15 @@ class Vicki(object):
                     'logger': self.logger,
                     'progress_hooks': [self.download_hook]}
 
-        with YoutubeDL(ydl_opts) as ydl:
-            self.logger.warning('Using source url %s', baseurl + vid)
-            ydl.download([baseurl + vid])
+        self.logger.warning('Using source url %s', baseurl + vid)
+        if baseurl == 'http://pleer.com/en/download/page/':
+            tmp = mkstemp()[1]
+            self.pleer_download(vid, tmp)
+            subprocess.call(['mplayer', tmp])
+            os.remove(tmp)
+        else:
+            with YoutubeDL(ydl_opts) as ydl:
+                ydl.download([baseurl + vid])
 
     @staticmethod
     def play_local_library(message):
