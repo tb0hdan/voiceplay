@@ -7,6 +7,7 @@ import json
 import kaptan
 import logging
 import os
+import platform
 import pylast
 import random
 random.seed()
@@ -197,17 +198,32 @@ class VoicePlayLastFm(object):
 
 class TextToSpeech(object):
     '''
-    TODO: Add other systems
+    MAC/Linux TTS
     '''
-    base = 'com.apple.speech.synthesis.voice'
-    def __init__(self, voice='Vicki'):
-        from AppKit import NSSpeechSynthesizer
-        self.voice = self.base + '.' + voice
-        self.speech = NSSpeechSynthesizer.alloc().initWithVoice_(self.voice)
+    def __init__(self):
+        system = platform.system()
+        if system == 'Darwin':
+            from AppKit import NSSpeechSynthesizer
+            voice = 'Vicki'
+            base = 'com.apple.speech.synthesis.voice'
+            self.voice = base + '.' + voice
+            self.speech = NSSpeechSynthesizer.alloc().initWithVoice_(self.voice)
+            self.say = self.__say_mac
+        elif system == 'Linux':
+            from festival import sayText
+            self.say = self.__say_linux
+        else:
+            raise NotImplementedError('Platform not supported')
 
-    def say(self, message):
+    def __say_linux(self, message):
         '''
-        Read aloud message
+        Read aloud message Linux
+        '''
+        sayText(message)
+
+    def __say_mac(self, message):
+        '''
+        Read aloud message MAC
         '''
         self.speech.startSpeakingString_(message)
         while self.speech.isSpeaking():

@@ -1,4 +1,4 @@
-voiceplay (proof of concept) - Voice controlled console playback (OSX only so far)
+voiceplay (proof of concept) - Voice controlled console playback (OSX/Linux)
 
 - [INSTALLATION](#installation)
 - [CONFIGURATION](#configuration)
@@ -9,12 +9,20 @@ voiceplay (proof of concept) - Voice controlled console playback (OSX only so fa
 
 ## Installation
 
-### System dependencies
+### MAC
+
 
 Please make sure you have XCode installed prior to proceeding with other steps.
 
 ```
 brew install ffmpeg mplayer portaudio
+```
+
+### Linux (Debian/Ubuntu)
+
+```
+sudo apt-get install libav-tools python-dev festival festival-dev
+sudo pip install pyfestival
 ```
 
 ### Application and dependencies
