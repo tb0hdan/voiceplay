@@ -21,7 +21,7 @@ brew install ffmpeg mplayer portaudio
 ### Linux (Debian/Ubuntu)
 
 ```
-sudo apt-get install libav-tools python-dev festival festival-dev
+sudo apt-get install libav-tools python-dev festival festival-dev portaudio19-dev mplayer
 sudo pip install pyfestival
 ```
 
