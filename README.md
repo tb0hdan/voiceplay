@@ -57,64 +57,67 @@ paste Google API key (for Server) into config.yaml and enable Youtube data api.
 
 ## Usage
 
+Start application:
+
 ```
 python ./voiceplay.py
 ```
 
-Available modes
+Then say 'Vicki', application should reply 'Yes', proceed with command from the list below:
+
 
 ### Single track
 
 ```
-Vicki play beat it by Michael Jackson
+play beat it by Michael Jackson
 ```
 
 ### Single track from top tracks (1-10)
 
 ```
-Vicki play top tracks by Michael Jackson
+play top tracks by Michael Jackson
 ```
 
 Then select track number (1-10)
 
 ```
-Vicki play one
+play one
 ```
 
 ### Shuffle top tracks
 
 ```
-Vicki play some music by Michael Jackson
+play some music by Michael Jackson
 ```
 
 ### Shuffle local library (~/Music, .mp3 only)
 
 ```
-Vicki play my library
+play my library
 ```
 
 ### Shuffle top tracks (global or country)
 
 ```
-Vicki play top tracks in united states
+play top tracks in united states
 ```
 
 or just
 
 ```
-Vicki play top tracks
+play top tracks
 ```
 
 ### Shuffle genre (station)
 
 ```
-Vicki play edm station
+play edm station
 ```
 
 or
 
 ```
-Vicki play melodic death metal station
+play melodic death metal station
 ```
 
 ## Console mode (advanced)
@@ -126,7 +129,7 @@ Vicki play melodic death metal station
 then run (or any other command from list above)
 
 ```
-vicki.play_from_parser('Vicki play some music by atb')
+vicki.play_from_parser('play some music by atb')
 ```
 
 
