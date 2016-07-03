@@ -449,7 +449,7 @@ class Vicki(object):
                    'Accept-Language': 'en-US,en;q=0.5',
                    'X-Requested-With': 'XMLHttpRequest',
                    'Referer': 'http://pleer.com/search?q=%s' % term}
-        r = requests.get(url, headers=headers)
+        r = requests.get(url, headers=headers, timeout=10)
         result = json.loads(r.text).get('html', '')
         soup = BeautifulSoup(''.join(result), 'html.parser')
         tracks = []
@@ -462,19 +462,20 @@ class Vicki(object):
             tracks.append([title, aid])
         return tracks
 
-    def pleer_download(self, track_id, filename, chunk_size=8196):
+    def pleer_download(self, track_url, filename, chunk_size=8196):
         '''
         Download track
         '''
+        track_id = track_url.replace('http://pleer.com/en/download/page/', '')
         url = 'http://pleer.com/site_api/files/get_url'
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0',
                    'Accept': 'application/json, text/javascript, */*; q=0.01',
                    'Accept-Language': 'en-US,en;q=0.5',
                    'X-Requested-With': 'XMLHttpRequest',
                    'Referer': 'http://pleer.com/en/download/page/%s' % track_id}
-        reply = requests.post(url, data={'action': 'download', 'id': track_id})
+        reply = requests.post(url, data={'action': 'download', 'id': track_id}, timeout=10)
         result = json.loads(reply.text).get('track_link')
-        r = requests.get(result, headers=headers, stream=True)
+        r = requests.get(result, headers=headers, stream=True, timeout=10)
         with open(filename, 'wb') as fd:
             for chunk in r.iter_content(chunk_size):
                 fd.write(chunk)
@@ -486,27 +487,10 @@ class Vicki(object):
         if response['status'] == 'finished':
             self.logger.warning('Done downloading, now converting ...')
 
-    def play_full_track(self, trackname):
+    def play_source_url(self, url):
         '''
-        Play full track
+        Play source url
         '''
-        vid = None
-        baseurl = None
-        sources = [{'method': self.pleer_search, 'baseurl': 'http://pleer.com/en/download/page/'},
-                   {'method': self.vimeo_search, 'baseurl': 'https://vimeo.com/'},
-                   {'method': self.dailymotion_search, 'baseurl': 'http://www.dailymotion.com/video/'}]
-        for source in sources:
-            results = source.get('method')(trackname)
-            if results:
-                vid = results[0][1]
-                baseurl = source.get('baseurl')
-                break
-        # fallback
-        if not results:
-            results = self.youtube_search(trackname)
-            vid = results[0][1]
-            baseurl = 'https://youtu.be/'
-
         ydl_opts = {'keepvideo': False, 'verbose': False, 'format': 'bestaudio/best',
                     'quiet': True,
                     'postprocessors': [{'preferredcodec': 'mp3', 'preferredquality': '5',
@@ -516,15 +500,44 @@ class Vicki(object):
                     'logger': self.logger,
                     'progress_hooks': [self.download_hook]}
 
-        self.logger.warning('Using source url %s', baseurl + vid)
-        if baseurl == 'http://pleer.com/en/download/page/':
+        self.logger.warning('Using source url %s', url)
+        if url.startswith('http://pleer.com/en/download/page/'):
             tmp = mkstemp()[1]
-            self.pleer_download(vid, tmp)
+            self.pleer_download(url, tmp)
             subprocess.call(['mplayer', tmp])
             os.remove(tmp)
         else:
             with YoutubeDL(ydl_opts) as ydl:
-                ydl.download([baseurl + vid])
+                ydl.download([url])
+        return True
+
+
+    def play_full_track(self, trackname):
+        '''
+        Play full track
+        '''
+        vid = None
+        baseurl = None
+        sources = [{'method': self.pleer_search, 'baseurl': 'http://pleer.com/en/download/page/'},
+                   {'method': self.vimeo_search, 'baseurl': 'https://vimeo.com/'},
+                   {'method': self.dailymotion_search, 'baseurl': 'http://www.dailymotion.com/video/'},
+                   {'method': self.youtube_search, 'baseurl': 'https://youtu.be/'}]
+        for source in sources:
+            try:
+                results = source.get('method')(trackname)
+            except Exception as exc:
+                results = None
+                message = 'Source %r search failed with %r\n' % (source, exc)
+                message += 'Continuing using next source provider...'
+            if results:
+                url = source.get('baseurl') + results[0][1]
+                try:
+                    if self.play_source_url(url):
+                        break
+                except Exception as exc:
+                    message = 'Playback of source url %s failed with %r\n' % (url, exc)
+                    message += 'Continuing using next source url...'
+                    self.logger.error(message)
 
     @staticmethod
     def play_local_library(message):
