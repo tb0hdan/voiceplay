@@ -17,6 +17,7 @@ import speech_recognition as sr
 # Having subprocess here makes me feel sad ;-(
 import subprocess
 import sys
+import threading
 import time
 import vimeo
 
@@ -25,6 +26,7 @@ from apiclient.errors import HttpError
 from bs4 import BeautifulSoup
 from dailymotion import Dailymotion
 from math import trunc
+from Queue import Queue
 from tempfile import mkstemp
 from urllib import quote
 from youtube_dl import YoutubeDL
@@ -44,47 +46,14 @@ class MyParser(object):
 
     def __init__(self, wake_word='vicki'):
         self.wake_word = wake_word
-        self.normalize_phrases = self.load_phrases(self.wake_word)
-
-    @staticmethod
-    def load_phrases(wake_word, normalize_file='normalize.json'):
-        '''
-        Load normalization phrases
-        '''
-        with open(normalize_file, 'rb') as normalize_fh:
-            data = json.loads(normalize_fh.read())
-        return data[wake_word]
-
-    def normalize(self, sentence):
-        '''
-        Run normalization
-        '''
-        message = sentence.lower()
-        result = message
-        # first pass
-        for phrase in self.normalize_phrases:
-            if message.startswith(phrase):
-                result = re.sub(r'^%s' % phrase, self.normalize_phrases[phrase], message)
-        if result != message:
-            message = result
-        #
-        # second pass
-        for phrase in self.normalize_phrases:
-            if message.startswith(phrase):
-                result = re.sub(r'^%s' % phrase, self.normalize_phrases[phrase], message)
-        return result
 
     def parse(self, message):
         '''
         Parse incoming message
         '''
-        result = self.normalize(message)
         start = False
         action_phrase = []
-        for word in result.split(' '):
-            if word == self.wake_word:
-                continue
-            # confirm proper type
+        for word in message.split(' '):
             if self.known_actions.get(word):
                 start = True
             if start and word:
@@ -214,6 +183,7 @@ class TextToSpeech(object):
             self.say = self.__say_linux
         else:
             raise NotImplementedError('Platform not supported')
+        self.queue = Queue()
 
     def __say_linux(self, message):
         '''
@@ -228,6 +198,16 @@ class TextToSpeech(object):
         self.speech.startSpeakingString_(message)
         while self.speech.isSpeaking():
             time.sleep(0.5)
+
+    def say_poll(self):
+        while True:
+            if self.queue.empty():
+                time.sleep(1)
+            else:
+                self.say(self.queue.get())
+
+    def say_put(self, message):
+        self.queue.put(message)
 
 
 class Vicki(object):
@@ -256,6 +236,8 @@ class Vicki(object):
         self.lfm = VoicePlayLastFm()
         self.parser = MyParser()
         self.tts = TextToSpeech()
+        self.queue = Queue()
+        self.shutdown = False
         self.logger.warning('Vicki init completed')
 
     def init_logger(self, name='voiceplay'):
@@ -283,7 +265,7 @@ class Vicki(object):
                 key = arr[0]
             adj = self.numbers[key]['adjective']
             artist = self.get_track_by_number(key)[0]
-            self.tts.say('Playing %s track by %s' % (adj, artist))
+            self.tts.say_put('Playing %s track by %s' % (adj, artist))
             # play track with track number
             self.play_track_by_number(key)
         else:
@@ -291,7 +273,7 @@ class Vicki(object):
                 tracks = self.lfm.get_top_tracks(self.lfm.get_corrected_artist(phrase))[:10]
                 numerized = ', '.join(self.lfm.numerize(tracks))
                 reply = re.sub(r'^(.+)\.\s\d\:\s', '1: ', numerized)
-                self.tts.say('Here are some top tracks by %s: %s' % (phrase,
+                self.tts.say_put('Here are some top tracks by %s: %s' % (phrase,
                                                                      reply))
                 # record track numbers
                 self.store_tracks(tracks)
@@ -575,7 +557,7 @@ class Vicki(object):
             self.run_play_cmd(artist)
         elif action_type == 'shuffle_artist':
             artist = re.match(reg, action_phrase).groups()[0]
-            self.tts.say('Shuffling %s' % artist)
+            self.tts.say_put('Shuffling %s' % artist)
             self.run_shuffle_artist(artist)
         elif action_type == 'track_number_artist':
             number = re.match(reg, action_phrase).groups()[0]
@@ -591,15 +573,15 @@ class Vicki(object):
                 msg = 'Playing top track for country %s' % country
             else:
                 msg = 'Playing global top tracks'
-            self.tts.say(msg)
+            self.tts.say_put(msg)
             self.run_top_tracks_geo(country)
         elif action_type == 'station_artist':
             station = re.match(reg, action_phrase).groups()[0]
-            self.tts.say('Playing %s station' % station)
+            self.tts.say_put('Playing %s station' % station)
             self.play_station(station)
         else:
             msg = 'Vicki thinks you said ' + message
-            self.tts.say(msg)
+            self.tts.say_put(msg)
             self.logger.warning(msg)
 
     def process_request(self, request):
@@ -610,37 +592,95 @@ class Vicki(object):
             self.play_from_parser(request)
         except Exception as exc:
             self.logger.error(exc)
-            self.tts.say('Vicki could not process your request')
+            self.tts.say_put('Vicki could not process your request')
 
-    def run_forever(self):
-        '''
-        Main loop
-        '''
+    def background_listener(self):
+        msg = 'Vicki is listening'
+        self.tts.say_put(msg)
+        self.logger.warning(msg)
         while True:
+            if self.shutdown:
+                break
             with sr.Microphone() as source:
-                msg = 'Vicki is listening'
-                self.tts.say(msg)
+                audio = self.rec.listen(source)
+            try:
+                result = self.rec.recognize_sphinx(audio)
+            except sr.UnknownValueError:
+                msg = 'Vicki could not understand audio'
+                self.tts.say_put(msg)
                 self.logger.warning(msg)
+                result = None
+            except sr.RequestError as e:
+                msg = 'Recognition error'
+                self.tts.say_put(msg)
+                self.logger.warning('{0}; {1}'.format(msg, e))
+                result = None
+            if not result in ['we k.', 'waiting', 'gritty', 'winking', 'we see it', 'sweetie',
+                              'we keep', 'we see', 'when did', 'wait a', 'we did']:
+                self.logger.warning('Heard %r', result)
+                continue
+            else:
+                self.logger.warning('Wake word! %r', result)
+                self.tts.say_put('Yes')
+
+            # command goes next
+            with sr.Microphone() as source:
                 audio = self.rec.listen(source)
             try:
                 result = self.rec.recognize_google(audio)
             except sr.UnknownValueError:
                 msg = 'Vicki could not understand audio'
-                self.tts.say(msg)
+                self.tts.say_put(msg)
                 self.logger.warning(msg)
                 result = None
             except sr.RequestError as e:
                 msg = 'Recognition error'
-                self.tts.say(msg)
+                self.tts.say_put(msg)
                 self.logger.warning('{0}; {1}'.format(msg, e))
                 result = None
             if result:
-                self.process_request(result)
-            elif result and result.lower() in ['shutdown']:
-                msg = 'Vicki is shutting down, see you later'
-                self.tts.say(msg)
-                self.logger.warning(msg)
+                self.queue.put(result)
+
+    def background_executor(self):
+        while True:
+            if self.shutdown:
                 break
+            if not self.queue.empty():
+                message = self.queue.get()
+                if message == 'shutdown':
+                    self.shutdown = True
+                else:
+                    self.process_request(message)
+            time.sleep(1)
+
+    def background_speaker(self):
+        self.tts.say_poll()
+
+    def run_forever_new(self):
+        '''
+        Main loop
+        '''
+        listener = threading.Thread(name='BackgroundListener', target=self.background_listener)
+        listener.setDaemon(True)
+
+        player = threading.Thread(name='BackgroundPlayer', target=self.background_executor)
+        player.setDaemon(True)
+
+        speaker = threading.Thread(name='BackgroundSpeaker', target=self.background_speaker)
+        speaker.setDaemon(True)
+
+        listener.start()
+        player.start()
+        speaker.start()
+        while True:
+            if self.shutdown:
+                break
+            try:
+                time.sleep(1)
+            except KeyboardInterrupt:
+                self.shutdown = True  # for threads
+                break
+
 
 class MyArgumentParser(object):
     '''
@@ -674,7 +714,7 @@ class MyArgumentParser(object):
             embed = InteractiveShellEmbed(config=config, banner1='')
             embed.mainloop()
         else:
-            vicki.run_forever()
+            vicki.run_forever_new()
 
 if __name__ == '__main__':
     parser = MyArgumentParser()

@@ -15,13 +15,13 @@ voiceplay (proof of concept) - Voice controlled console playback (OSX/Linux)
 Please make sure you have XCode installed prior to proceeding with other steps.
 
 ```
-brew install ffmpeg mplayer portaudio
+brew install ffmpeg mplayer portaudio cmu-pocketsphinx
 ```
 
 ### Linux (Debian/Ubuntu)
 
 ```
-sudo apt-get install libav-tools python-dev festival festival-dev portaudio19-dev mplayer
+sudo apt-get install libav-tools python-dev festival festival-dev portaudio19-dev mplayer pocketsphinx
 sudo pip install pyfestival
 ```
 
