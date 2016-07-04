@@ -1,10 +1,21 @@
 voiceplay (proof of concept) - Voice controlled console playback (OSX/Linux)
 
+- [DESCRIPTION](#description)
 - [INSTALLATION](#installation)
 - [CONFIGURATION](#configuration)
 - [USAGE](#usage)
 - [CONSOLE MODE](#console-mode-advanced)
 - [COPYRIGHT](#copyright)
+
+## Description
+**voiceplay** is a command-line program that listens to voice in background and gets
+activated by a wake word - **Vicki** (processing is done offline using [CMU PocketSphinx](http://cmusphinx.sourceforge.net/) and only
+after that records audio later transcribed by Google Voice Recognition (code can be modified to
+use any of engines supported by [SpeechRecognition](https://github.com/Uberi/speech_recognition) library). It requires the Python interpreter,
+version 2.7 (so far) and is not platform specific. It should work on
+your Linux or on Mac OS X. It is released to the public domain, which means you can modify it,
+redistribute it or use it however you like.
+
 
 
 ## Installation
@@ -15,13 +26,14 @@ voiceplay (proof of concept) - Voice controlled console playback (OSX/Linux)
 Please make sure you have XCode installed prior to proceeding with other steps.
 
 ```
-brew install ffmpeg mplayer portaudio cmu-pocketsphinx
+brew install ffmpeg mplayer portaudio cmu-pocketsphinx swig
 ```
 
 ### Linux (Debian/Ubuntu)
 
 ```
-sudo apt-get install libav-tools python-dev festival festival-dev portaudio19-dev mplayer pocketsphinx
+sudo apt-get install libav-tools python-dev festival festival-dev portaudio19-dev mplayer
+sudo apt-get install pocketsphinx swig
 sudo pip install pyfestival
 ```
 
