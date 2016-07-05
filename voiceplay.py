@@ -42,7 +42,10 @@ class MyParser(object):
                               {r'^play top tracks by (.+)$': 'top_tracks_artist'},
                               {r'^play top tracks(?:\sin\s(.+))?$': 'top_tracks_geo'},
                               {r'^play (.+)?my library$': 'shuffle_local_library'},
-                              {r'^play (.+) by (.+)$': 'single_track_artist'}]}
+                              {r'^play (.+) by (.+)$': 'single_track_artist'}],
+                     'shutdown': [{'shutdown': 'shutdown_action'},
+                                  {'shut down': 'shutdown_action'}]
+                    }
 
     def __init__(self, wake_word='vicki'):
         self.wake_word = wake_word
@@ -686,7 +689,7 @@ class Vicki(object):
             except KeyboardInterrupt:
                 self.shutdown = True  # for threads
                 break
-
+        time.sleep(5)
 
 class MyArgumentParser(object):
     '''
