@@ -597,12 +597,18 @@ class Vicki(object):
     def background_listener(self):
         msg = 'Vicki is listening'
         self.tts.say_put(msg)
+        # TODO: Fix this using callback or something so that 
+        # we do not record ourselves
+        time.sleep(3)
         self.logger.warning(msg)
         while True:
             if self.shutdown:
                 break
             with sr.Microphone() as source:
-                audio = self.rec.listen(source)
+                try:
+                    audio = self.rec.listen(source, timeout=5)
+                except sr.WaitTimeoutError:
+                    continue
             try:
                 result = self.rec.recognize_sphinx(audio)
             except sr.UnknownValueError:
@@ -616,7 +622,7 @@ class Vicki(object):
                 self.logger.warning('{0}; {1}'.format(msg, e))
                 result = None
             if not result in ['we k.', 'waiting', 'gritty', 'winking', 'we see it', 'sweetie',
-                              'we keep', 'we see', 'when did', 'wait a', 'we did']:
+                              'we keep', 'we see', 'when did', 'wait a', 'we did', "we didn't"]:
                 self.logger.warning('Heard %r', result)
                 continue
             else:
