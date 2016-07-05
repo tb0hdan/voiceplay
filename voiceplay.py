@@ -624,6 +624,8 @@ class Vicki(object):
             if self.shutdown:
                 break
             with sr.Microphone() as source:
+                # TODO: Test effectiveness of this method
+                self.rec.adjust_for_ambient_noise(source)
                 try:
                     audio = self.rec.listen(source, timeout=5)
                 except sr.WaitTimeoutError:
@@ -705,6 +707,7 @@ class Vicki(object):
             except KeyboardInterrupt:
                 self.shutdown = True  # for threads
                 break
+        # FIXME: oh, this is nasty
         time.sleep(5)
 
 class MyArgumentParser(object):
