@@ -26,9 +26,15 @@ from apiclient.errors import HttpError
 from bs4 import BeautifulSoup
 from dailymotion import Dailymotion
 from math import trunc
-from Queue import Queue
+
+try: # python2
+    from Queue import Queue
+    from urllib import quote
+except ImportError: # python3
+    from queue import Queue
+    from urllib.parse import quote
+
 from tempfile import mkstemp
-from urllib import quote
 from youtube_dl import YoutubeDL
 
 __version__ = '0.1.0'
@@ -73,7 +79,7 @@ class MyParser(object):
             raise ValueError('Unknown action %r in phrase %r' % (action, action_phrase))
         action_type = None
         for regs in self.known_actions.get(action):
-            reg = regs.keys()[0]
+            reg = list(regs.keys())[0]
             if re.match(reg, action_phrase) is not None:
                 action_type = regs[reg]
                 break
@@ -172,15 +178,19 @@ class TextToSpeech(object):
     '''
     MAC/Linux TTS
     '''
-    def __init__(self):
+    def __init__(self, name='voiceplay'):
         system = platform.system()
         if system == 'Darwin':
-            from AppKit import NSSpeechSynthesizer
-            voice = 'Vicki'
-            base = 'com.apple.speech.synthesis.voice'
-            self.voice = base + '.' + voice
-            self.speech = NSSpeechSynthesizer.alloc().initWithVoice_(self.voice)
-            self.say = self.__say_mac
+            try:
+                from AppKit import NSSpeechSynthesizer
+                voice = 'Vicki'
+                base = 'com.apple.speech.synthesis.voice'
+                self.voice = base + '.' + voice
+                self.speech = NSSpeechSynthesizer.alloc().initWithVoice_(self.voice)
+                self.say = self.__say_mac
+            except ImportError:
+                # osx lacks appkit support for python3 (sigh)
+                self.say = self.__say_dummy
         elif system == 'Linux':
             from festival import sayText
             self.say = self.__say_linux
@@ -201,6 +211,12 @@ class TextToSpeech(object):
         self.speech.startSpeakingString_(message)
         while self.speech.isSpeaking():
             time.sleep(0.5)
+
+    def __say_dummy(self, message):
+        '''
+        Dummy TTS
+        '''
+        pass
 
     def say_poll(self):
         while True:

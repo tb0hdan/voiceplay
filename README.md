@@ -12,8 +12,8 @@ voiceplay (proof of concept) - Voice controlled console playback (OSX/Linux)
 activated by a wake word - **Vicki** (processing is done offline using [CMU PocketSphinx](http://cmusphinx.sourceforge.net/) and only
 after that records audio later transcribed by Google Voice Recognition (code can be modified to
 use any of engines supported by [SpeechRecognition](https://github.com/Uberi/speech_recognition) library). It requires the Python interpreter,
-version 2.7 (so far) and is not platform specific. It should work on
-your Linux or on Mac OS X. It is released to the public domain, which means you can modify it,
+version 2.7, 3.5 (so far) and is not platform specific. It should work on
+your Linux or on Mac OS X (Python 2.7 only). It is released to the public domain, which means you can modify it,
 redistribute it or use it however you like.
 
 
