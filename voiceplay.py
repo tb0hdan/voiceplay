@@ -2,6 +2,7 @@
 #-*- coding: utf-8 -*-
 ''' VoicePlay main module '''
 
+from __future__ import unicode_literals
 import argparse
 import json
 import kaptan
@@ -30,14 +31,17 @@ from math import trunc
 try: # python2
     from Queue import Queue
     from urllib import quote
+    from pipes import quote as shell_quote
 except ImportError: # python3
     from queue import Queue
     from urllib.parse import quote
+    from shlex import quote as shell_quote
 
-from tempfile import mkstemp
+from tempfile import mkstemp, mkdtemp
 from youtube_dl import YoutubeDL
 
-__version__ = '0.1.0'
+__version__ = '0.1.1'
+
 
 class MyParser(object):
     '''
@@ -87,6 +91,7 @@ class MyParser(object):
             reg = '^play (.+)$'
             action_type = 'track_number_artist'
         return action_type, reg, action_phrase
+
 
 class VoicePlayLastFm(object):
     '''
@@ -444,12 +449,12 @@ class Vicki(object):
 
     def pleer_search(self, query, max_results=25):
         term = quote(query)
-        url = 'http://pleer.com/search?page=1&q=%s&sort_mode=0&sort_by=0&quality=all&onlydata=true' % quote(query)
+        url = 'http://pleer.net/search?page=1&q=%s&sort_mode=0&sort_by=0&quality=all&onlydata=true' % quote(query)
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0',
                    'Accept': 'application/json, text/javascript, */*; q=0.01',
                    'Accept-Language': 'en-US,en;q=0.5',
                    'X-Requested-With': 'XMLHttpRequest',
-                   'Referer': 'http://pleer.com/search?q=%s' % term}
+                   'Referer': 'http://pleer.net/search?q=%s' % term}
         r = requests.get(url, headers=headers, timeout=10)
         result = json.loads(r.text).get('html', '')
         soup = BeautifulSoup(''.join(result), 'html.parser')
@@ -467,13 +472,13 @@ class Vicki(object):
         '''
         Download track
         '''
-        track_id = track_url.replace('http://pleer.com/en/download/page/', '')
-        url = 'http://pleer.com/site_api/files/get_url'
+        track_id = track_url.replace('http://pleer.net/en/download/page/', '')
+        url = 'http://pleer.net/site_api/files/get_url'
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0',
                    'Accept': 'application/json, text/javascript, */*; q=0.01',
                    'Accept-Language': 'en-US,en;q=0.5',
                    'X-Requested-With': 'XMLHttpRequest',
-                   'Referer': 'http://pleer.com/en/download/page/%s' % track_id}
+                   'Referer': 'http://pleer.net/en/download/page/%s' % track_id}
         reply = requests.post(url, data={'action': 'download', 'id': track_id}, timeout=10)
         result = json.loads(reply.text).get('track_link')
         r = requests.get(result, headers=headers, stream=True, timeout=10)
@@ -487,29 +492,30 @@ class Vicki(object):
         '''
         if response['status'] == 'finished':
             self.logger.warning('Done downloading, now converting ...')
+            self.target_filename = response['filename']
 
     def play_source_url(self, url):
         '''
         Play source url
         '''
+        tmp = mkdtemp()
         ydl_opts = {'keepvideo': False, 'verbose': False, 'format': 'bestaudio/best',
-                    'quiet': True,
+                    'quiet': True, 'outtmpl': str(os.path.join(tmp, '%(title)s-%(id)s.%(ext)s')),
                     'postprocessors': [{'preferredcodec': 'mp3', 'preferredquality': '5',
-                                        'nopostoverwrites': True, 'key': 'FFmpegExtractAudio'},
-                                       {'exec_cmd': 'mplayer {}; rm -f {}',
-                                        'key': 'ExecAfterDownload'}],
+                                        'nopostoverwrites': True, 'key': 'FFmpegExtractAudio'}],
                     'logger': self.logger,
                     'progress_hooks': [self.download_hook]}
 
         self.logger.warning('Using source url %s', url)
-        if url.startswith('http://pleer.com/en/download/page/'):
-            tmp = mkstemp()[1]
-            self.pleer_download(url, tmp)
-            subprocess.call(['mplayer', tmp])
-            os.remove(tmp)
+        if url.startswith('http://pleer.net/en/download/page/'):
+            audio_file = mkstemp()[1]
+            self.pleer_download(url, audio_file)
         else:
             with YoutubeDL(ydl_opts) as ydl:
                 ydl.download([url])
+                audio_file = re.sub('\.(.+)$', '.mp3', self.target_filename)
+        subprocess.call(['mplayer', audio_file])
+        os.remove(audio_file)
         return True
 
 
@@ -519,7 +525,7 @@ class Vicki(object):
         '''
         vid = None
         baseurl = None
-        sources = [{'method': self.pleer_search, 'baseurl': 'http://pleer.com/en/download/page/'},
+        sources = [{'method': self.pleer_search, 'baseurl': 'http://pleer.net/en/download/page/'},
                    {'method': self.vimeo_search, 'baseurl': 'https://vimeo.com/'},
                    {'method': self.dailymotion_search, 'baseurl': 'http://www.dailymotion.com/video/'},
                    {'method': self.youtube_search, 'baseurl': 'https://youtu.be/'}]
@@ -710,6 +716,7 @@ class Vicki(object):
         # FIXME: oh, this is nasty
         time.sleep(5)
 
+
 class MyArgumentParser(object):
     '''
     Parse command line arguments
@@ -733,7 +740,7 @@ class MyArgumentParser(object):
         result = self.parser.parse_args(argv[1:])
         vicki = Vicki()
         if result.console:
-            from IPython import Config
+            from traitlets.config import Config
             from IPython.terminal.embed import InteractiveShellEmbed
             config = Config()
             # basic configuration
@@ -743,6 +750,7 @@ class MyArgumentParser(object):
             embed.mainloop()
         else:
             vicki.run_forever_new()
+
 
 if __name__ == '__main__':
     parser = MyArgumentParser()
