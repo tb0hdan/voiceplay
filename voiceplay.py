@@ -2,7 +2,7 @@
 #-*- coding: utf-8 -*-
 ''' VoicePlay main module '''
 
-from __future__ import unicode_literals
+from __future__ import print_function, unicode_literals
 import argparse
 import colorama
 import json
@@ -56,7 +56,11 @@ class Console(object):
         self.default_prompt = '%s [%s]%s '
         self.exit = False
         self.banner = banner
-        self.commands = ['quit', 'exit', 'logout', 'clear', 'cls', 'clr']
+        self.commands = {}
+
+    def add_handler(self, keyword, method, aliases=None):
+        aliases = aliases if aliases else []
+        self.commands[keyword] = {'method': method, 'aliases': aliases}
 
     @property
     def format_prompt(self):
@@ -69,15 +73,23 @@ class Console(object):
         result = None
         should_be_printed = True
         command = command.strip().lower()
-        if command in ['quit', 'exit', 'logout']:
-            self.exit = True
-            result = None
-            should_be_printed = False
-        elif command in ['clear', 'cls', 'clr']:
-            sys.stderr.flush()
-            sys.stderr.write("\x1b[2J\x1b[H")
-            result = None
-            should_be_printed = False
+        for kwd in self.commands:
+            if command.startswith(kwd) or [c for c in self.commands[kwd]['aliases'] if command.startswith(c)]:
+                result, should_be_printed = self.commands[kwd]['method'](command)
+                break
+        return result, should_be_printed
+
+    def quit_command(self, cmd):
+        self.exit = True
+        result = None
+        should_be_printed = False
+        return result, should_be_printed
+
+    def clear_command(self, cmd):
+        sys.stderr.flush()
+        sys.stderr.write("\x1b[2J\x1b[H")
+        result = None
+        should_be_printed = False
         return result, should_be_printed
 
     def complete(self, _, state):
@@ -87,7 +99,6 @@ class Console(object):
         results = [c + ' ' for c in self.commands if c.startswith(text)]
         return results[state]
 
-
     def run_exit(self):
         print ('Goodbye!')
 
@@ -96,6 +107,10 @@ class Console(object):
         colorama.init()
         readline.parse_and_bind("tab: complete")
         readline.set_completer(self.complete)
+        # Add handlers
+        self.add_handler('quit', self.quit_command, ['exit', 'logout'])
+        self.add_handler('clear', self.clear_command, ['cls', 'clr'])
+        #
         if self.banner:
             print (self.banner)
         while True:
@@ -113,7 +128,6 @@ class Console(object):
                 break
 
 
-
 class MPlayerSlave(object):
     command = ['mplayer', '-slave', '-idle',
                '-really-quiet', '-msglevel', 'global=6:cplayer=4', '-msgmodule',
@@ -126,19 +140,19 @@ class MPlayerSlave(object):
 
     def player_stdout_thread(self):
         while self.proc.poll() is None:
-            print 'stdout...'
+            print ('stdout...')
             line = self.proc.stdout.readline().rstrip('\n')
             if line:
                 self.stdout_pool.append(line)
-        print 'Player exited...'
+        print ('Player exited...')
 
     def player_stderr_thread(self):
         while self.proc.poll() is None:
-            print 'stderr...'
+            print ('stderr...')
             line = self.proc.stderr.readline().rstrip('\n')
             if line:
                 self.stderr_pool.append(line)
-        print 'Player exited...'
+        print ('Player exited...')
 
     def send_command(self, command):
         with self.lock:
@@ -389,7 +403,7 @@ class Vicki(object):
         self.tts = TextToSpeech()
         self.queue = Queue()
         self.shutdown = False
-        self.logger.warning('Vicki init completed')
+        self.logger.debug('Vicki init completed')
 
     def init_logger(self, name='voiceplay'):
         '''
@@ -859,6 +873,25 @@ class MyArgumentParser(object):
                                  help='Start console')
         self.parser.add_argument('--version', action='version', version='%(prog)s ' +  __version__)
 
+    @staticmethod
+    def ipython_console():
+        '''
+        Run ipython console
+        '''
+        from traitlets.config import Config
+        from IPython.terminal.embed import InteractiveShellEmbed
+        config = Config()
+        # basic configuration
+        config.TerminalInteractiveShell.confirm_exit = False
+        #
+        embed = InteractiveShellEmbed(config=config, banner1='')
+        embed.mainloop()
+
+    def player_console(self, vicki):
+        console = Console()
+        console.add_handler('play', vicki.play_from_parser, ['pause', 'shuffle'])
+        console.run_console()
+
     def parse(self, argv=None):
         '''
         Parse command line arguments
@@ -867,14 +900,7 @@ class MyArgumentParser(object):
         result = self.parser.parse_args(argv[1:])
         vicki = Vicki()
         if result.console:
-            from traitlets.config import Config
-            from IPython.terminal.embed import InteractiveShellEmbed
-            config = Config()
-            # basic configuration
-            config.TerminalInteractiveShell.confirm_exit = False
-            #
-            embed = InteractiveShellEmbed(config=config, banner1='')
-            embed.mainloop()
+            self.player_console(vicki)
         else:
             vicki.run_forever_new()
 
