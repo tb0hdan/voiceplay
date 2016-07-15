@@ -1,4 +1,5 @@
 beautifulsoup4==4.4.1
+colorama==0.3.6
 dailymotion==0.2.2
 google-api-python-client==1.5.1
 ipython==5.0.0
