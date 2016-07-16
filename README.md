@@ -138,12 +138,9 @@ play melodic death metal station
 ./voiceplay -c
 ```
 
-then run (or any other command from list above)
+then run any command from the list above
 
-```
-vicki.play_from_parser('play some music by atb')
-```
-
+![console_play](https://raw.githubusercontent.com/tb0hdan/voiceplay/master/images/console_play.png)
 
 
 
