@@ -45,7 +45,7 @@ except ImportError: # python3
 from tempfile import mkstemp, mkdtemp
 from youtube_dl import YoutubeDL
 
-__version__ = '0.1.1'
+__version__ = '0.1.2'
 
 class Console(object):
     '''
@@ -75,8 +75,11 @@ class Console(object):
         command = command.strip().lower()
         for kwd in self.commands:
             if command.startswith(kwd) or [c for c in self.commands[kwd]['aliases'] if command.startswith(c)]:
-                result, should_be_printed = self.commands[kwd]['method'](command)
-                break
+                try:
+                    result, should_be_printed = self.commands[kwd]['method'](command)
+                    break
+                except KeyboardInterrupt:
+                    pass
         return result, should_be_printed
 
     def quit_command(self, cmd):

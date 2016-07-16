@@ -1,5 +1,5 @@
 beautifulsoup4==4.4.1
-colorama==0.3.6
+colorama==0.3.7
 dailymotion==0.2.2
 google-api-python-client==1.5.1
 ipython==5.0.0
@@ -10,4 +10,4 @@ PyAudio==0.2.9
 pylast==1.6.0
 PyVimeo==0.3.3
 SpeechRecognition==3.4.6
-youtube-dl==2016.7.7
+youtube-dl==2016.7.16
