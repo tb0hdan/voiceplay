@@ -116,7 +116,7 @@ class Console(object):
         while True:
             print (self.format_prompt, end='')
             try:
-                inp = raw_input()
+                inp = raw_input().decode('utf-8')
             except KeyboardInterrupt:
                 pass
             except EOFError:
@@ -640,8 +640,9 @@ class Vicki(object):
         Play source url
         '''
         tmp = mkdtemp()
+        template = os.path.join(tmp, '%(title)s-%(id)s.%(ext)s')
         ydl_opts = {'keepvideo': False, 'verbose': False, 'format': 'bestaudio/best',
-                    'quiet': True, 'outtmpl': str(os.path.join(tmp, '%(title)s-%(id)s.%(ext)s')),
+                    'quiet': True, 'outtmpl': unicode(template),
                     'postprocessors': [{'preferredcodec': 'mp3', 'preferredquality': '5',
                                         'nopostoverwrites': True, 'key': 'FFmpegExtractAudio'}],
                     'logger': self.logger,
