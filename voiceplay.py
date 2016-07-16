@@ -708,7 +708,7 @@ class Vicki(object):
             try:
                 results = source.get('method')(trackname)
             except Exception as exc:
-                results = None
+                results = []
                 message = 'Source %r search failed with %r\n' % (source, exc)
                 message += 'Continuing using next source provider...'
             tracks = [track for track in results if self.track_filter_fn(trackname, track)]
