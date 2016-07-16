@@ -424,6 +424,29 @@ class Vicki(object):
         handler = logging.StreamHandler(sys.stderr)
         self.logger.addHandler(handler)
 
+    @staticmethod
+    def trackfilter(search_term, search_result):
+        track_is_ok = True
+        regset = ['(\(|\]|\{).?FULL (ALBUM|SET|CONCERT|MOVIE)?.+(\(|\]|\})?',
+                  '(\(|\[|\{)KARAOKE?.+(\)|\]\})',
+                  '(\(|\[).?LIVE (AT|\@|ON).+?(\(|\])',
+                  '\(?(REMIX|BOOTLEG|MASH\-?UP)(.+)\)?']
+        # allow exact match
+        if search_term.lower() == search_result.lower():
+            return track_is_ok
+        # proceed with patterns
+        for reg in regset:
+            if re.search(reg, search_result.upper()):
+                track_is_ok = False
+                break
+        return track_is_ok
+
+    def track_filter_fn(self, search_term, track_result_pair):
+        '''
+        wrapper around trackfilter
+        '''
+        return self.trackfilter(search_term, track_result_pair[0])
+
     def run_play_cmd(self, phrase):
         '''
         Run play command
@@ -671,7 +694,6 @@ class Vicki(object):
         os.remove(audio_file)
         return True
 
-
     def play_full_track(self, trackname):
         '''
         Play full track
@@ -689,8 +711,9 @@ class Vicki(object):
                 results = None
                 message = 'Source %r search failed with %r\n' % (source, exc)
                 message += 'Continuing using next source provider...'
-            if results:
-                url = source.get('baseurl') + results[0][1]
+            tracks = [track for track in results if self.track_filter_fn(trackname, track)]
+            if tracks:
+                url = source.get('baseurl') + tracks[0][1]
                 try:
                     if self.play_source_url(url):
                         break
