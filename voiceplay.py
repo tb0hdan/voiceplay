@@ -31,15 +31,17 @@ from bs4 import BeautifulSoup
 from dailymotion import Dailymotion
 from math import trunc
 
-try: # python2
+if sys.version_info.major == 2:
     from Queue import Queue
     from urllib import quote
     from pipes import quote as shell_quote
-except ImportError: # python3
+elif sys.version_info.major == 3:
     from builtins import input as raw_input
     from queue import Queue
     from urllib.parse import quote
     from shlex import quote as shell_quote
+else:
+    raise RuntimeError('What kind of system is this?!?!')
 
 
 from tempfile import mkstemp, mkdtemp
@@ -123,7 +125,9 @@ class Console(object):
         while True:
             print (self.format_prompt, end='')
             try:
-                inp = raw_input().decode('utf-8')
+                inp = raw_input()
+                if sys.version_info.major == 2:
+                    inp = inp.decode('utf-8')
             except KeyboardInterrupt:
                 pass
             except EOFError:
@@ -649,7 +653,7 @@ class Vicki(object):
         tmp = mkdtemp()
         template = os.path.join(tmp, '%(title)s-%(id)s.%(ext)s')
         ydl_opts = {'keepvideo': False, 'verbose': False, 'format': 'bestaudio/best',
-                    'quiet': True, 'outtmpl': unicode(template),
+                    'quiet': True, 'outtmpl': template,
                     'postprocessors': [{'preferredcodec': 'mp3', 'preferredquality': '5',
                                         'nopostoverwrites': True, 'key': 'FFmpegExtractAudio'}],
                     'logger': self.logger,
