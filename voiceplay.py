@@ -105,7 +105,11 @@ class Console(object):
     def run_console(self):
         inp = None
         colorama.init()
-        readline.parse_and_bind("tab: complete")
+        # FSCK! Details here: http://stackoverflow.com/questions/7116038/python-tab-completion-mac-osx-10-7-lion
+        if 'libedit' in readline.__doc__:
+            readline.parse_and_bind("bind ^I rl_complete")
+        else:
+            readline.parse_and_bind("tab: complete")
         readline.set_completer(self.complete)
         # Add handlers
         self.add_handler('quit', self.quit_command, ['exit', 'logout'])
