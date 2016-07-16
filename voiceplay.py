@@ -754,6 +754,7 @@ class Vicki(object):
             msg = 'Vicki thinks you said ' + message
             self.tts.say_put(msg)
             self.logger.warning(msg)
+        return None, False
 
     def process_request(self, request):
         '''
