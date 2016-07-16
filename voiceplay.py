@@ -195,7 +195,7 @@ class MyParser(object):
     Parse text commands
     '''
     known_actions = {'play': [{r'^play (.+) station$': 'station_artist'},
-                              {r'^play some music by (.+)$': 'shuffle_artist'},
+                              {r'^play some (?:music|tracks?|songs?) by (.+)$': 'shuffle_artist'},
                               {r'^play top tracks by (.+)$': 'top_tracks_artist'},
                               {r'^play top tracks(?:\sin\s(.+))?$': 'top_tracks_geo'},
                               {r'^play (.+)?my library$': 'shuffle_local_library'},

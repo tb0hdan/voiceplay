@@ -4,7 +4,7 @@ voiceplay (proof of concept) - Voice controlled console playback (OSX/Linux)
 - [INSTALLATION](#installation)
 - [CONFIGURATION](#configuration)
 - [USAGE](#usage)
-- [CONSOLE MODE](#console-mode-advanced)
+- [CONSOLE MODE](#console-mode)
 - [COPYRIGHT](#copyright)
 
 ## Description
@@ -102,6 +102,18 @@ play one
 play some music by Michael Jackson
 ```
 
+or
+
+```
+play some tracks by Michael Jackson
+```
+
+or
+
+```
+play some songs by Michael Jackson
+```
+
 ### Shuffle local library (~/Music, .mp3 only)
 
 ```
@@ -132,7 +144,7 @@ or
 play melodic death metal station
 ```
 
-## Console mode (advanced)
+## Console mode
 
 ```
 ./voiceplay -c
@@ -142,7 +154,7 @@ then run any command from the list above
 
 ![console_play](https://raw.githubusercontent.com/tb0hdan/voiceplay/master/images/console_play.png)
 
-
+to quit, either type 'quit' or press CTRL+D
 
 # COPYRIGHT
 
