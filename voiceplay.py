@@ -200,13 +200,15 @@ class MyParser(object):
     '''
     known_actions = {'play': [{r'^play (.+) station$': 'station_artist'},
                               {r'^play some (?:music|tracks?|songs?) by (.+)$': 'shuffle_artist'},
-                              {r'^play top tracks by (.+)$': 'top_tracks_artist'},
-                              {r'^play top tracks(?:\sin\s(.+))?$': 'top_tracks_geo'},
+                              {r'^play top (?:songs|tracks) by (.+)$': 'top_tracks_artist'},
+                              {r'^play top (?:songs|tracks)(?:\sin\s(.+))?$': 'top_tracks_geo'},
                               {r'^play (.+)?my library$': 'shuffle_local_library'},
                               {r'^play (.+) by (.+)$': 'single_track_artist'}],
                      'shuffle': [{r'^shuffle (.+)?my library$': 'shuffle_local_library'}],
                      'shutdown': [{'shutdown': 'shutdown_action'},
-                                  {'shut down': 'shutdown_action'}]
+                                  {'shut down': 'shutdown_action'}],
+                     'what': [{r'^what are top albums by (.+)$': 'top_albums_artist'},
+                              {r'^what are top tracks by (.+)$': 'top_tracks_artist'}]
                     }
 
     def __init__(self, wake_word='vicki'):
@@ -275,6 +277,7 @@ class VoicePlayLastFm(object):
         '''
         Get top tracks by artist
         '''
+        artist = self.get_corrected_artist(artist)
         aobj = pylast.Artist(artist, self.network)
         tracks = aobj.get_top_tracks()
         return self.trackarize(tracks)
@@ -287,6 +290,15 @@ class VoicePlayLastFm(object):
         tracks = aobj.get_top_tracks()
         return self.trackarize(tracks)
 
+    def get_top_albums(self, artist):
+        album_list = []
+        artist = self.get_corrected_artist(artist)
+        aobj = pylast.Artist(artist, self.network)
+        albums = aobj.get_top_albums()
+        for album in albums:
+            album_list.append(album.item.title)
+        return album_list
+
     def get_corrected_artist(self, artist):
         '''
         Get corrected artist
@@ -296,7 +308,7 @@ class VoicePlayLastFm(object):
         if isinstance(reply, list) and reply:
             return reply[0].name
         else:
-            return ''
+            return artist
 
     def get_query_type(self, query):
         '''
@@ -780,6 +792,11 @@ class Vicki(object):
             station = re.match(reg, action_phrase).groups()[0]
             self.tts.say_put('Playing %s station' % station)
             self.play_station(station)
+        elif action_type == 'top_albums_artist':
+            artist = re.match(reg, action_phrase).groups()[0]
+            albums = self.lfm.get_top_albums(artist)
+            msg = self.lfm.numerize(albums[:10])
+            self.tts.say_put('Here are top albums by %s - %s' % (artist, msg))
         else:
             msg = 'Vicki thinks you said ' + message
             self.tts.say_put(msg)
@@ -926,6 +943,7 @@ class MyArgumentParser(object):
     def player_console(self, vicki):
         console = Console()
         console.add_handler('play', vicki.play_from_parser, ['pause', 'shuffle'])
+        console.add_handler('what', vicki.play_from_parser)
         console.run_console()
 
     def parse(self, argv=None):
