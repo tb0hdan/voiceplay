@@ -132,6 +132,12 @@ or just
 play top tracks
 ```
 
+### Shuffle specific album
+
+```
+play tracks from crimson by sentenced
+```
+
 ### Shuffle genre (station)
 
 ```

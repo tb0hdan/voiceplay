@@ -203,6 +203,7 @@ class MyParser(object):
                               {r'^play top (?:songs|tracks) by (.+)$': 'top_tracks_artist'},
                               {r'^play top (?:songs|tracks)(?:\sin\s(.+))?$': 'top_tracks_geo'},
                               {r'^play (.+)?my library$': 'shuffle_local_library'},
+                              {r'^play (?:songs|tracks) from (.+) by (.+)$': 'artist_album'},
                               {r'^play (.+) by (.+)$': 'single_track_artist'}],
                      'shuffle': [{r'^shuffle (.+)?my library$': 'shuffle_local_library'}],
                      'shutdown': [{'shutdown': 'shutdown_action'},
@@ -298,6 +299,14 @@ class VoicePlayLastFm(object):
         for album in albums:
             album_list.append(album.item.title)
         return album_list
+
+    def get_tracks_for_album(self, artist, album):
+        result = []
+        artist = self.get_corrected_artist(artist)
+        tracks = pylast.Album(artist, album.title(), self.network).get_tracks()
+        for track in tracks:
+            result.append(track.artist.name + ' - ' + track.title)
+        return result
 
     def get_corrected_artist(self, artist):
         '''
@@ -755,6 +764,15 @@ class Vicki(object):
         for track in tracks:
             self.play_full_track(track)
 
+    def play_artist_album(self, artist, album):
+        '''
+        Play all tracks from album
+        '''
+        tracks = self.lfm.get_tracks_for_album(artist, album)
+        random.shuffle(tracks)
+        for track in tracks:
+            self.play_full_track(track)
+
     def play_from_parser(self, message):
         '''
         Process incoming message
@@ -797,6 +815,10 @@ class Vicki(object):
             albums = self.lfm.get_top_albums(artist)
             msg = self.lfm.numerize(albums[:10])
             self.tts.say_put('Here are top albums by %s - %s' % (artist, msg))
+            self.logger.warning(msg)
+        elif action_type == 'artist_album':
+            album, artist = re.match(reg, action_phrase).groups()
+            self.play_artist_album(artist, album)
         else:
             msg = 'Vicki thinks you said ' + message
             self.tts.say_put(msg)
