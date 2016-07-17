@@ -208,8 +208,8 @@ class MyParser(object):
                      'shuffle': [{r'^shuffle (.+)?my library$': 'shuffle_local_library'}],
                      'shutdown': [{'shutdown': 'shutdown_action'},
                                   {'shut down': 'shutdown_action'}],
-                     'what': [{r'^what are top albums by (.+)$': 'top_albums_artist'},
-                              {r'^what are top tracks by (.+)$': 'top_tracks_artist'}]
+                     'what': [{r'^what are top albums (?:by|for) (.+)$': 'top_albums_artist'},
+                              {r'^what are top (?:songs|tracks) (?:by|for) (.+)$': 'top_tracks_artist'}]
                     }
 
     def __init__(self, wake_word='vicki'):
