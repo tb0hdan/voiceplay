@@ -132,6 +132,7 @@ class Console(object):
                 pass
             except EOFError:
                 self.exit = True
+                inp = None
             if inp:
                 result, should_be_printed = self.parse_command(inp)
             if self.exit:
