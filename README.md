@@ -147,7 +147,7 @@ play melodic death metal station
 ## Console mode
 
 ```
-./voiceplay -c
+python ./voiceplay.py -c
 ```
 
 then run any command from the list above
@@ -155,6 +155,13 @@ then run any command from the list above
 ![console_play](https://raw.githubusercontent.com/tb0hdan/voiceplay/master/images/console_play.png)
 
 to quit, either type 'quit' or press CTRL+D
+
+## Console mode (development)
+
+```
+python ./voiceplay.py -cd
+```
+
 
 # COPYRIGHT
 

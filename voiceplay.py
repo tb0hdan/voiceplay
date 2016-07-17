@@ -922,8 +922,11 @@ class MyArgumentParser(object):
         '''
         Configure argument parser
         '''
-        self.parser.add_argument('-c', action="store_true", default=False, dest='console',
-                                 help='Start console')
+        group = self.parser.add_mutually_exclusive_group()
+        group.add_argument('-c', '--console', action='store_true', default=False, dest='console',
+                           help='Start console')
+        group.add_argument('-cd', '--console-devel', action='store_true', default=False, dest='console_devel',
+                           help='Start development console')
         self.parser.add_argument('--version', action='version', version='%(prog)s ' +  __version__)
 
     @staticmethod
@@ -955,6 +958,8 @@ class MyArgumentParser(object):
         vicki = Vicki()
         if result.console:
             self.player_console(vicki)
+        elif result.console_devel:
+            self.ipython_console()
         else:
             vicki.run_forever_new()
 
