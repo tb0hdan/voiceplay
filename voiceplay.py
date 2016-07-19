@@ -47,7 +47,7 @@ else:
 from tempfile import mkstemp, mkdtemp
 from youtube_dl import YoutubeDL
 
-__version__ = '0.1.2'
+__version__ = '0.1.3'
 
 class Console(object):
     '''
@@ -140,11 +140,10 @@ class Console(object):
                 break
 
 
-class MPlayerSlave(object):
-    command = ['mplayer', '-slave', '-idle',
-               '-really-quiet', '-msglevel', 'global=6:cplayer=4', '-msgmodule',
-               '-vo', 'null', '-cache', '1024']
-
+class ConsolePlayer(object):
+    '''
+    Console player
+    '''
     def __init__(self, *args, **kwargs):
         self.lock = threading.Lock()
         self.stdout_pool = []
@@ -155,7 +154,7 @@ class MPlayerSlave(object):
             print ('stdout...')
             line = self.proc.stdout.readline().rstrip('\n')
             if line:
-                self.stdout_pool.append(line)
+                self.stdout_pool.append(line.strip())
         print ('Player exited...')
 
     def player_stderr_thread(self):
@@ -163,15 +162,12 @@ class MPlayerSlave(object):
             print ('stderr...')
             line = self.proc.stderr.readline().rstrip('\n')
             if line:
-                self.stderr_pool.append(line)
+                self.stderr_pool.append(line.strip())
         print ('Player exited...')
 
     def send_command(self, command):
         with self.lock:
             self.proc.stdin.write(command + '\n')
-
-    def play(self, uri):
-        self.send_command('loadfile %s' % uri)
 
     def stop(self):
         os.killpg(self.proc.pid, signal.SIGTERM)
@@ -194,6 +190,50 @@ class MPlayerSlave(object):
         self.stderr_thread.setDaemon(True)
         self.stderr_thread.start()
 
+
+class MPlayerSlave(ConsolePlayer):
+    '''
+    MPlayer slave
+    '''
+    def __init__(self, *args, **kwargs):
+        self.command = ['mplayer', '-slave', '-idle',
+               '-really-quiet', '-msglevel', 'global=6:cplayer=4', '-msgmodule',
+               '-vo', 'null', '-cache', '1024']
+        super(MPlayerSlave, self).__init__(*args, **kwargs)
+        self._state = 'started'
+
+    def play(self, uri, block=True):
+        cmd = 'loadfile %s' % uri
+        self.send_command(cmd.encode('utf-8'))
+        if block:
+            while self.state != 'stopped':
+                time.sleep(0.5)
+
+    def pause(self):
+        if self._state == 'playing':
+            self.send_command('pause')
+            self._state = 'paused'
+
+    def resume(self):
+        if self._state == 'paused':
+            self.send_command('pause')
+            self._state = 'playing'
+
+    def get_state(self):
+        for line in self.stdout_pool:
+            if line.startswith('GLOBAL: EOF code'):
+                self._state = 'stopped'
+                break
+            if line.startswith('CPLAYER: Starting playback'):
+                self._state = 'playing'
+                break
+        self.stdout_pool = []
+
+    @property
+    def state(self):
+        self.get_state()
+        return self._state
+ 
 
 class MyParser(object):
     '''
@@ -437,6 +477,8 @@ class Vicki(object):
         self.queue = Queue()
         self.shutdown = False
         self.logger.debug('Vicki init completed')
+        self.player = MPlayerSlave()
+        self.player.start()
 
     def init_logger(self, name='voiceplay'):
         '''
@@ -712,8 +754,11 @@ class Vicki(object):
             with YoutubeDL(ydl_opts) as ydl:
                 ydl.download([url])
                 audio_file = re.sub('\.(.+)$', '.mp3', self.target_filename)
-        subprocess.call(['mplayer', audio_file])
-        os.remove(audio_file)
+        #subprocess.call(['mplayer', audio_file])
+        self.player.play(audio_file)
+        #while self.player.state in ['playing', 'started']:
+        #    time.sleep(0.5)
+        #os.remove(audio_file)
         return True
 
     def play_full_track(self, trackname):
@@ -744,8 +789,7 @@ class Vicki(object):
                     message += 'Continuing using next source url...'
                     self.logger.error(message)
 
-    @staticmethod
-    def play_local_library(message):
+    def play_local_library(self, message):
         fnames = []
         library = os.path.expanduser('~/Music')
         for root, _, files in os.walk(library, topdown=False):
@@ -899,6 +943,7 @@ class Vicki(object):
                 message = self.queue.get()
                 if message == 'shutdown':
                     self.shutdown = True
+                    self.player.stop()
                 else:
                     self.process_request(message)
             time.sleep(1)
@@ -971,6 +1016,7 @@ class MyArgumentParser(object):
         console.add_handler('play', vicki.play_from_parser, ['pause', 'shuffle'])
         console.add_handler('what', vicki.play_from_parser)
         console.run_console()
+        vicki.player.stop()
 
     def parse(self, argv=None):
         '''
