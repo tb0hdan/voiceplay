@@ -448,7 +448,7 @@ class TextToSpeech(object):
         self.queue.put(message)
 
 
-class Vicki(object):
+class VickiPlayer(object):
     '''
     Vicki player class
     '''
@@ -463,24 +463,19 @@ class Vicki(object):
                '9': {'name': 'nine', 'adjective': 'ninth'},
                '10': {'name': 'ten', 'adjective': 'tenth'}}
 
-    def __init__(self, cfg_file='config.yaml'):
-        # logger is the earliest bird
+    def __init__(self, tts=None, cfg_file='config.yaml'):
+        self.tts = tts
+        self.lfm = VoicePlayLastFm()
+        self.parser = MyParser()
+        self.player_queue = Queue()
         self.init_logger()
-        #
         config = kaptan.Kaptan()
         config.import_config(cfg_file)
         self.cfg_data = config.configuration_data
-        self.rec = sr.Recognizer()
-        self.lfm = VoicePlayLastFm()
-        self.parser = MyParser()
-        self.tts = TextToSpeech()
-        self.queue = Queue()
-        self.shutdown = False
-        self.logger.debug('Vicki init completed')
         self.player = MPlayerSlave()
         self.player.start()
 
-    def init_logger(self, name='voiceplay'):
+    def init_logger(self, name='VickiPlayer'):
         '''
         Initialize logger
         '''
@@ -870,12 +865,45 @@ class Vicki(object):
             self.logger.warning(msg)
         return None, False
 
+class Vicki(object):
+    '''
+    Vicki main class
+    '''
+
+    def __init__(self):#, cfg_file='config.yaml'):
+        # logger is the earliest bird
+        self.init_logger()
+        #
+        #config = kaptan.Kaptan()
+        #config.import_config(cfg_file)
+        #self.cfg_data = config.configuration_data
+        self.rec = sr.Recognizer()
+        #self.lfm = VoicePlayLastFm()
+        #self.parser = MyParser()
+        self.tts = TextToSpeech()
+        self.queue = Queue()
+        self.shutdown = False
+        self.logger.debug('Vicki init completed')
+        #self.player = MPlayerSlave()
+        #self.player.start()
+        self.player = VickiPlayer(tts=self.tts)
+
+    def init_logger(self, name='Vicki'):
+        '''
+        Initialize logger
+        '''
+        self.logger = logging.getLogger(name)
+        handler = logging.StreamHandler(sys.stderr)
+        self.logger.addHandler(handler)
+
+
     def process_request(self, request):
         '''
         process request
         '''
+        print (request)
         try:
-            self.play_from_parser(request)
+            self.player.play_from_parser(request)
         except Exception as exc:
             self.logger.error(exc)
             self.tts.say_put('Vicki could not process your request')
@@ -974,10 +1002,10 @@ class Vicki(object):
                 time.sleep(1)
             except KeyboardInterrupt:
                 self.shutdown = True  # for threads
+                listener.join()
+                player.join()
+                speaker.join()
                 break
-        # FIXME: oh, this is nasty
-        time.sleep(5)
-
 
 class MyArgumentParser(object):
     '''
