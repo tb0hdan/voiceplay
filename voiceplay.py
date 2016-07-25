@@ -151,19 +151,15 @@ class ConsolePlayer(object):
 
     def player_stdout_thread(self):
         while self.proc.poll() is None:
-            print ('stdout...')
             line = self.proc.stdout.readline().rstrip('\n')
             if line:
                 self.stdout_pool.append(line.strip())
-        print ('Player exited...')
 
     def player_stderr_thread(self):
         while self.proc.poll() is None:
-            print ('stderr...')
             line = self.proc.stderr.readline().rstrip('\n')
             if line:
                 self.stderr_pool.append(line.strip())
-        print ('Player exited...')
 
     def send_command(self, command):
         with self.lock:
@@ -205,9 +201,15 @@ class MPlayerSlave(ConsolePlayer):
     def play(self, uri, block=True):
         cmd = 'loadfile %s' % uri
         self.send_command(cmd.encode('utf-8'))
+        time.sleep(1)
         if block:
             while self.state != 'stopped':
                 time.sleep(0.5)
+
+    def stop_playback(self):
+        if self._state in ['playing', 'paused']:
+            self.send_command('stop')
+            self._state = 'stopped'
 
     def pause(self):
         if self._state == 'playing':
@@ -219,6 +221,11 @@ class MPlayerSlave(ConsolePlayer):
             self.send_command('pause')
             self._state = 'playing'
 
+    def shutdown(self):
+        self.send_command('quit')
+        time.sleep(0.5)
+        self.stop()
+
     def get_state(self):
         for line in self.stdout_pool:
             if line.startswith('GLOBAL: EOF code'):
@@ -228,6 +235,9 @@ class MPlayerSlave(ConsolePlayer):
                 self._state = 'playing'
                 break
         self.stdout_pool = []
+        if self.proc is not None:
+            self._state = 'notrunning'
+
 
     @property
     def state(self):
@@ -467,13 +477,15 @@ class VickiPlayer(object):
         self.tts = tts
         self.lfm = VoicePlayLastFm()
         self.parser = MyParser()
-        self.player_queue = Queue()
+        self.queue = Queue()
         self.init_logger()
         config = kaptan.Kaptan()
         config.import_config(cfg_file)
         self.cfg_data = config.configuration_data
         self.player = MPlayerSlave()
         self.player.start()
+        self.shutdown = False
+        self.exit_task = False
 
     def init_logger(self, name='VickiPlayer'):
         '''
@@ -546,6 +558,8 @@ class VickiPlayer(object):
             tracks = self.lfm.get_top_tracks(self.lfm.get_corrected_artist(artist))
             random.shuffle(tracks)
             for track in tracks:
+                if self.exit_task:
+                    break
                 self.play_full_track(track)
 
     def run_top_tracks_geo(self, country):
@@ -558,6 +572,8 @@ class VickiPlayer(object):
             tracks = self.lfm.get_top_tracks_global()
         random.shuffle(tracks)
         for track in tracks:
+            if self.exit_task:
+                break
             self.play_full_track(track)
 
     @staticmethod
@@ -793,7 +809,9 @@ class VickiPlayer(object):
                     fnames.append(os.path.join(root, name))
         random.shuffle(fnames)
         for fname in fnames:
-            subprocess.call(['mplayer', fname])
+            if self.exit_task:
+                break
+            self.player.play(fname)
 
     def play_station(self, station):
         '''
@@ -802,6 +820,8 @@ class VickiPlayer(object):
         tracks = self.lfm.get_station(station)
         random.shuffle(tracks)
         for track in tracks:
+            if self.exit_task:
+                break
             self.play_full_track(track)
 
     def play_artist_album(self, artist, album):
@@ -811,81 +831,100 @@ class VickiPlayer(object):
         tracks = self.lfm.get_tracks_for_album(artist, album)
         random.shuffle(tracks)
         for track in tracks:
+            if self.exit_task:
+                break
             self.play_full_track(track)
 
     def play_from_parser(self, message):
-        '''
-        Process incoming message
-        '''
-        parsed = self.parser.parse(message)
-        action_type, reg, action_phrase = self.parser.get_action_type(parsed)
-        self.logger.warning('Action type: %s', action_type)
-        if action_type == 'single_track_artist':
-            track, artist = re.match(reg, action_phrase).groups()
-            self.play_full_track('%s - %s' % (artist, track))
-        elif action_type == 'top_tracks_artist':
-            artist = re.match(reg, action_phrase).groups()[0]
-            self.run_play_cmd(artist)
-        elif action_type == 'shuffle_artist':
-            artist = re.match(reg, action_phrase).groups()[0]
-            self.tts.say_put('Shuffling %s' % artist)
-            self.run_shuffle_artist(artist)
-        elif action_type == 'track_number_artist':
-            number = re.match(reg, action_phrase).groups()[0]
-            self.logger.warning(number)
-            self.run_play_cmd(number)
-        elif action_type == 'shuffle_local_library':
-            msg = re.match(reg, action_phrase).groups()[0]
-            self.logger.warning(msg)
-            self.play_local_library(msg)
-        elif action_type == 'top_tracks_geo':
-            country = re.match(reg, action_phrase).groups()[0]
-            if country:
-                msg = 'Playing top track for country %s' % country
-            else:
-                msg = 'Playing global top tracks'
-            self.tts.say_put(msg)
-            self.run_top_tracks_geo(country)
-        elif action_type == 'station_artist':
-            station = re.match(reg, action_phrase).groups()[0]
-            self.tts.say_put('Playing %s station' % station)
-            self.play_station(station)
-        elif action_type == 'top_albums_artist':
-            artist = re.match(reg, action_phrase).groups()[0]
-            albums = self.lfm.get_top_albums(artist)
-            msg = self.lfm.numerize(albums[:10])
-            self.tts.say_put('Here are top albums by %s - %s' % (artist, msg))
-            self.logger.warning(msg)
-        elif action_type == 'artist_album':
-            album, artist = re.match(reg, action_phrase).groups()
-            self.play_artist_album(artist, album)
+        if message in ['stop', 'pause', 'next', 'quit']:
+            if message in ['stop', 'next']:
+                self.player.stop_playback()
+            elif message == 'pause':
+                self.player.pause()
+            elif message == 'quit':
+                self.player.shutdown()
         else:
-            msg = 'Vicki thinks you said ' + message
-            self.tts.say_put(msg)
-            self.logger.warning(msg)
+            self.queue.put(message)
         return None, False
+
+    def task_loop(self):
+        while True:
+            while self.queue.empty():
+                if self.shutdown:
+                    break
+                time.sleep(0.5)
+            if self.shutdown:
+                break
+            parsed = self.parser.parse(self.queue.get())
+            action_type, reg, action_phrase = self.parser.get_action_type(parsed)
+            self.logger.warning('Action type: %s', action_type)
+            if action_type == 'single_track_artist':
+                track, artist = re.match(reg, action_phrase).groups()
+                self.play_full_track('%s - %s' % (artist, track))
+            elif action_type == 'top_tracks_artist':
+                artist = re.match(reg, action_phrase).groups()[0]
+                self.run_play_cmd(artist)
+            elif action_type == 'shuffle_artist':
+                artist = re.match(reg, action_phrase).groups()[0]
+                self.tts.say_put('Shuffling %s' % artist)
+                self.run_shuffle_artist(artist)
+            elif action_type == 'track_number_artist':
+                number = re.match(reg, action_phrase).groups()[0]
+                self.logger.warning(number)
+                self.run_play_cmd(number)
+            elif action_type == 'shuffle_local_library':
+                msg = re.match(reg, action_phrase).groups()[0]
+                self.logger.warning(msg)
+                self.play_local_library(msg)
+            elif action_type == 'top_tracks_geo':
+                country = re.match(reg, action_phrase).groups()[0]
+                if country:
+                    msg = 'Playing top track for country %s' % country
+                else:
+                    msg = 'Playing global top tracks'
+                self.tts.say_put(msg)
+                self.run_top_tracks_geo(country)
+            elif action_type == 'station_artist':
+                station = re.match(reg, action_phrase).groups()[0]
+                self.tts.say_put('Playing %s station' % station)
+                self.play_station(station)
+            elif action_type == 'top_albums_artist':
+                artist = re.match(reg, action_phrase).groups()[0]
+                albums = self.lfm.get_top_albums(artist)
+                msg = self.lfm.numerize(albums[:10])
+                self.tts.say_put('Here are top albums by %s - %s' % (artist, msg))
+                self.logger.warning(msg)
+            elif action_type == 'artist_album':
+                album, artist = re.match(reg, action_phrase).groups()
+                self.play_artist_album(artist, album)
+            else:
+                msg = 'Vicki thinks you said ' + message
+                self.tts.say_put(msg)
+                self.logger.warning(msg)
+
+    def start(self):
+        self.task_thread = threading.Thread(name='player_task_pool', target=self.task_loop)
+        self.task_thread.setDaemon = True
+        self.task_thread.start()
+
+    def stop(self):
+        self.shutdown = True
+        self.player.shutdown()
+        self.task_thread.join()
+
 
 class Vicki(object):
     '''
     Vicki main class
     '''
 
-    def __init__(self):#, cfg_file='config.yaml'):
-        # logger is the earliest bird
+    def __init__(self):
         self.init_logger()
-        #
-        #config = kaptan.Kaptan()
-        #config.import_config(cfg_file)
-        #self.cfg_data = config.configuration_data
         self.rec = sr.Recognizer()
-        #self.lfm = VoicePlayLastFm()
-        #self.parser = MyParser()
         self.tts = TextToSpeech()
         self.queue = Queue()
         self.shutdown = False
         self.logger.debug('Vicki init completed')
-        #self.player = MPlayerSlave()
-        #self.player.start()
         self.player = VickiPlayer(tts=self.tts)
 
     def init_logger(self, name='Vicki'):
@@ -896,12 +935,10 @@ class Vicki(object):
         handler = logging.StreamHandler(sys.stderr)
         self.logger.addHandler(handler)
 
-
     def process_request(self, request):
         '''
         process request
         '''
-        print (request)
         try:
             self.player.play_from_parser(request)
         except Exception as exc:
@@ -1041,10 +1078,9 @@ class MyArgumentParser(object):
 
     def player_console(self, vicki):
         console = Console()
-        console.add_handler('play', vicki.play_from_parser, ['pause', 'shuffle'])
-        console.add_handler('what', vicki.play_from_parser)
+        console.add_handler('play', vicki.player.play_from_parser, ['pause', 'shuffle', 'next', 'stop'])
+        console.add_handler('what', vicki.player.play_from_parser)
         console.run_console()
-        vicki.player.stop()
 
     def parse(self, argv=None):
         '''
@@ -1054,7 +1090,9 @@ class MyArgumentParser(object):
         result = self.parser.parse_args(argv[1:])
         vicki = Vicki()
         if result.console:
+            vicki.player.start()
             self.player_console(vicki)
+            vicki.player.stop()
         elif result.console_devel:
             self.ipython_console()
         else:
