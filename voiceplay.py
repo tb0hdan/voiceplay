@@ -166,7 +166,10 @@ class ConsolePlayer(object):
             self.proc.stdin.write(command + '\n')
 
     def stop(self):
-        os.killpg(self.proc.pid, signal.SIGTERM)
+        try:
+            os.killpg(self.proc.pid, signal.SIGTERM)
+        except OSError:
+            pass
         self.stdout_thread.join()
         self.stderr_thread.join()
 
@@ -201,7 +204,6 @@ class MPlayerSlave(ConsolePlayer):
     def play(self, uri, block=True):
         cmd = 'loadfile %s' % uri
         self.send_command(cmd.encode('utf-8'))
-        time.sleep(1)
         if block:
             while self.state != 'stopped':
                 time.sleep(0.5)
@@ -235,9 +237,7 @@ class MPlayerSlave(ConsolePlayer):
                 self._state = 'playing'
                 break
         self.stdout_pool = []
-        if self.proc is not None:
-            self._state = 'notrunning'
-
+        self.stderr_pool = []
 
     @property
     def state(self):
@@ -483,7 +483,6 @@ class VickiPlayer(object):
         config.import_config(cfg_file)
         self.cfg_data = config.configuration_data
         self.player = MPlayerSlave()
-        self.player.start()
         self.shutdown = False
         self.exit_task = False
 
@@ -836,26 +835,29 @@ class VickiPlayer(object):
             self.play_full_track(track)
 
     def play_from_parser(self, message):
-        if message in ['stop', 'pause', 'next', 'quit']:
+        if message in ['stop', 'pause', 'next', 'quit', 'resume']:
             if message in ['stop', 'next']:
                 self.player.stop_playback()
             elif message == 'pause':
                 self.player.pause()
+            elif message == 'resume':
+                self.player.resume()
             elif message == 'quit':
                 self.player.shutdown()
+                self.queue.put('quit')
         else:
             self.queue.put(message)
         return None, False
 
     def task_loop(self):
         while True:
-            while self.queue.empty():
-                if self.shutdown:
-                    break
-                time.sleep(0.5)
             if self.shutdown:
                 break
-            parsed = self.parser.parse(self.queue.get())
+            if not self.queue.empty():
+                parsed = self.parser.parse(self.queue.get())
+            else:
+                time.sleep(0.5)
+                continue
             action_type, reg, action_phrase = self.parser.get_action_type(parsed)
             self.logger.warning('Action type: %s', action_type)
             if action_type == 'single_track_artist':
@@ -903,6 +905,7 @@ class VickiPlayer(object):
                 self.logger.warning(msg)
 
     def start(self):
+        self.player.start()
         self.task_thread = threading.Thread(name='player_task_pool', target=self.task_loop)
         self.task_thread.setDaemon = True
         self.task_thread.start()
@@ -1078,7 +1081,7 @@ class MyArgumentParser(object):
 
     def player_console(self, vicki):
         console = Console()
-        console.add_handler('play', vicki.player.play_from_parser, ['pause', 'shuffle', 'next', 'stop'])
+        console.add_handler('play', vicki.player.play_from_parser, ['pause', 'shuffle', 'next', 'stop', 'resume'])
         console.add_handler('what', vicki.player.play_from_parser)
         console.run_console()
 
@@ -1096,6 +1099,7 @@ class MyArgumentParser(object):
         elif result.console_devel:
             self.ipython_console()
         else:
+            vicki.player.start()
             vicki.run_forever_new()
 
 
