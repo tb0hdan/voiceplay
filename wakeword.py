@@ -2,14 +2,31 @@
 #-*- coding: utf-8 -*-
 ''' VoicePlay wakeword module '''
 
+import socket
 import threading
 import time
 import extlib.snowboydetect.snowboydecoder as snowboydecoder
 
-class D(object):
+class WakeWordListener(object):
     def __init__(self):
         self.wake_up = False
         self.exit = False
+        self.ip = '127.0.0.1'
+        self.port = '63455'
+
+    def send_tcp_message(self, message):
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect((self.ip, int(self.port)))
+        len_sent = s.send(message)
+        response = s.recv(1024)
+
+    def send_tcp_message_async(self, message):
+        try:
+            th = threading.Thread(name='TCPAsync', target=self.send_tcp_message, args=(message,))
+            th.setDaemon(True)
+            th.start()
+        except Exception as exc:
+            pass
 
     def wakeword_listener(self):
         print ('starting detector!')
@@ -21,10 +38,12 @@ class D(object):
 
     def wakeword_callback(self):
         print ('wakey!')
+        self.send_tcp_message_async('wakeup')
         self.wake_up = True
 
     def run_forever(self):
         th = threading.Thread(target=self.wakeword_listener)
+        th.setDaemon(True)
         th.start()
         while True:
             try:
@@ -34,6 +53,6 @@ class D(object):
                 th.join()
                 break
 
-
-d = D()
-d.run_forever()
+if __name__ == '__main__':
+    listener = WakeWordListener()
+    listener.run_forever()

@@ -35,11 +35,13 @@ if sys.version_info.major == 2:
     from Queue import Queue
     from urllib import quote
     from pipes import quote as shell_quote
+    import SocketServer as socketserver
 elif sys.version_info.major == 3:
     from builtins import input as raw_input
     from queue import Queue
     from urllib.parse import quote
     from shlex import quote as shell_quote
+    import socketserver
 else:
     raise RuntimeError('What kind of system is this?!?!')
 
@@ -918,6 +920,25 @@ class VickiPlayer(object):
         self.task_thread.join()
 
 
+
+
+class ThreadedRequestHandler(socketserver.BaseRequestHandler):
+    callback = None
+    def handle(self):
+        # Echo the back to the client
+        data = self.request.recv(1024)
+        if self.callback:
+            self.callback(data)
+        cur_thread = threading.currentThread()
+        response = b'%s: %s' % (cur_thread.getName().encode(),
+                                data)
+        self.request.send(response)
+        return
+
+
+class WakeWordReceiver(socketserver.ThreadingMixIn, socketserver.TCPServer):
+    allow_reuse_address=True
+
 class Vicki(object):
     '''
     Vicki main class
@@ -950,11 +971,8 @@ class Vicki(object):
             self.logger.error(exc)
             self.tts.say_put('Vicki could not process your request')
 
-    def wakeword_listener(self):
-        self.detector = snowboydecoder.HotwordDetector("extlib/snowboydetect/resources/Vicki.pmdl", sensitivity=0.5, audio_gain=1)
-        self.detector.start(self.wakeword_callback)
-
-    def wakeword_callback(self):
+    def wakeword_callback(self, message):
+        print (message)
         self.wake_up = True
 
     def background_listener(self):
@@ -973,7 +991,6 @@ class Vicki(object):
                 self.logger.warning('Wake word!')
                 self.tts.say_put('Yes')
                 self.wake_up = False
-                #continue
             else:
                 time.sleep(0.5)
                 continue
@@ -1017,7 +1034,7 @@ class Vicki(object):
         Main loop
         '''
         listener = threading.Thread(name='BackgroundListener', target=self.background_listener)
-        #listener.setDaemon(True)
+        listener.setDaemon(True)
 
         player = threading.Thread(name='BackgroundPlayer', target=self.background_executor)
         player.setDaemon(True)
@@ -1025,13 +1042,9 @@ class Vicki(object):
         speaker = threading.Thread(name='BackgroundSpeaker', target=self.background_speaker)
         speaker.setDaemon(True)
 
-        waker = threading.Thread(name='BackgroundWaker', target=self.wakeword_listener)
-        #waker.setDaemon(True)
-
         listener.start()
         player.start()
         speaker.start()
-        waker.start()
         while True:
             if self.shutdown:
                 break
@@ -1042,7 +1055,6 @@ class Vicki(object):
                 listener.join()
                 player.join()
                 speaker.join()
-                waker.join()
                 break
 
 class MyArgumentParser(object):
@@ -1098,6 +1110,13 @@ class MyArgumentParser(object):
             self.ipython_console()
         else:
             vicki.player.start()
+            ThreadedRequestHandler.callback = vicki.wakeword_callback
+            address = ('127.0.0.1', 63455)
+            server = WakeWordReceiver(address,
+                                ThreadedRequestHandler)
+            t = threading.Thread(target=server.serve_forever)
+            t.setDaemon(True)
+            t.start()
             vicki.run_forever_new()
 
 
