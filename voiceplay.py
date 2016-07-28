@@ -1,8 +1,8 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python
 #-*- coding: utf-8 -*-
 ''' VoicePlay main module '''
 
-from __future__ import print_function, unicode_literals
+from __future__ import print_function
 import argparse
 import colorama
 import json
@@ -46,6 +46,8 @@ else:
 
 from tempfile import mkstemp, mkdtemp
 from youtube_dl import YoutubeDL
+
+import extlib.snowboydetect.snowboydecoder as snowboydecoder
 
 __version__ = '0.1.3'
 
@@ -948,6 +950,13 @@ class Vicki(object):
             self.logger.error(exc)
             self.tts.say_put('Vicki could not process your request')
 
+    def wakeword_listener(self):
+        self.detector = snowboydecoder.HotwordDetector("extlib/snowboydetect/resources/Vicki.pmdl", sensitivity=0.5, audio_gain=1)
+        self.detector.start(self.wakeword_callback)
+
+    def wakeword_callback(self):
+        self.wake_up = True
+
     def background_listener(self):
         msg = 'Vicki is listening'
         self.tts.say_put(msg)
@@ -955,35 +964,19 @@ class Vicki(object):
         # we do not record ourselves
         time.sleep(3)
         self.logger.warning(msg)
+        self.wake_up = False
         while True:
             if self.shutdown:
                 break
-            with sr.Microphone() as source:
-                # TODO: Test effectiveness of this method
-                self.rec.adjust_for_ambient_noise(source)
-                try:
-                    audio = self.rec.listen(source, timeout=5)
-                except sr.WaitTimeoutError:
-                    continue
-            try:
-                result = self.rec.recognize_sphinx(audio)
-            except sr.UnknownValueError:
-                msg = 'Vicki could not understand audio'
-                self.tts.say_put(msg)
-                self.logger.warning(msg)
-                result = None
-            except sr.RequestError as e:
-                msg = 'Recognition error'
-                self.tts.say_put(msg)
-                self.logger.warning('{0}; {1}'.format(msg, e))
-                result = None
-            if not result in ['we k.', 'waiting', 'gritty', 'winking', 'we see it', 'sweetie',
-                              'we keep', 'we see', 'when did', 'wait a', 'we did', "we didn't"]:
-                self.logger.warning('Heard %r', result)
-                continue
-            else:
-                self.logger.warning('Wake word! %r', result)
+
+            if self.wake_up:
+                self.logger.warning('Wake word!')
                 self.tts.say_put('Yes')
+                self.wake_up = False
+                #continue
+            else:
+                time.sleep(0.5)
+                continue
 
             # command goes next
             with sr.Microphone() as source:
@@ -1024,7 +1017,7 @@ class Vicki(object):
         Main loop
         '''
         listener = threading.Thread(name='BackgroundListener', target=self.background_listener)
-        listener.setDaemon(True)
+        #listener.setDaemon(True)
 
         player = threading.Thread(name='BackgroundPlayer', target=self.background_executor)
         player.setDaemon(True)
@@ -1032,9 +1025,13 @@ class Vicki(object):
         speaker = threading.Thread(name='BackgroundSpeaker', target=self.background_speaker)
         speaker.setDaemon(True)
 
+        waker = threading.Thread(name='BackgroundWaker', target=self.wakeword_listener)
+        #waker.setDaemon(True)
+
         listener.start()
         player.start()
         speaker.start()
+        waker.start()
         while True:
             if self.shutdown:
                 break
@@ -1045,6 +1042,7 @@ class Vicki(object):
                 listener.join()
                 player.join()
                 speaker.join()
+                waker.join()
                 break
 
 class MyArgumentParser(object):
