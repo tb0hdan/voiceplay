@@ -49,9 +49,8 @@ else:
 from tempfile import mkstemp, mkdtemp
 from youtube_dl import YoutubeDL
 
-import extlib.snowboydetect.snowboydecoder as snowboydecoder
 
-__version__ = '0.1.3'
+__version__ = '0.1.4'
 
 class Console(object):
     '''
