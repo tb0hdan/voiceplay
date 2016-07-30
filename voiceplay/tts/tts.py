@@ -1,3 +1,12 @@
+import platform
+import sys
+if sys.version_info.major == 2:
+    from Queue import Queue
+elif sys.version_info.major == 3:
+    from queue import Queue
+
+import time
+
 class TextToSpeech(object):
     '''
     MAC/Linux TTS

@@ -1,3 +1,5 @@
+import re
+
 class MyParser(object):
     '''
     Parse text commands

@@ -1,3 +1,11 @@
+import argparse
+import threading
+import sys
+from voiceplay import __version__
+from voiceplay.recognition.vicki import Vicki
+from voiceplay.recognition.wakeword.receiver import ThreadedRequestHandler, WakeWordReceiver
+from voiceplay.cli.console.console import Console
+
 class MyArgumentParser(object):
     '''
     Parse command line arguments

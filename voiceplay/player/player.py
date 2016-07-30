@@ -1,3 +1,7 @@
+import os
+import subprocess
+import threading
+
 class ConsolePlayer(object):
     '''
     Console player

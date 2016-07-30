@@ -1,3 +1,9 @@
+from __future__ import print_function
+import colorama
+import readline
+import sys
+import time
+
 class Console(object):
     '''
     Console mode

@@ -1,3 +1,21 @@
+import kaptan
+import logging
+import random
+random.seed()
+import re
+import sys
+if sys.version_info.major == 2:
+    from Queue import Queue
+elif sys.version_info.major == 3:
+    from queue import Queue
+
+import threading
+import time
+
+from voiceplay.datasources.lastfm import VoicePlayLastFm
+from voiceplay.cmdprocessor.parser import MyParser
+from .player import MPlayerSlave
+
 class VickiPlayer(object):
     '''
     Vicki player class

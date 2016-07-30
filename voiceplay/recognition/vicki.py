@@ -1,3 +1,18 @@
+import logging
+import speech_recognition as sr
+import sys
+if sys.version_info.major == 2:
+    from Queue import Queue
+elif sys.version_info.major == 3:
+    from queue import Queue
+
+import threading
+import time
+
+from voiceplay.tts.tts import TextToSpeech
+from voiceplay.player.vickiplayer import VickiPlayer
+
+
 class Vicki(object):
     '''
     Vicki main class
