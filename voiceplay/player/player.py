@@ -1,6 +1,8 @@
 import os
+import signal
 import subprocess
 import threading
+import time
 
 class ConsolePlayer(object):
     '''

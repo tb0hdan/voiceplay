@@ -1,4 +1,3 @@
-import logging
 import speech_recognition as sr
 import sys
 if sys.version_info.major == 2:
@@ -9,6 +8,7 @@ elif sys.version_info.major == 3:
 import threading
 import time
 
+from voiceplay.logger import logger
 from voiceplay.tts.tts import TextToSpeech
 from voiceplay.player.vickiplayer import VickiPlayer
 
@@ -19,21 +19,12 @@ class Vicki(object):
     '''
 
     def __init__(self):
-        self.init_logger()
         self.rec = sr.Recognizer()
         self.tts = TextToSpeech()
         self.queue = Queue()
         self.shutdown = False
-        self.logger.debug('Vicki init completed')
+        logger.debug('Vicki init completed')
         self.player = VickiPlayer(tts=self.tts)
-
-    def init_logger(self, name='Vicki'):
-        '''
-        Initialize logger
-        '''
-        self.logger = logging.getLogger(name)
-        handler = logging.StreamHandler(sys.stderr)
-        self.logger.addHandler(handler)
 
     def process_request(self, request):
         '''
@@ -42,7 +33,7 @@ class Vicki(object):
         try:
             self.player.play_from_parser(request)
         except Exception as exc:
-            self.logger.error(exc)
+            logger.error(exc)
             self.tts.say_put('Vicki could not process your request')
 
     def wakeword_callback(self, message):
@@ -55,14 +46,14 @@ class Vicki(object):
         # TODO: Fix this using callback or something so that 
         # we do not record ourselves
         time.sleep(3)
-        self.logger.warning(msg)
+        logger.warning(msg)
         self.wake_up = False
         while True:
             if self.shutdown:
                 break
 
             if self.wake_up:
-                self.logger.warning('Wake word!')
+                logger.warning('Wake word!')
                 self.tts.say_put('Yes')
                 self.wake_up = False
             else:
@@ -77,12 +68,12 @@ class Vicki(object):
             except sr.UnknownValueError:
                 msg = 'Vicki could not understand audio'
                 self.tts.say_put(msg)
-                self.logger.warning(msg)
+                logger.warning(msg)
                 result = None
             except sr.RequestError as e:
                 msg = 'Recognition error'
                 self.tts.say_put(msg)
-                self.logger.warning('{0}; {1}'.format(msg, e))
+                logger.warning('{0}; {1}'.format(msg, e))
                 result = None
             if result:
                 self.queue.put(result)

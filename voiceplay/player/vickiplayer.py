@@ -1,5 +1,4 @@
 import kaptan
-import logging
 import random
 random.seed()
 import re
@@ -14,6 +13,7 @@ import time
 
 from voiceplay.datasources.lastfm import VoicePlayLastFm
 from voiceplay.cmdprocessor.parser import MyParser
+from voiceplay.logger import logger
 from .player import MPlayerSlave
 
 class VickiPlayer(object):
@@ -36,21 +36,12 @@ class VickiPlayer(object):
         self.lfm = VoicePlayLastFm()
         self.parser = MyParser()
         self.queue = Queue()
-        self.init_logger()
         config = kaptan.Kaptan()
         config.import_config(cfg_file)
         self.cfg_data = config.configuration_data
         self.player = MPlayerSlave()
         self.shutdown = False
         self.exit_task = False
-
-    def init_logger(self, name='VickiPlayer'):
-        '''
-        Initialize logger
-        '''
-        self.logger = logging.getLogger(name)
-        handler = logging.StreamHandler(sys.stderr)
-        self.logger.addHandler(handler)
 
     @staticmethod
     def trackfilter(search_term, search_result):
@@ -152,7 +143,7 @@ class VickiPlayer(object):
             if num == number:
                 tid = idx if idx > 1 else idx + 1
                 break
-        self.logger.warning('Playing track: %s - %s', number, tid)
+        logger.warning('Playing track: %s - %s', number, tid)
         with open('state.txt', 'rb') as file_handle:
             lines = file_handle.read()
         for idx, line in enumerate(lines.splitlines()):
@@ -172,7 +163,7 @@ class VickiPlayer(object):
             if num == number:
                 tid = idx if idx > 1 else idx + 1
                 break
-        self.logger.warning('Getting track: %s - %s', number, tid)
+        logger.warning('Getting track: %s - %s', number, tid)
         with open('state.txt', 'rb') as file_handle:
             lines = file_handle.read()
         full_track = ''
@@ -298,7 +289,7 @@ class VickiPlayer(object):
         YDL download hook
         '''
         if response['status'] == 'finished':
-            self.logger.warning('Done downloading, now converting ...')
+            logger.warning('Done downloading, now converting ...')
             self.target_filename = response['filename']
 
     def play_source_url(self, url):
@@ -311,10 +302,10 @@ class VickiPlayer(object):
                     'quiet': True, 'outtmpl': template,
                     'postprocessors': [{'preferredcodec': 'mp3', 'preferredquality': '5',
                                         'nopostoverwrites': True, 'key': 'FFmpegExtractAudio'}],
-                    'logger': self.logger,
+                    'logger': logger,
                     'progress_hooks': [self.download_hook]}
 
-        self.logger.warning('Using source url %s', url)
+        logger.warning('Using source url %s', url)
         if url.startswith('http://pleer.net/en/download/page/'):
             audio_file = mkstemp()[1]
             self.pleer_download(url, audio_file)
@@ -355,7 +346,7 @@ class VickiPlayer(object):
                 except Exception as exc:
                     message = 'Playback of source url %s failed with %r\n' % (url, exc)
                     message += 'Continuing using next source url...'
-                    self.logger.error(message)
+                    logger.error(message)
 
     def play_local_library(self, message):
         fnames = []
@@ -417,7 +408,7 @@ class VickiPlayer(object):
                 time.sleep(0.5)
                 continue
             action_type, reg, action_phrase = self.parser.get_action_type(parsed)
-            self.logger.warning('Action type: %s', action_type)
+            logger.warning('Action type: %s', action_type)
             if action_type == 'single_track_artist':
                 track, artist = re.match(reg, action_phrase).groups()
                 self.play_full_track('%s - %s' % (artist, track))
@@ -430,11 +421,11 @@ class VickiPlayer(object):
                 self.run_shuffle_artist(artist)
             elif action_type == 'track_number_artist':
                 number = re.match(reg, action_phrase).groups()[0]
-                self.logger.warning(number)
+                logger.warning(number)
                 self.run_play_cmd(number)
             elif action_type == 'shuffle_local_library':
                 msg = re.match(reg, action_phrase).groups()[0]
-                self.logger.warning(msg)
+                logger.warning(msg)
                 self.play_local_library(msg)
             elif action_type == 'top_tracks_geo':
                 country = re.match(reg, action_phrase).groups()[0]
@@ -453,14 +444,14 @@ class VickiPlayer(object):
                 albums = self.lfm.get_top_albums(artist)
                 msg = self.lfm.numerize(albums[:10])
                 self.tts.say_put('Here are top albums by %s - %s' % (artist, msg))
-                self.logger.warning(msg)
+                logger.warning(msg)
             elif action_type == 'artist_album':
                 album, artist = re.match(reg, action_phrase).groups()
                 self.play_artist_album(artist, album)
             else:
                 msg = 'Vicki thinks you said ' + message
                 self.tts.say_put(msg)
-                self.logger.warning(msg)
+                logger.warning(msg)
 
     def start(self):
         self.player.start()
