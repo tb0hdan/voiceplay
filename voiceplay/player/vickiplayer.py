@@ -1,4 +1,3 @@
-import kaptan
 import random
 random.seed()
 import re
@@ -11,6 +10,7 @@ elif sys.version_info.major == 3:
 import threading
 import time
 
+from voiceplay.config import Config
 from voiceplay.datasources.lastfm import VoicePlayLastFm
 from voiceplay.cmdprocessor.parser import MyParser
 from voiceplay.logger import logger
@@ -36,9 +36,7 @@ class VickiPlayer(object):
         self.lfm = VoicePlayLastFm()
         self.parser = MyParser()
         self.queue = Queue()
-        config = kaptan.Kaptan()
-        config.import_config(cfg_file)
-        self.cfg_data = config.configuration_data
+        self.cfg_data = Config.cfg_data()
         self.player = MPlayerSlave()
         self.shutdown = False
         self.exit_task = False

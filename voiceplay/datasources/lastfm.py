@@ -1,15 +1,12 @@
-import kaptan
 import pylast
+from voiceplay.config import Config
 
 class VoicePlayLastFm(object):
     '''
     Last.Fm API
     '''
-    def __init__(self, cfg_file='config.yaml'):
-        config = kaptan.Kaptan()
-        config.import_config(cfg_file)
-        cfg_data = config.configuration_data
-
+    def __init__(self):
+        cfg_data = Config.cfg_data()
         self.network = pylast.LastFMNetwork(api_key=cfg_data['lastfm']['key'],
                                             api_secret=cfg_data['lastfm']['secret'])
 
