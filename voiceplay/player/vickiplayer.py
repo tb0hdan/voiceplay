@@ -1,14 +1,28 @@
+import json
+import os
 import random
 random.seed()
 import re
+import requests
 import sys
 if sys.version_info.major == 2:
     from Queue import Queue
+    from urllib import quote
 elif sys.version_info.major == 3:
     from queue import Queue
+    from urllib.parse import quote
 
 import threading
 import time
+import vimeo
+
+from apiclient.discovery import build
+from apiclient.errors import HttpError
+from bs4 import BeautifulSoup
+from dailymotion import Dailymotion
+from math import trunc
+from tempfile import mkstemp, mkdtemp
+from youtube_dl import YoutubeDL
 
 from voiceplay.config import Config
 from voiceplay.datasources.lastfm import VoicePlayLastFm

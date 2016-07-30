@@ -42,7 +42,7 @@ sudo pip install pyfestival
 ```
 git clone https://github.com/tb0hdan/voiceplay
 cd voiceplay
-sudo pip install -r requirements.txt
+./voiceplay.sh requirements
 ```
 
 ## Configuration
@@ -72,7 +72,7 @@ paste Google API key (for Server) into config.yaml and enable Youtube data api.
 Start application:
 
 ```
-python ./voiceplay.py
+./voiceplay.sh
 ```
 
 Then say 'Vicki', application should reply 'Yes', proceed with command from the list below:
@@ -153,7 +153,7 @@ play melodic death metal station
 ## Console mode
 
 ```
-python ./voiceplay.py -c
+./voiceplay.sh -c
 ```
 
 then run any command from the list above
@@ -165,12 +165,12 @@ to quit, either type 'quit' or press CTRL+D
 ## Console mode (development)
 
 ```
-python ./voiceplay.py -cd
+./voiceplay.sh -cd
 ```
 
 
 # COPYRIGHT
 
-voiceplay is released into the public domain by the copyright holders.
+voiceplay is released into the public domain by its authors.
 
 This README file was originally written by [Bohdan Turkynewych](https://github.com/tb0hdan) and is likewise released into the public domain.

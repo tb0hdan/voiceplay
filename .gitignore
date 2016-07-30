@@ -98,3 +98,4 @@ config.yaml.bkp
 *.webm
 *.part
 state.txt
+.DS_*
