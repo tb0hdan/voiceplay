@@ -86,7 +86,7 @@ class Vicki(object):
                 message = self.queue.get()
                 if message == 'shutdown':
                     self.shutdown = True
-                    self.player.stop()
+                    self.player.shutdown()
                 else:
                     self.process_request(message)
             time.sleep(1)

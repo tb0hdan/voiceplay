@@ -54,7 +54,7 @@ class MyArgumentParser(object):
         if result.console:
             vicki.player.start()
             self.player_console(vicki)
-            vicki.player.stop()
+            vicki.player.shutdown()
         elif result.console_devel:
             self.ipython_console()
         else:

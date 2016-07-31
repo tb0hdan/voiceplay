@@ -1,3 +1,5 @@
+#-*- coding: utf-8 -*-
+
 from dailymotion import Dailymotion
 from math import trunc
 

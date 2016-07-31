@@ -1,3 +1,5 @@
+#-*- coding: utf-8 -*-
+
 from apiclient.discovery import build
 from apiclient.errors import HttpError
 

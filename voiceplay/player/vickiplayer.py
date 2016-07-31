@@ -42,7 +42,7 @@ class VickiPlayer(object):
         self.queue = Queue()
         self.cfg_data = Config.cfg_data()
         self.player = VLCPlayer()
-        self.shutdown = False
+        self.shutdown_flag = False
         self.exit_task = False
 
     @staticmethod
@@ -201,7 +201,7 @@ class VickiPlayer(object):
             if tracks:
                 url = source.__baseurl__ + tracks[0][1]
                 try:
-                    filename = source.download(url)#, hooks=[self.download_hook])
+                    filename = source.download(url)
                     if self.player.play(filename):
                         break
                 except Exception as exc:
@@ -253,21 +253,24 @@ class VickiPlayer(object):
             elif message == 'resume':
                 self.player.resume()
             elif message == 'quit':
+                self.exit_task = True
                 self.player.shutdown()
                 self.queue.put('quit')
         else:
+            self.exit_task = True
             self.queue.put(message)
         return None, False
 
     def task_loop(self):
         while True:
-            if self.shutdown:
+            if self.shutdown_flag:
                 break
             if not self.queue.empty():
                 parsed = self.parser.parse(self.queue.get())
             else:
-                time.sleep(0.5)
+                time.sleep(0.01)
                 continue
+            self.exit_task = False
             action_type, reg, action_phrase = self.parser.get_action_type(parsed)
             logger.warning('Action type: %s', action_type)
             if action_type == 'single_track_artist':
@@ -321,7 +324,8 @@ class VickiPlayer(object):
         self.task_thread.setDaemon = True
         self.task_thread.start()
 
-    def stop(self):
-        self.shutdown = True
+    def shutdown(self):
+        self.shutdown_flag = True
+        self.exit_task = True
         self.player.shutdown()
         self.task_thread.join()

@@ -1,3 +1,5 @@
+#-*- coding: utf-8 -*-
+
 import json
 import sys
 if sys.version_info.major == 2:

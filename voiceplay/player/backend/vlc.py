@@ -1,6 +1,6 @@
-import threading
 import time
 from extlib.vlcpython.vlc import Instance
+
 
 class VLCPlayer(object):
     '''
@@ -34,6 +34,7 @@ class VLCPlayer(object):
                 pass
             if not self.player.is_playing() and not self.paused:
                 break
+        return True
 
     def pause(self):
         if self.player.is_playing():
