@@ -1,7 +1,14 @@
+from tempfile import mkstemp
 from .tracksource import TrackSource
 
 class PleerSource(TrackSource):
-    def search(self, query, max_results=25):
+    '''
+    '''
+    __baseurl__ =  'http://pleer.net/en/download/page/'
+    __priority__ = 10
+    chunk_size=8196
+
+    def search(cls, query, max_results=25):
         term = quote(query)
         url = 'http://pleer.net/search?page=1&q=%s&sort_mode=0&sort_by=0&quality=all&onlydata=true' % quote(query)
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0',
@@ -22,10 +29,11 @@ class PleerSource(TrackSource):
             tracks.append([title, aid])
         return tracks
 
-    def download(self, track_url, filename, chunk_size=8196):
+    def download(cls, track_url):
         '''
         Download track
         '''
+        filename = mkstemp()[1]
         track_id = track_url.replace('http://pleer.net/en/download/page/', '')
         url = 'http://pleer.net/site_api/files/get_url'
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0',
@@ -37,5 +45,6 @@ class PleerSource(TrackSource):
         result = json.loads(reply.text).get('track_link')
         r = requests.get(result, headers=headers, stream=True, timeout=10)
         with open(filename, 'wb') as fd:
-            for chunk in r.iter_content(chunk_size):
+            for chunk in r.iter_content(cls.chunk_size):
                 fd.write(chunk)
+        return filename

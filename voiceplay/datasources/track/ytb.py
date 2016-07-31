@@ -1,11 +1,15 @@
 from .tracksource import TrackSource
 
 class YoutubeSource(TrackSource):
-    def search(self, query, max_results=25):
+    __baseurl__ = 'https://youtu.be/'
+    __priority__ = 40
+
+    @classmethod
+    def search(cls, query, max_results=25):
         '''
         Run youtube search
         '''
-        youtube = build('youtube', 'v3', developerKey=self.cfg_data['google']['key'])
+        youtube = build('youtube', 'v3', developerKey=cls.cfg_data['google']['key'])
         search_response = youtube.search().list(q=query,
                                                 part="id,snippet",
                                                 maxResults=max_results).execute()

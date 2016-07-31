@@ -1,17 +1,20 @@
 from .tracksource import TrackSource
 
-class DailyMotionSource(TrackSource):1
-    def search(self, query, max_results=25):
+class DailyMotionSource(TrackSource):
+    __baseurl__ = 'http://www.dailymotion.com/video/'
+    __priority__ = 30
+
+    def search(cls, query, max_results=25):
         '''
         Run dailymotion search
         '''
         maxresults = 100
         client = Dailymotion()
         client.set_grant_type('password',
-                              api_key=self.cfg_data['dailymotion']['key'],
-                              api_secret=self.cfg_data['dailymotion']['secret'],
-                              info={'username': self.cfg_data['dailymotion']['username'],
-                                    'password': self.cfg_data['dailymotion']['password']},
+                              api_key=cls.cfg_data['dailymotion']['key'],
+                              api_secret=cls.cfg_data['dailymotion']['secret'],
+                              info={'username': cls.cfg_data['dailymotion']['username'],
+                                    'password': cls.cfg_data['dailymotion']['password']},
                               scope=['userinfo'])
         results = []
         pages = trunc(max_results/maxresults)

@@ -26,8 +26,10 @@ from youtube_dl import YoutubeDL
 
 from voiceplay.config import Config
 from voiceplay.datasources.lastfm import VoicePlayLastFm
+from voiceplay.datasources.track.tracksource import TrackSource
 from voiceplay.cmdprocessor.parser import MyParser
 from voiceplay.logger import logger
+from voiceplay.utils.loader import PluginLoader
 from .player import MPlayerSlave
 
 class VickiPlayer(object):
@@ -191,24 +193,14 @@ class VickiPlayer(object):
             track = 'unknown'
         return artist, track
 
-    def download_hook(self, response):
+    @classmethod
+    def download_hook(cls, response):
         '''
         YDL download hook
         '''
         if response['status'] == 'finished':
             logger.warning('Done downloading, now converting ...')
-            self.target_filename = response['filename']
-
-    def play_source_url(self, url):
-        '''
-        Play source url
-        '''
-        #subprocess.call(['mplayer', audio_file])
-        self.player.play(audio_file)
-        #while self.player.state in ['playing', 'started']:
-        #    time.sleep(0.5)
-        #os.remove(audio_file)
-        return True
+            cls.target_filename = response['filename']
 
     def play_full_track(self, trackname):
         '''
@@ -216,22 +208,21 @@ class VickiPlayer(object):
         '''
         vid = None
         baseurl = None
-        sources = [{'method': self.pleer_search, 'baseurl': 'http://pleer.net/en/download/page/'},
-                   {'method': self.vimeo_search, 'baseurl': 'https://vimeo.com/'},
-                   {'method': self.dailymotion_search, 'baseurl': 'http://www.dailymotion.com/video/'},
-                   {'method': self.youtube_search, 'baseurl': 'https://youtu.be/'}]
+        sources = sorted(PluginLoader().find_classes('voiceplay.datasources.track', TrackSource),
+                         cmp=lambda x, y: cmp(x.__priority__, y.__priority__))
         for source in sources:
             try:
-                results = source.get('method')(trackname)
+                results = source.search(trackname)
             except Exception as exc:
                 results = []
                 message = 'Source %r search failed with %r\n' % (source, exc)
                 message += 'Continuing using next source provider...'
             tracks = [track for track in results if self.track_filter_fn(trackname, track)]
             if tracks:
-                url = source.get('baseurl') + tracks[0][1]
+                url = source.__baseurl__ + tracks[0][1]
                 try:
-                    if self.play_source_url(url):
+                    filename = source.download(url, hooks=[self.download_hook])
+                    if self.player.play(filename):
                         break
                 except Exception as exc:
                     message = 'Playback of source url %s failed with %r\n' % (url, exc)
