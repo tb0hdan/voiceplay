@@ -8,7 +8,7 @@ class VLCPlayer(object):
     '''
     def __init__(self):
         self.exit = False
-        self.instance = Instance()
+        self.instance = Instance('--quiet', '--file-caching=10000')
         self.player = None
         self.paused = False
 
