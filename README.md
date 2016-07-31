@@ -26,13 +26,13 @@ redistribute it or use it however you like.
 Please make sure you have XCode installed prior to proceeding with other steps.
 
 ```
-brew install ffmpeg mplayer portaudio cmu-pocketsphinx swig
+brew install ffmpeg vlc portaudio cmu-pocketsphinx swig
 ```
 
 ### Linux (Debian/Ubuntu)
 
 ```
-sudo apt-get install libav-tools python-dev festival festival-dev portaudio19-dev mplayer
+sudo apt-get install libav-tools python-dev festival festival-dev portaudio19-dev vlc
 sudo apt-get install pocketsphinx swig
 sudo pip install pyfestival
 ```

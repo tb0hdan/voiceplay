@@ -1,6 +1,4 @@
-.PHONY: snowboy
-
-CURDIR=$(shell pwd)
+.PHONY: snowboy vlcpython
 
 snowboy:
 	@cd snowboy/swig/Python; make
@@ -8,7 +6,9 @@ snowboy:
 	@cp -v snowboy/swig/Python/*.py extlib/snowboydetect/
 	@cp -v snowboy/examples/Python/*.py extlib/snowboydetect/
 	@cp -R snowboy/resources extlib/snowboydetect
-	@cd $(CURDIR)
 
-deps:	snowboy
+vlcpython:
+	@cp -v vlcpython/generated/vlc.py extlib/vlcpython
+
+deps:	snowboy vlcpython
 	@pip install -r requirements.txt

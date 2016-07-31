@@ -30,7 +30,7 @@ from voiceplay.datasources.track.tracksource import TrackSource
 from voiceplay.cmdprocessor.parser import MyParser
 from voiceplay.logger import logger
 from voiceplay.utils.loader import PluginLoader
-from .player import MPlayerSlave
+from .backend.vlc import VLCPlayer
 
 class VickiPlayer(object):
     '''
@@ -53,7 +53,7 @@ class VickiPlayer(object):
         self.parser = MyParser()
         self.queue = Queue()
         self.cfg_data = Config.cfg_data()
-        self.player = MPlayerSlave()
+        self.player = VLCPlayer()
         self.shutdown = False
         self.exit_task = False
 
@@ -267,11 +267,11 @@ class VickiPlayer(object):
     def play_from_parser(self, message):
         if message in ['stop', 'pause', 'next', 'quit', 'resume']:
             if message in ['stop', 'next']:
-                self.player.stop_playback()
+                self.player.stop()
             elif message == 'pause':
                 self.player.pause()
             elif message == 'resume':
-                self.player.resume()
+                self.player.pause()
             elif message == 'quit':
                 self.player.shutdown()
                 self.queue.put('quit')
@@ -335,6 +335,7 @@ class VickiPlayer(object):
                 logger.warning(msg)
 
     def start(self):
+        # non-blocking start
         self.player.start()
         self.task_thread = threading.Thread(name='player_task_pool', target=self.task_loop)
         self.task_thread.setDaemon = True
