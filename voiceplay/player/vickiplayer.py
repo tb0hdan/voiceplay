@@ -272,7 +272,7 @@ class VickiPlayer(object):
                 continue
             self.exit_task = False
             action_type, reg, action_phrase = self.parser.get_action_type(parsed)
-            logger.warning('Action type: %s', action_type)
+            logger.debug('Action type: %s', action_type)
             if action_type == 'single_track_artist':
                 track, artist = re.match(reg, action_phrase).groups()
                 self.play_full_track('%s - %s' % (artist, track))
