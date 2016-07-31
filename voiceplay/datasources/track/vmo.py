@@ -1,3 +1,11 @@
+import json
+import sys
+if sys.version_info.major == 2:
+    from urllib import quote
+elif sys.version_info.major == 3:
+    from urllib.parse import quote
+
+import vimeo
 from .tracksource import TrackSource
 
 class VimeoSource(TrackSource):

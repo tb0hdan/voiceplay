@@ -1,28 +1,16 @@
-import json
+''' VickiPlayer module '''
 import os
 import random
 random.seed()
 import re
-import requests
 import sys
 if sys.version_info.major == 2:
     from Queue import Queue
-    from urllib import quote
 elif sys.version_info.major == 3:
     from queue import Queue
-    from urllib.parse import quote
 
 import threading
 import time
-import vimeo
-
-from apiclient.discovery import build
-from apiclient.errors import HttpError
-from bs4 import BeautifulSoup
-from dailymotion import Dailymotion
-from math import trunc
-from tempfile import mkstemp, mkdtemp
-from youtube_dl import YoutubeDL
 
 from voiceplay.config import Config
 from voiceplay.datasources.lastfm import VoicePlayLastFm
@@ -193,15 +181,6 @@ class VickiPlayer(object):
             track = 'unknown'
         return artist, track
 
-    @classmethod
-    def download_hook(cls, response):
-        '''
-        YDL download hook
-        '''
-        if response['status'] == 'finished':
-            logger.warning('Done downloading, now converting ...')
-            cls.target_filename = response['filename']
-
     def play_full_track(self, trackname):
         '''
         Play full track
@@ -217,11 +196,12 @@ class VickiPlayer(object):
                 results = []
                 message = 'Source %r search failed with %r\n' % (source, exc)
                 message += 'Continuing using next source provider...'
+                logger.error(message)
             tracks = [track for track in results if self.track_filter_fn(trackname, track)]
             if tracks:
                 url = source.__baseurl__ + tracks[0][1]
                 try:
-                    filename = source.download(url, hooks=[self.download_hook])
+                    filename = source.download(url)#, hooks=[self.download_hook])
                     if self.player.play(filename):
                         break
                 except Exception as exc:
@@ -271,7 +251,7 @@ class VickiPlayer(object):
             elif message == 'pause':
                 self.player.pause()
             elif message == 'resume':
-                self.player.pause()
+                self.player.resume()
             elif message == 'quit':
                 self.player.shutdown()
                 self.queue.put('quit')

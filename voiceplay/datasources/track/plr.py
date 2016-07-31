@@ -1,3 +1,12 @@
+import json
+import requests
+import sys
+if sys.version_info.major == 2:
+    from urllib import quote
+elif sys.version_info.major == 3:
+    from urllib.parse import quote
+
+from bs4 import BeautifulSoup
 from tempfile import mkstemp
 from .tracksource import TrackSource
 
@@ -8,6 +17,7 @@ class PleerSource(TrackSource):
     __priority__ = 10
     chunk_size=8196
 
+    @classmethod
     def search(cls, query, max_results=25):
         term = quote(query)
         url = 'http://pleer.net/search?page=1&q=%s&sort_mode=0&sort_by=0&quality=all&onlydata=true' % quote(query)
@@ -29,6 +39,7 @@ class PleerSource(TrackSource):
             tracks.append([title, aid])
         return tracks
 
+    @classmethod
     def download(cls, track_url):
         '''
         Download track

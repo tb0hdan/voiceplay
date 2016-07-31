@@ -1,26 +1,40 @@
+import os
+import re
+
+from tempfile import mkdtemp
+from youtube_dl import YoutubeDL
+
 from voiceplay.config import Config
+from voiceplay.logger import logger
 
 class TrackSource(object):
     '''
     '''
-    cfg_data = Config.cfg_data
+    cfg_data = Config.cfg_data()
 
     @classmethod
     def search(cls, *args, **kwargs):
         raise NotImplementedError('{0} {1}'.format(cls.__name__, 'does not provide search method'))
 
+    @classmethod
+    def download_hook(cls, response):
+        '''
+        YDL download hook
+        '''
+        if response['status'] == 'finished':
+            logger.warning('Done downloading, now converting ...')
+            cls.target_filename = response['filename']
 
     @classmethod
-    def download(cls, track_url, hooks=None):
+    def download(cls, url):
         tmp = mkdtemp()
         template = os.path.join(tmp, '%(title)s-%(id)s.%(ext)s')
         ydl_opts = {'keepvideo': False, 'verbose': False, 'format': 'bestaudio/best',
                     'quiet': True, 'outtmpl': template,
                     'postprocessors': [{'preferredcodec': 'mp3', 'preferredquality': '5',
                                         'nopostoverwrites': True, 'key': 'FFmpegExtractAudio'}],
-                    'logger': logger}
-        if hooks:
-            ydl_opts['progress_hooks'] = hooks
+                    'logger': logger,
+                    'progress_hooks': [cls.download_hook]}
 
         logger.warning('Using source url %s', url)
         with YoutubeDL(ydl_opts) as ydl:

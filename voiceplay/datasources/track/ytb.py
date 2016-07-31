@@ -1,3 +1,6 @@
+from apiclient.discovery import build
+from apiclient.errors import HttpError
+
 from .tracksource import TrackSource
 
 class YoutubeSource(TrackSource):

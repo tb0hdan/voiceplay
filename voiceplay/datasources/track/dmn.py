@@ -1,9 +1,13 @@
+from dailymotion import Dailymotion
+from math import trunc
+
 from .tracksource import TrackSource
 
 class DailyMotionSource(TrackSource):
     __baseurl__ = 'http://www.dailymotion.com/video/'
     __priority__ = 30
 
+    @classmethod
     def search(cls, query, max_results=25):
         '''
         Run dailymotion search
