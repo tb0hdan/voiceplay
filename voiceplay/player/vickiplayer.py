@@ -191,111 +191,6 @@ class VickiPlayer(object):
             track = 'unknown'
         return artist, track
 
-    def dailymotion_search(self, query, max_results=25):
-        '''
-        Run dailymotion search
-        '''
-        maxresults = 100
-        client = Dailymotion()
-        client.set_grant_type('password',
-                              api_key=self.cfg_data['dailymotion']['key'],
-                              api_secret=self.cfg_data['dailymotion']['secret'],
-                              info={'username': self.cfg_data['dailymotion']['username'],
-                                    'password': self.cfg_data['dailymotion']['password']},
-                              scope=['userinfo'])
-        results = []
-        pages = trunc(max_results/maxresults)
-        pages = pages if pages > 0 else 1
-        dquery = {'search': query,
-                  'fields':'id,title',
-                  'limit': maxresults}
-        i = 0
-        while i < pages:
-            response = client.get('/videos', dquery)
-            results += response.get('list', [])
-            i += 1
-            if not response.get('has_more', False):
-                break
-        videos = []
-        for result in results:
-            vid = result.get('id')
-            title = result.get('title')
-            if not title.lower().startswith(query.lower()):
-                continue
-            videos.append([title, vid])
-        return videos
-
-    def vimeo_search(self, query, max_results=25):
-        '''
-        Run vimeo search
-        '''
-        client = vimeo.VimeoClient(token=self.cfg_data['vimeo']['token'],
-                                   key=self.cfg_data['vimeo']['key'],
-                                   secret=self.cfg_data['vimeo']['secret'])
-        response = client.get('/videos?query=%s' % quote(query))
-        result = json.loads(response.text).get('data', [])
-        videos = []
-        for video in result:
-            vid = video.get('uri', '').split('/videos/')[1]
-            title = video.get('name', '')
-            if not title.lower().startswith(query.lower()):
-                continue
-            videos.append([title, vid])
-        return videos
-
-    def youtube_search(self, query, max_results=25):
-        '''
-        Run youtube search
-        '''
-        youtube = build('youtube', 'v3', developerKey=self.cfg_data['google']['key'])
-        search_response = youtube.search().list(q=query,
-                                                part="id,snippet",
-                                                maxResults=max_results).execute()
-        videos = []
-        for search_result in search_response.get("items", []):
-            if search_result["id"]["kind"] == "youtube#video":
-                videos.append([search_result["snippet"]["title"], search_result["id"]["videoId"]])
-        return videos
-
-    def pleer_search(self, query, max_results=25):
-        term = quote(query)
-        url = 'http://pleer.net/search?page=1&q=%s&sort_mode=0&sort_by=0&quality=all&onlydata=true' % quote(query)
-        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0',
-                   'Accept': 'application/json, text/javascript, */*; q=0.01',
-                   'Accept-Language': 'en-US,en;q=0.5',
-                   'X-Requested-With': 'XMLHttpRequest',
-                   'Referer': 'http://pleer.net/search?q=%s' % term}
-        r = requests.get(url, headers=headers, timeout=10)
-        result = json.loads(r.text).get('html', '')
-        soup = BeautifulSoup(''.join(result), 'html.parser')
-        tracks = []
-        for el in soup.findAll(lambda tag: tag.name == 'div' and tag.a and tag.a['href'] == '#'):
-            tg = el.findParent()
-            if not tg.name == 'li':
-                continue
-            title = '%s - %s' % (tg.get('singer'), tg.get('song'))
-            aid = tg.get('link')
-            tracks.append([title, aid])
-        return tracks
-
-    def pleer_download(self, track_url, filename, chunk_size=8196):
-        '''
-        Download track
-        '''
-        track_id = track_url.replace('http://pleer.net/en/download/page/', '')
-        url = 'http://pleer.net/site_api/files/get_url'
-        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0',
-                   'Accept': 'application/json, text/javascript, */*; q=0.01',
-                   'Accept-Language': 'en-US,en;q=0.5',
-                   'X-Requested-With': 'XMLHttpRequest',
-                   'Referer': 'http://pleer.net/en/download/page/%s' % track_id}
-        reply = requests.post(url, data={'action': 'download', 'id': track_id}, timeout=10)
-        result = json.loads(reply.text).get('track_link')
-        r = requests.get(result, headers=headers, stream=True, timeout=10)
-        with open(filename, 'wb') as fd:
-            for chunk in r.iter_content(chunk_size):
-                fd.write(chunk)
-
     def download_hook(self, response):
         '''
         YDL download hook
@@ -308,23 +203,6 @@ class VickiPlayer(object):
         '''
         Play source url
         '''
-        tmp = mkdtemp()
-        template = os.path.join(tmp, '%(title)s-%(id)s.%(ext)s')
-        ydl_opts = {'keepvideo': False, 'verbose': False, 'format': 'bestaudio/best',
-                    'quiet': True, 'outtmpl': template,
-                    'postprocessors': [{'preferredcodec': 'mp3', 'preferredquality': '5',
-                                        'nopostoverwrites': True, 'key': 'FFmpegExtractAudio'}],
-                    'logger': logger,
-                    'progress_hooks': [self.download_hook]}
-
-        logger.warning('Using source url %s', url)
-        if url.startswith('http://pleer.net/en/download/page/'):
-            audio_file = mkstemp()[1]
-            self.pleer_download(url, audio_file)
-        else:
-            with YoutubeDL(ydl_opts) as ydl:
-                ydl.download([url])
-                audio_file = re.sub('\.(.+)$', '.mp3', self.target_filename)
         #subprocess.call(['mplayer', audio_file])
         self.player.play(audio_file)
         #while self.player.state in ['playing', 'started']:
