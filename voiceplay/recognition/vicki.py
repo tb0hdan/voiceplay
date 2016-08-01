@@ -62,7 +62,8 @@ class Vicki(object):
 
             # command goes next
             with sr.Microphone() as source:
-                audio = self.rec.listen(source)
+                self.rec.adjust_for_ambient_noise(source)
+                audio = self.rec.listen(source, timeout=5)
             try:
                 result = self.rec.recognize_google(audio)
             except sr.UnknownValueError:
