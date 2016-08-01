@@ -246,7 +246,10 @@ class VickiPlayer(object):
 
     def play_from_parser(self, message):
         if message in ['stop', 'pause', 'next', 'quit', 'resume']:
-            if message in ['stop', 'next']:
+            if message == 'stop':
+                self.exit_task = True
+                self.player.stop()
+            elif message == 'next':
                 self.player.stop()
             elif message == 'pause':
                 self.player.pause()

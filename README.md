@@ -9,7 +9,7 @@ voiceplay (proof of concept) - Voice controlled console playback (OSX/Linux)
 
 ## Description
 **voiceplay** is a command-line program that listens to voice in background and gets
-activated by a wake word - **Vicki** (processing is done offline using [CMU PocketSphinx](http://cmusphinx.sourceforge.net/) and only
+activated by a wake word - **Vicki** (processing is done offline using [Kitt.ai snowboy](https://snowboy.kitt.ai/) and only
 after that records audio later transcribed by Google Voice Recognition (code can be modified to
 use any of engines supported by [SpeechRecognition](https://github.com/Uberi/speech_recognition) library). It requires the Python interpreter,
 version 2.7, 3.5 (so far) and is not platform specific. It should work on
@@ -24,9 +24,10 @@ redistribute it or use it however you like.
 
 
 Please make sure you have XCode installed prior to proceeding with other steps.
+Download and install VLC package from http://videolan.org
 
 ```
-brew install ffmpeg vlc portaudio cmu-pocketsphinx swig
+brew install ffmpeg portaudio cmu-pocketsphinx swig
 ```
 
 ### Linux (Debian/Ubuntu)
@@ -56,9 +57,6 @@ cp config.yaml.sample config.yaml
 
 Register at [http://www.last.fm/api](http://www.last.fm/api) and then
 paste Last.fm API key and secret into config.yaml
-
-Register at [https://developer.dailymotion.com](https://developer.dailymotion.com) and then
-paste DailyMotion key, secret, username, password into config.yaml
 
 Register at [https://developer.vimeo.com](https://developer.vimeo.com) and then
 paste client id(key), token and secret into config.yaml

@@ -24,7 +24,7 @@ class TrackSource(object):
         YDL download hook
         '''
         if response['status'] == 'finished':
-            logger.warning('Done downloading, now converting ...')
+            logger.debug('Done downloading, now converting ...')
             cls.target_filename = response['filename']
 
     @classmethod
@@ -38,7 +38,7 @@ class TrackSource(object):
                     'logger': logger,
                     'progress_hooks': [cls.download_hook]}
 
-        logger.warning('Using source url %s', url)
+        logger.debug('Using source url %s', url)
         with YoutubeDL(ydl_opts) as ydl:
             ydl.download([url])
             audio_file = re.sub('\.(.+)$', '.mp3', cls.target_filename)

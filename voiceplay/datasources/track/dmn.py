@@ -16,12 +16,6 @@ class DailyMotionSource(TrackSource):
         '''
         maxresults = 100
         client = Dailymotion()
-        client.set_grant_type('password',
-                              api_key=cls.cfg_data['dailymotion']['key'],
-                              api_secret=cls.cfg_data['dailymotion']['secret'],
-                              info={'username': cls.cfg_data['dailymotion']['username'],
-                                    'password': cls.cfg_data['dailymotion']['password']},
-                              scope=['userinfo'])
         results = []
         pages = trunc(max_results/maxresults)
         pages = pages if pages > 0 else 1
