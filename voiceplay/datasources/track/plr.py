@@ -21,6 +21,8 @@ class PleerSource(TrackSource):
 
     @classmethod
     def search(cls, query, max_results=25):
+        if isinstance(query, unicode):
+            query = query.encode('utf-8')
         term = quote(query)
         url = 'http://pleer.net/search?page=1&q=%s&sort_mode=0&sort_by=0&quality=all&onlydata=true' % quote(query)
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0',

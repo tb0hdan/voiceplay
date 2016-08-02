@@ -19,6 +19,8 @@ class VimeoSource(TrackSource):
         '''
         Run vimeo search
         '''
+        if isinstance(query, unicode):
+            query = query.encode('utf-8')
         client = vimeo.VimeoClient(token=cls.cfg_data['vimeo']['token'],
                                    key=cls.cfg_data['vimeo']['key'],
                                    secret=cls.cfg_data['vimeo']['secret'])

@@ -197,7 +197,7 @@ class VickiPlayer(object):
                 results = []
                 message = 'Source %r search failed with %r\n' % (source, exc)
                 message += 'Continuing using next source provider...'
-                logger.error(message)
+                logger.debug(message)
             tracks = [track for track in results if self.track_filter_fn(trackname, track)]
             if tracks:
                 url = source.__baseurl__ + tracks[0][1]
@@ -208,7 +208,7 @@ class VickiPlayer(object):
                 except Exception as exc:
                     message = 'Playback of source url %s failed with %r\n' % (url, exc)
                     message += 'Continuing using next source url...'
-                    logger.error(message)
+                    logger.debug(message)
 
     def play_local_library(self, message):
         fnames = []

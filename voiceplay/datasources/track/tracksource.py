@@ -31,6 +31,8 @@ class TrackSource(object):
     def download(cls, url):
         tmp = mkdtemp()
         template = os.path.join(tmp, '%(title)s-%(id)s.%(ext)s')
+        if isinstance(template, str):
+            template = template.decode('utf-8')
         ydl_opts = {'keepvideo': False, 'verbose': False, 'format': 'bestaudio/best',
                     'quiet': True, 'outtmpl': template,
                     'postprocessors': [{'preferredcodec': 'mp3', 'preferredquality': '5',
