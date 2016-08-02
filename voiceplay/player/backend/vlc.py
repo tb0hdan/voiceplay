@@ -6,9 +6,13 @@ class VLCPlayer(object):
     '''
     VLC player backend
     '''
-    def __init__(self):
+    def __init__(self, debug=False):
+        self.debug = debug
+        opts = ['--file-caching=10000']
+        if not self.debug:
+            opts.append('--quiet')
         self.exit = False
-        self.instance = Instance('--quiet', '--file-caching=10000')
+        self.instance = Instance(tuple(opts))
         self.player = None
         self.paused = False
 

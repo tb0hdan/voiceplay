@@ -1,7 +1,7 @@
 import argparse
 import threading
 import sys
-from voiceplay import __version__
+from voiceplay import __version__, __title__
 from voiceplay.recognition.vicki import Vicki
 from voiceplay.recognition.wakeword.receiver import ThreadedRequestHandler, WakeWordReceiver
 from voiceplay.cli.console.console import Console
@@ -11,7 +11,7 @@ class MyArgumentParser(object):
     Parse command line arguments
     '''
     def __init__(self):
-        self.parser = argparse.ArgumentParser(description='VoicePlay')
+        self.parser = argparse.ArgumentParser(description='VoicePlay', prog=__title__)
 
     def configure(self):
         '''
@@ -22,7 +22,10 @@ class MyArgumentParser(object):
                            help='Start console')
         group.add_argument('-cd', '--console-devel', action='store_true', default=False, dest='console_devel',
                            help='Start development console')
-        self.parser.add_argument('--version', action='version', version='%(prog)s ' +  __version__)
+        self.parser.add_argument('-V', '--version', action='version', version='%(prog)s ' +  __version__)
+        self.parser.add_argument('-v', '--verbose', action='store_true', default=False, 
+                                dest='debug',
+                                help='Enable debug mode')
 
     @staticmethod
     def ipython_console():
@@ -50,7 +53,7 @@ class MyArgumentParser(object):
         '''
         argv = sys.argv if not argv else argv
         result = self.parser.parse_args(argv[1:])
-        vicki = Vicki()
+        vicki = Vicki(debug=result.debug)
         if result.console:
             vicki.player.start()
             self.player_console(vicki)

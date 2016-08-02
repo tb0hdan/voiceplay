@@ -1,3 +1,4 @@
+import logging
 import speech_recognition as sr
 import sys
 if sys.version_info.major == 2:
@@ -18,13 +19,16 @@ class Vicki(object):
     Vicki main class
     '''
 
-    def __init__(self):
+    def __init__(self, debug=False):
+        self.debug = debug
         self.rec = sr.Recognizer()
         self.tts = TextToSpeech()
         self.queue = Queue()
         self.shutdown = False
+        if self.debug:
+            logger.setLevel(logging.DEBUG)
         logger.debug('Vicki init completed')
-        self.player = VickiPlayer(tts=self.tts)
+        self.player = VickiPlayer(tts=self.tts, debug=self.debug)
 
     def process_request(self, request):
         '''

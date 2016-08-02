@@ -1,8 +1,7 @@
 import logging
 import sys
 
+from voiceplay import __title__
 logging.basicConfig()
-logger = logging.getLogger("voiceplay")
+logger = logging.getLogger(__title__)
 logger.setLevel(logging.INFO)
-handler = logging.StreamHandler(sys.stderr)
-logger.addHandler(handler)

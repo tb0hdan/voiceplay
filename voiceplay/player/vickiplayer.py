@@ -35,13 +35,14 @@ class VickiPlayer(object):
                '9': {'name': 'nine', 'adjective': 'ninth'},
                '10': {'name': 'ten', 'adjective': 'tenth'}}
 
-    def __init__(self, tts=None, cfg_file='config.yaml'):
+    def __init__(self, tts=None, cfg_file='config.yaml', debug=False):
+        self.debug = debug
         self.tts = tts
         self.lfm = VoicePlayLastFm()
         self.parser = MyParser()
         self.queue = Queue()
         self.cfg_data = Config.cfg_data()
-        self.player = VLCPlayer()
+        self.player = VLCPlayer(debug=self.debug)
         self.shutdown_flag = False
         self.exit_task = False
 
