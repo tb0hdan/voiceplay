@@ -73,6 +73,13 @@ Start application:
 ./voiceplay.sh
 ```
 
+Start wake word listener:
+
+```
+./voiceplay.sh wakeword
+```
+
+
 Then say 'Vicki', application should reply 'Yes', proceed with command from the list below:
 
 
