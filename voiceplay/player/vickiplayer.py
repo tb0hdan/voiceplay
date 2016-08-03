@@ -250,7 +250,7 @@ class VickiPlayer(object):
             if message == 'stop':
                 self.exit_task = True
                 self.player.stop()
-            elif message == 'next':
+            elif message in ['next', 'max']:
                 self.player.stop()
             elif message == 'pause':
                 self.player.pause()
@@ -270,11 +270,18 @@ class VickiPlayer(object):
             if self.shutdown_flag:
                 break
             if not self.queue.empty():
+                message = self.queue.get()
+                # process playback control commands first
+                self.play_from_parser(message.lower())
+                # continue with commands
                 parsed = self.parser.parse(self.queue.get())
             else:
                 time.sleep(0.01)
                 continue
             self.exit_task = False
+            logger.debug('task_loop got from queue: %r', parsed)
+            if not parsed:
+                continue
             action_type, reg, action_phrase = self.parser.get_action_type(parsed)
             logger.debug('Action type: %s', action_type)
             if action_type == 'single_track_artist':

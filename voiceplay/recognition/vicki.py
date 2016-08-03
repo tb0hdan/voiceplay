@@ -64,10 +64,17 @@ class Vicki(object):
                 time.sleep(0.5)
                 continue
 
+            volume = self.player.player.player.audio_get_volume()
+            self.player.player.player.audio_set_volume(30)
+            logger.debug('recog start')
             # command goes next
-            with sr.Microphone() as source:
-                self.rec.adjust_for_ambient_noise(source)
-                audio = self.rec.listen(source, timeout=5)
+            try:
+                with sr.Microphone() as source:
+                    self.rec.adjust_for_ambient_noise(source)
+                    audio = self.rec.listen(source, timeout=5)
+            except sr.WaitTimeoutError:
+                self.player.player.player.audio_set_volume(volume)
+                continue
             try:
                 result = self.rec.recognize_google(audio)
             except sr.UnknownValueError:
@@ -80,7 +87,10 @@ class Vicki(object):
                 self.tts.say_put(msg)
                 logger.warning('{0}; {1}'.format(msg, e))
                 result = None
+            logger.debug('recog end')
+            self.player.player.player.audio_set_volume(volume)
             if result:
+                logger.debug('Putting %r into processing queue', repr(result))
                 self.queue.put(result)
 
     def background_executor(self):
