@@ -10,16 +10,13 @@ class MyParser(object):
                               {r'^play top (?:songs|tracks)(?:\sin\s(.+))?$': 'top_tracks_geo'},
                               {r'^play (.+)?my library$': 'shuffle_local_library'},
                               {r'^play (?:songs|tracks) from (.+) by (.+)$': 'artist_album'},
-                              {r'^play (.+) by (.+)$': 'single_track_artist'}],
+                              {r'^play (.+) bu?(?:t|y) (.+)$': 'single_track_artist'}],
                      'shuffle': [{r'^shuffle (.+)?my library$': 'shuffle_local_library'}],
                      'shutdown': [{'shutdown': 'shutdown_action'},
                                   {'shut down': 'shutdown_action'}],
                      'what': [{r'^what are top albums (?:by|for) (.+)$': 'top_albums_artist'},
                               {r'^what are top (?:songs|tracks) (?:by|for) (.+)$': 'top_tracks_artist'}]
                     }
-
-    def __init__(self, wake_word='vicki'):
-        self.wake_word = wake_word
 
     def parse(self, message):
         '''

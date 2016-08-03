@@ -246,17 +246,23 @@ class VickiPlayer(object):
             self.play_full_track(track)
 
     def play_from_parser(self, message):
-        if message in ['stop', 'pause', 'next', 'quit', 'resume']:
-            if message == 'stop':
+        stop_set = ['stop', 'stock', 'top']
+        next_set = ['next', 'max', 'maxed', 'text']
+        pause_set = ['pause']
+        resume_set = ['resume']
+        quit_set = ['quit']
+        all_set = stop_set + next_set + pause_set + resume_set + quit_set
+        if message in all_set:
+            if message in stop_set:
                 self.exit_task = True
                 self.player.stop()
-            elif message in ['next', 'max']:
+            elif message in next_set:
                 self.player.stop()
-            elif message == 'pause':
+            elif message in pause_set:
                 self.player.pause()
-            elif message == 'resume':
+            elif message in resume_set:
                 self.player.resume()
-            elif message == 'quit':
+            elif message in quit_set:
                 self.exit_task = True
                 self.player.shutdown()
                 self.queue.put('quit')
