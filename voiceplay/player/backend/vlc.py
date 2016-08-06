@@ -16,6 +16,14 @@ class VLCPlayer(object):
         self.player = None
         self.paused = False
 
+    @property
+    def volume(self):
+        return self.player.audio_get_volume()
+
+    @volume.setter
+    def volume(self, value):
+        return self.player.audio_set_volume(value)
+
     def start(self):
         self.player = self.instance.media_player_new()
 

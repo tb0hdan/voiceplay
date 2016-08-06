@@ -64,7 +64,7 @@ class Vicki(object):
                 time.sleep(0.5)
                 continue
 
-            volume = self.player.player.player.audio_get_volume()
+            volume = self.player.player.volume
             self.player.player.player.audio_set_volume(30)
             logger.debug('recog start')
             # command goes next
@@ -88,7 +88,7 @@ class Vicki(object):
                 logger.warning('{0}; {1}'.format(msg, e))
                 result = None
             logger.debug('recog end')
-            self.player.player.player.audio_set_volume(volume)
+            self.player.player.volume = volume
             if result:
                 logger.debug('Putting %r into processing queue', repr(result))
                 self.queue.put(result)
