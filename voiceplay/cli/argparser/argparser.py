@@ -11,7 +11,7 @@ class MyArgumentParser(object):
     Parse command line arguments
     '''
     def __init__(self):
-        self.parser = argparse.ArgumentParser(description='VoicePlay', prog=__title__)
+        self.parser = argparse.ArgumentParser(description=__title__, prog=__title__)
 
     def configure(self):
         '''

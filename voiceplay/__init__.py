@@ -1,6 +1,6 @@
 __title__ = 'voiceplay'
-__version__ = '0.1.5'
-__build__ = 0xe
+__version__ = '0.1.6'
+__build__ = 0x10
 __author__ = 'Bohdan Turkynewych'
 __license__ = 'UNLICENSE'
 __copyright__ = 'public domain'

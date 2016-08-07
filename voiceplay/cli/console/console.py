@@ -1,15 +1,18 @@
 from __future__ import print_function
+
 import colorama
 import readline
 import sys
 import time
 
+from voiceplay import __title__
+
 class Console(object):
     '''
     Console mode
     '''
-    def __init__(self, banner='Welcome to voiceplay console!'):
-        self.name = 'voiceplay'
+    def __init__(self, banner='Welcome to {0} console!'.format(__title__)):
+        self.name = __title__
         self.default_prompt = '%s [%s]%s '
         self.exit = False
         self.banner = banner

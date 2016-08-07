@@ -6,12 +6,14 @@ elif sys.version_info.major == 3:
     from queue import Queue
 
 import time
+from voiceplay import __title__
+
 
 class TextToSpeech(object):
     '''
     MAC/Linux TTS
     '''
-    def __init__(self, name='voiceplay'):
+    def __init__(self, name=__title__):
         system = platform.system()
         if system == 'Darwin':
             try:
