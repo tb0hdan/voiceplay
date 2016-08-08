@@ -41,10 +41,14 @@ class VickiPlayer(object):
         self.lfm = VoicePlayLastFm()
         self.parser = MyParser()
         self.queue = Queue()
+        self.p_queue = Queue()
         self.cfg_data = Config.cfg_data()
         self.player = VLCPlayer(debug=self.debug)
         self.shutdown_flag = False
         self.exit_task = False
+
+    def put(self, message):
+        self.queue.put(message)
 
     @staticmethod
     def trackfilter(search_term, search_result):
@@ -248,9 +252,9 @@ class VickiPlayer(object):
     def play_from_parser(self, message):
         stop_set = ['stop', 'stock', 'top']
         next_set = ['next', 'max', 'maxed', 'text']
-        pause_set = ['pause']
+        pause_set = ['pause', 'boss']
         resume_set = ['resume']
-        quit_set = ['quit']
+        quit_set = ['quit', 'shutdown']
         all_set = stop_set + next_set + pause_set + resume_set + quit_set
         if message in all_set:
             if message in stop_set:
@@ -263,31 +267,37 @@ class VickiPlayer(object):
             elif message in resume_set:
                 self.player.resume()
             elif message in quit_set:
+                self.shutdown_flag = True
                 self.exit_task = True
                 self.player.shutdown()
-                self.queue.put('quit')
         else:
             self.exit_task = True
-            self.queue.put(message)
+            if message.startswith('play'):
+                self.player.stop()
+            self.p_queue.put(message)
         return None, False
 
-    def task_loop(self):
-        while True:
-            if self.shutdown_flag:
-                break
+    def cmd_loop(self):
+        while not self.shutdown_flag:
             if not self.queue.empty():
                 message = self.queue.get()
-                # process playback control commands first
-                self.play_from_parser(message.lower())
-                # continue with commands
-                parsed = self.parser.parse(self.queue.get())
             else:
                 time.sleep(0.01)
                 continue
-            self.exit_task = False
+            self.play_from_parser(message)
+        logger.debug('Vickiplayer.cmd_loop exit')
+
+    def task_loop(self):
+        while not self.shutdown_flag:
+            if not self.p_queue.empty():
+                parsed = self.parser.parse(self.p_queue.get())
+            else:
+                time.sleep(0.01)
+                continue
             logger.debug('task_loop got from queue: %r', parsed)
             if not parsed:
                 continue
+            self.exit_task = False
             action_type, reg, action_phrase = self.parser.get_action_type(parsed)
             logger.debug('Action type: %s', action_type)
             if action_type == 'single_track_artist':
@@ -330,19 +340,22 @@ class VickiPlayer(object):
                 album, artist = re.match(reg, action_phrase).groups()
                 self.play_artist_album(artist, album)
             else:
-                msg = 'Vicki thinks you said ' + message
+                msg = 'I think you said ' + message
                 self.tts.say_put(msg)
                 logger.warning(msg)
+        logger.debug('VickiPlayer.task_loop exit')
 
     def start(self):
         # non-blocking start
         self.player.start()
         self.task_thread = threading.Thread(name='player_task_pool', target=self.task_loop)
-        self.task_thread.setDaemon = True
         self.task_thread.start()
+        self.cmd_thread = threading.Thread(name='player_cmd_pool', target=self.cmd_loop)
+        self.cmd_thread.start()
 
     def shutdown(self):
         self.shutdown_flag = True
         self.exit_task = True
         self.player.shutdown()
         self.task_thread.join()
+        self.cmd_thread.join()

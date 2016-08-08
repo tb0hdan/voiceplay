@@ -1,11 +1,5 @@
 import logging
 import speech_recognition as sr
-import sys
-if sys.version_info.major == 2:
-    from Queue import Queue
-elif sys.version_info.major == 3:
-    from queue import Queue
-
 import threading
 import time
 
@@ -23,25 +17,15 @@ class Vicki(object):
         self.debug = debug
         self.rec = sr.Recognizer()
         self.tts = TextToSpeech()
-        self.queue = Queue()
         self.shutdown = False
         if self.debug:
             logger.setLevel(logging.DEBUG)
         logger.debug('Vicki init completed')
         self.player = VickiPlayer(tts=self.tts, debug=self.debug)
-
-    def process_request(self, request):
-        '''
-        process request
-        '''
-        try:
-            self.player.play_from_parser(request)
-        except Exception as exc:
-            logger.error(exc)
-            self.tts.say_put('Vicki could not process your request')
+        self.wakeword_receiver = None
 
     def wakeword_callback(self, message):
-        print (message)
+        logger.debug(message)
         self.wake_up = True
 
     def background_listener(self):
@@ -52,16 +36,14 @@ class Vicki(object):
         time.sleep(3)
         logger.warning(msg)
         self.wake_up = False
-        while True:
-            if self.shutdown:
-                break
+        while not self.shutdown:
 
             if self.wake_up:
                 logger.warning('Wake word!')
                 self.tts.say_put('Yes')
                 self.wake_up = False
             else:
-                time.sleep(0.5)
+                time.sleep(0.01)
                 continue
 
             volume = self.player.player.volume
@@ -91,48 +73,29 @@ class Vicki(object):
             self.player.player.volume = volume
             if result:
                 logger.debug('Putting %r into processing queue', repr(result))
-                self.queue.put(result)
+                # allow commands to be processed by player instance first
+                self.player.put(result)
+                # process local cmd
+                if result.lower() in ['shutdown']:
+                    self.stop()
+        logger.debug('Vicki.Listener exit')
 
-    def background_executor(self):
-        while True:
-            if self.shutdown:
-                break
-            if not self.queue.empty():
-                message = self.queue.get()
-                if message == 'shutdown':
-                    self.shutdown = True
-                    self.player.shutdown()
-                else:
-                    self.process_request(message)
-            time.sleep(1)
+    def stop(self):
+        self.shutdown = True  # for threads
+        self.tts.stop()
+        self.player.shutdown()
+        if self.wakeword_receiver:
+            self.wakeword_receiver.shutdown()
 
-    def background_speaker(self):
-        self.tts.say_poll()
-
-    def run_forever_new(self):
+    def run_forever_new(self, wakeword_receiver):
         '''
         Main loop
         '''
-        listener = threading.Thread(name='BackgroundListener', target=self.background_listener)
-        listener.setDaemon(True)
-
-        player = threading.Thread(name='BackgroundPlayer', target=self.background_executor)
-        player.setDaemon(True)
-
-        speaker = threading.Thread(name='BackgroundSpeaker', target=self.background_speaker)
-        speaker.setDaemon(True)
-
-        listener.start()
-        player.start()
-        speaker.start()
-        while True:
-            if self.shutdown:
-                break
+        self.wakeword_receiver = wakeword_receiver
+        self.listener = threading.Thread(name='BackgroundListener', target=self.background_listener)
+        self.listener.start()
+        while not self.shutdown:
             try:
-                time.sleep(1)
+                time.sleep(0.5)
             except KeyboardInterrupt:
-                self.shutdown = True  # for threads
-                listener.join()
-                player.join()
-                speaker.join()
-                break
+                self.stop()

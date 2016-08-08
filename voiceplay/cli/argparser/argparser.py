@@ -62,11 +62,11 @@ class MyArgumentParser(object):
             self.ipython_console()
         else:
             vicki.player.start()
+            vicki.tts.start()
             ThreadedRequestHandler.callback = vicki.wakeword_callback
             address = ('127.0.0.1', 63455)
             server = WakeWordReceiver(address,
                                 ThreadedRequestHandler)
             t = threading.Thread(target=server.serve_forever)
-            t.setDaemon(True)
             t.start()
-            vicki.run_forever_new()
+            vicki.run_forever_new(server)

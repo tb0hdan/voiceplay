@@ -5,15 +5,18 @@ if sys.version_info.major == 2:
 elif sys.version_info.major == 3:
     from queue import Queue
 
+import threading
 import time
-from voiceplay import __title__
 
+from voiceplay import __title__
+from voiceplay.logger import logger
 
 class TextToSpeech(object):
     '''
     MAC/Linux TTS
     '''
     def __init__(self, name=__title__):
+        self.shutdown = False
         system = platform.system()
         if system == 'Darwin':
             try:
@@ -53,12 +56,21 @@ class TextToSpeech(object):
         '''
         pass
 
-    def say_poll(self):
-        while True:
-            if self.queue.empty():
-                time.sleep(1)
-            else:
+    def poll_loop(self):
+        while not self.shutdown:
+            if not self.queue.empty():
                 self.say(self.queue.get())
+            else:
+                time.sleep(0.01)
+        logger.debug('TTS poll_loop exit')
+
+    def start(self):
+        self.th = threading.Thread(name='TTS', target=self.poll_loop)
+        self.th.start()
+
+    def stop(self):
+        self.shutdown = True
+        self.th.join()
 
     def say_put(self, message):
         self.queue.put(message)
