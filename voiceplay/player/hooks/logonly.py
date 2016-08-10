@@ -7,26 +7,27 @@ class LogOnlyPlayerHook(BasePlayerHook):
     base hook
     '''
     @classmethod
-    def on_playback_start(cls, trackname):
-        logger.debug('{0}.{1}: {2}'.format(cls.__name__, inspect.currentframe().f_code.co_name,
-                                           trackname))
+    def debugself(cls, *args, **kwargs):
+        name = inspect.stack()[1][3]
+        logger.debug('{0}.{1}: args: {2!r} kwargs: {3!r}'.format(cls.__name__, name,
+                                           args, kwargs))
 
     @classmethod
-    def on_playback_pause(cls, trackname):
-        logger.debug('{0}.{1}: {2}'.format(cls.__name__, inspect.currentframe().f_code.co_name,
-                                           trackname))
+    def on_playback_start(cls, *args, **kwargs)
+         cls.debugself(*args, **kwargs)
 
     @classmethod
-    def on_playback_resume(cls, trackname):
-        logger.debug('{0}.{1}: {2}'.format(cls.__name__, inspect.currentframe().f_code.co_name,
-                                           trackname))
+    def on_playback_pause(cls, *args, **kwargs):
+         cls.debugself(*args, **kwargs)
 
     @classmethod
-    def on_playback_stop(cls, trackname):
-        logger.debug('{0}.{1}: {2}'.format(cls.__name__, inspect.currentframe().f_code.co_name,
-                                           trackname))
+    def on_playback_resume(cls, *args, **kwargs):
+         cls.debugself(*args, **kwargs)
 
     @classmethod
-    def on_playback_error(cls, trackname):
-        logger.debug('{0}.{1}: {2}'.format(cls.__name__, inspect.currentframe().f_code.co_name,
-                                           trackname))
+    def on_playback_stop(cls, *args, **kwargs):
+         cls.debugself(*args, **kwargs)
+
+    @classmethod
+    def on_playback_error(cls, *args, **kwargs):
+         cls.debugself(*args, **kwargs)

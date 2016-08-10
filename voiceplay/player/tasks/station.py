@@ -1,4 +1,9 @@
 class StationTask(BasePlayerTask):
+
+    __group__ = 'play'
+    __regexp__ = 
+    __actiontype__ = 
+
     @classmethod
     def play_station(cls, station):
         '''

@@ -1,4 +1,9 @@
 class SingleArtistTask(BasePlayerTask):
+
+    __group__ = 'play'
+    __regexp__ = 
+    __actiontype__ = 
+
     @classmethod
     def run_shuffle_artist(cls, artist):
         '''

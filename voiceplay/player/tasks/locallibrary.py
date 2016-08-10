@@ -1,4 +1,9 @@
 class LocalLibraryTask(BasePlayerTask):
+
+    __group__ = ['play', 'shuffle']
+    __regexp__ = 
+    __actiontype__ = 
+
     @classmethod
     def play_local_library(cls, message):
         fnames = []

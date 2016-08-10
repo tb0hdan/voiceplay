@@ -1,4 +1,9 @@
 class GeoTask(BasePlayerTask):
+
+    __group__ = 'play'
+    __regexp__ = 
+    __actiontype__ = 
+
     @classmethod
     def run_top_tracks_geo(cls, country):
         '''

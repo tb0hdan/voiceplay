@@ -1,4 +1,9 @@
 class AlbumTask(BasePlayerTask):
+
+    __group__ = ['play']
+    __regexp__ = 
+    __actiontype__ = 
+
     @classmethod
     def play_artist_album(cls, artist, album):
         '''

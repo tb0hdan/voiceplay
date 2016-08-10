@@ -1,4 +1,9 @@
 class TrackByNumber(BasePlayerTask):
+
+    __group__ = 'play'
+    __regexp__ = 
+    __actiontype__ = 
+
     numbers = {'1': {'name': 'one', 'adjective': 'first'},
                '2': {'name': 'two', 'adjective': 'second'},
                '3': {'name': 'three', 'adjective': 'third'},
