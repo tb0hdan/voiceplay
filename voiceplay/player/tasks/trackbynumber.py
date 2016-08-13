@@ -1,8 +1,13 @@
+import re
+from .basetask import BasePlayerTask
+
+
 class TrackByNumber(BasePlayerTask):
 
     __group__ = 'play'
-    __regexp__ = 
-    __actiontype__ = 
+    __regexp__ = '^play top (?:songs|tracks) by (.+)$'
+    __priority__ = 30
+    __actiontype__ = 'top_tracks_artist'
 
     numbers = {'1': {'name': 'one', 'adjective': 'first'},
                '2': {'name': 'two', 'adjective': 'second'},
@@ -102,5 +107,7 @@ class TrackByNumber(BasePlayerTask):
             track = 'unknown'
         return artist, track
 
-
-
+    @classmethod
+    def process(cls, message):
+        artist = re.match(cls.__regexp__, message).groups()[0]
+        cls.run_play_cmd(artist)

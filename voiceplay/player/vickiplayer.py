@@ -13,8 +13,8 @@ import threading
 import time
 
 from voiceplay.config import Config
-from voiceplay.datasources.lastfm import VoicePlayLastFm
-from voiceplay.datasources.track.basesource import TrackSource
+#from voiceplay.datasources.lastfm import VoicePlayLastFm
+#from voiceplay.datasources.track.basesource import TrackSource
 from voiceplay.cmdprocessor.parser import MyParser
 from voiceplay.logger import logger
 from voiceplay.utils.loader import PluginLoader
@@ -29,7 +29,7 @@ class VickiPlayer(object):
     def __init__(self, tts=None, cfg_file='config.yaml', debug=False):
         self.debug = debug
         self.tts = tts
-        self.lfm = VoicePlayLastFm()
+        #self.lfm = VoicePlayLastFm()
         self.parser = MyParser()
         self.queue = Queue()
         self.p_queue = Queue()
@@ -37,6 +37,9 @@ class VickiPlayer(object):
         self.player = VLCPlayer(debug=self.debug)
         self.shutdown_flag = False
         self.exit_task = False
+        self.player_tasks = sorted(PluginLoader().find_classes('voiceplay.player.tasks', BasePlayerTask),
+                         cmp=lambda x, y: cmp(x.__priority__, y.__priority__))
+
 
     def put(self, message):
         self.queue.put(message)
@@ -90,6 +93,12 @@ class VickiPlayer(object):
             if not parsed:
                 continue
             self.exit_task = False
+            for task in self.player_tasks:
+                if re.match(task.__regexp__, parsed) is not None:
+                    task.player = self.player
+                    task.process(parsed)
+                    break
+            '''
             action_type, reg, action_phrase = self.parser.get_action_type(parsed)
             logger.debug('Action type: %s', action_type)
             if action_type == 'single_track_artist':
@@ -135,6 +144,7 @@ class VickiPlayer(object):
                 msg = 'I think you said ' + message
                 self.tts.say_put(msg)
                 logger.warning(msg)
+            '''
         logger.debug('VickiPlayer.task_loop exit')
 
     def start(self):

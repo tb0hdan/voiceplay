@@ -10,7 +10,7 @@ elif sys.version_info.major == 3:
 
 from bs4 import BeautifulSoup
 from tempfile import mkstemp
-from .tracksource import TrackSource
+from .basesource import TrackSource
 
 class PleerSource(TrackSource):
     '''

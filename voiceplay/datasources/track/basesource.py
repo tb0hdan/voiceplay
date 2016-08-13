@@ -35,7 +35,7 @@ class TrackSource(object):
             template = template.decode('utf-8')
         ydl_opts = {'keepvideo': False, 'verbose': False, 'format': 'bestaudio/best',
                     'quiet': True, 'outtmpl': template,
-                    'postprocessors': [{'preferredcodec': 'mp3', 'preferredquality': '5',
+                    'postprocessors': [{'preferredcodec': 'mp3', 'preferredquality': '0',
                                         'nopostoverwrites': True, 'key': 'FFmpegExtractAudio'}],
                     'logger': logger,
                     'progress_hooks': [cls.download_hook]}

@@ -3,7 +3,7 @@
 from apiclient.discovery import build
 from apiclient.errors import HttpError
 
-from .tracksource import TrackSource
+from .basesource import TrackSource
 
 class YoutubeSource(TrackSource):
     __baseurl__ = 'https://youtu.be/'

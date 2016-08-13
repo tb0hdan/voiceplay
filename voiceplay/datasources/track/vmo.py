@@ -8,7 +8,7 @@ elif sys.version_info.major == 3:
     from urllib.parse import quote
 
 import vimeo
-from .tracksource import TrackSource
+from .basesource import TrackSource
 
 class VimeoSource(TrackSource):
     __baseurl__ = 'https://vimeo.com/'

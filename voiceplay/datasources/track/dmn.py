@@ -3,7 +3,7 @@
 from dailymotion import Dailymotion
 from math import trunc
 
-from .tracksource import TrackSource
+from .basesource import TrackSource
 
 class DailyMotionSource(TrackSource):
     __baseurl__ = 'http://www.dailymotion.com/video/'

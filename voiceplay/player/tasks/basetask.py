@@ -2,11 +2,16 @@ import re
 from voiceplay.datasources.track.basesource import TrackSource
 from voiceplay.logger import logger
 from voiceplay.utils.loader import PluginLoader
+from voiceplay.datasources.lastfm import VoicePlayLastFm
+
 
 class BasePlayerTask(object):
     '''
     base player task
     '''
+    lfm = VoicePlayLastFm()
+    exit_task = False
+
     @staticmethod
     def trackfilter(search_term, search_result):
         track_is_ok = True
@@ -36,10 +41,12 @@ class BasePlayerTask(object):
         '''
         Play full track
         '''
+        print (trackname)
         vid = None
         baseurl = None
         sources = sorted(PluginLoader().find_classes('voiceplay.datasources.track', TrackSource),
                          cmp=lambda x, y: cmp(x.__priority__, y.__priority__))
+        #print sources
         for source in sources:
             try:
                 results = source.search(trackname)
@@ -47,7 +54,7 @@ class BasePlayerTask(object):
                 results = []
                 message = 'Source %r search failed with %r\n' % (source, exc)
                 message += 'Continuing using next source provider...'
-                logger.debug(message)
+                logger.error(message)
             tracks = [track for track in results if cls.track_filter_fn(trackname, track)]
             if tracks:
                 url = source.__baseurl__ + tracks[0][1]
@@ -58,7 +65,7 @@ class BasePlayerTask(object):
                 except Exception as exc:
                     message = 'Playback of source url %s failed with %r\n' % (url, exc)
                     message += 'Continuing using next source url...'
-                    logger.debug(message)
-    @classmethod
-    def player(cls, *args, **kwargs):
-        raise NotImplementedError('{0}.player method has to be overridden'.format(cls.__name__))
+                    logger.error(message)
+    #@classmethod
+    #def player(cls, *args, **kwargs):
+    #    raise NotImplementedError('{0}.player method has to be overridden'.format(cls.__name__))

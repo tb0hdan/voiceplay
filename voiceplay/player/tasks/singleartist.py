@@ -1,8 +1,15 @@
+import random
+random.seed()
+import re
+from .basetask import BasePlayerTask
+
+
 class SingleArtistTask(BasePlayerTask):
 
-    __group__ = 'play'
-    __regexp__ = 
-    __actiontype__ = 
+    __group__ = ['play']
+    __regexp__ = '^play some (?:music|tracks?|songs?) by (.+)$'
+    __priority__ = 20
+    __actiontype__ = 'shuffle_artist'
 
     @classmethod
     def run_shuffle_artist(cls, artist):
@@ -16,3 +23,9 @@ class SingleArtistTask(BasePlayerTask):
                 if cls.exit_task:
                     break
                 cls.play_full_track(track)
+
+    @classmethod
+    def process(cls, message):
+        artist = re.match(cls.__regexp__, message).groups()[0]
+        #self.tts.say_put('Shuffling %s' % artist)
+        cls.run_shuffle_artist(artist)

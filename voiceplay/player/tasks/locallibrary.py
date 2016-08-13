@@ -1,8 +1,13 @@
+import re
+from .basetask import BasePlayerTask
+
+
 class LocalLibraryTask(BasePlayerTask):
 
     __group__ = ['play', 'shuffle']
-    __regexp__ = 
-    __actiontype__ = 
+    __regexp__ = '^play (.+)?my library$'
+    __priority__ = 50
+    __actiontype__ = 'shuffle_local_library'
 
     @classmethod
     def play_local_library(cls, message):
@@ -17,3 +22,9 @@ class LocalLibraryTask(BasePlayerTask):
             if cls.exit_task:
                 break
             cls.player.play(fname)
+
+    @classmethod
+    def process(cls, message):
+        msg = re.match(reg, action_phrase).groups()[0]
+        logger.warning(msg)
+        cls.play_local_library(msg)
