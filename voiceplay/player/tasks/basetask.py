@@ -10,7 +10,6 @@ class BasePlayerTask(object):
     base player task
     '''
     lfm = VoicePlayLastFm()
-    exit_task = False
 
     @staticmethod
     def trackfilter(search_term, search_result):
@@ -41,12 +40,11 @@ class BasePlayerTask(object):
         '''
         Play full track
         '''
-        print (trackname)
         vid = None
         baseurl = None
         sources = sorted(PluginLoader().find_classes('voiceplay.datasources.track', TrackSource),
                          cmp=lambda x, y: cmp(x.__priority__, y.__priority__))
-        #print sources
+
         for source in sources:
             try:
                 results = source.search(trackname)
@@ -66,6 +64,3 @@ class BasePlayerTask(object):
                     message = 'Playback of source url %s failed with %r\n' % (url, exc)
                     message += 'Continuing using next source url...'
                     logger.error(message)
-    #@classmethod
-    #def player(cls, *args, **kwargs):
-    #    raise NotImplementedError('{0}.player method has to be overridden'.format(cls.__name__))

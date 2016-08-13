@@ -30,5 +30,5 @@ class GeoTask(BasePlayerTask):
             msg = 'Playing top track for country %s' % country
         else:
             msg = 'Playing global top tracks'
-        #cls.tts.say_put(msg)
+        cls.tts.say_put(msg)
         cls.run_top_tracks_geo(country)

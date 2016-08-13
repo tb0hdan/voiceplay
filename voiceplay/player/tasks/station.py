@@ -24,5 +24,5 @@ class StationTask(BasePlayerTask):
     @classmethod
     def process(cls, message):
         station = re.match(cls.__regexp__, message).groups()[0]
-        #self.tts.say_put('Playing %s station' % station)
+        cls.tts.say_put('Playing %s station' % station)
         cls.play_station(station)

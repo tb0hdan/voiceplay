@@ -27,5 +27,5 @@ class SingleArtistTask(BasePlayerTask):
     @classmethod
     def process(cls, message):
         artist = re.match(cls.__regexp__, message).groups()[0]
-        #self.tts.say_put('Shuffling %s' % artist)
+        cls.tts.say_put('Shuffling %s' % artist)
         cls.run_shuffle_artist(artist)

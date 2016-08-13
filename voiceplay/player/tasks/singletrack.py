@@ -13,4 +13,3 @@ class SingleTrackArtistTask(BasePlayerTask):
     def process(cls, message):
         track, artist = re.match(cls.__regexp__, message).groups()
         cls.play_full_track('%s - %s' % (artist, track))
-

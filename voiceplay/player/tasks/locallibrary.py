@@ -27,4 +27,5 @@ class LocalLibraryTask(BasePlayerTask):
     def process(cls, message):
         msg = re.match(reg, action_phrase).groups()[0]
         logger.warning(msg)
+        cls.tts.say_put('Shuffling local library')
         cls.play_local_library(msg)
