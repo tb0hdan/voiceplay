@@ -20,6 +20,7 @@ class SingleArtistTask(BasePlayerTask):
             tracks = cls.lfm.get_top_tracks(cls.lfm.get_corrected_artist(artist))
             random.shuffle(tracks)
             for track in tracks:
+                print cls.exit_task
                 if cls.exit_task:
                     break
                 cls.play_full_track(track)
