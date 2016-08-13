@@ -59,7 +59,7 @@ class BasePlayerTask(object):
                 url = source.__baseurl__ + tracks[0][1]
                 try:
                     filename = source.download(url)
-                    if cls.player.play(filename):
+                    if cls.player.play(filename, trackname):
                         break
                 except Exception as exc:
                     message = 'Playback of source url %s failed with %r\n' % (url, exc)

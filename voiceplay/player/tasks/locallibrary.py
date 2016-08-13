@@ -1,11 +1,15 @@
+import os
+import random
+random.seed()
 import re
+from voiceplay.logger import logger
 from .basetask import BasePlayerTask
 
 
 class LocalLibraryTask(BasePlayerTask):
 
     __group__ = ['play', 'shuffle']
-    __regexp__ = '^play (.+)?my library$'
+    __regexp__ = ['^play (.+)?my library$', '^shuffle (.+)?my library$']
     __priority__ = 50
     __actiontype__ = 'shuffle_local_library'
 
@@ -19,13 +23,13 @@ class LocalLibraryTask(BasePlayerTask):
                     fnames.append(os.path.join(root, name))
         random.shuffle(fnames)
         for fname in fnames:
-            if cls.exit_task:
+            if cls.get_exit():
                 break
-            cls.player.play(fname)
+            cls.player.play(fname, fname.rstrip('.mp3'))
 
     @classmethod
-    def process(cls, message):
-        msg = re.match(reg, action_phrase).groups()[0]
+    def process(cls, regexp, message):
+        msg = re.match(regexp, message).groups()[0]
         logger.warning(msg)
         cls.tts.say_put('Shuffling local library')
         cls.play_local_library(msg)

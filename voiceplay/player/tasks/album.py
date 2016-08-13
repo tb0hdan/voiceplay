@@ -4,7 +4,7 @@ from .basetask import BasePlayerTask
 class AlbumTask(BasePlayerTask):
 
     __group__ = ['play']
-    __regexp__ = '^play (?:songs|tracks) from (.+) by (.+)$'
+    __regexp__ = ['^play (?:songs|tracks) from (.+) by (.+)$']
     __priority__ = 60
     __actiontype__ = 'artist_album'
 
@@ -16,11 +16,11 @@ class AlbumTask(BasePlayerTask):
         tracks = cls.lfm.get_tracks_for_album(artist, album)
         random.shuffle(tracks)
         for track in tracks:
-            if cls.exit_task:
+            if cls.get_exit():
                 break
             cls.play_full_track(track)
 
     @classmethod
-    def process(cls, message):
-        album, artist = re.match(cls.__regexp__, message).groups()
+    def process(cls, regexp, message):
+        album, artist = re.match(regexp, message).groups()
         cls.play_artist_album(artist, album)

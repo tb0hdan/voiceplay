@@ -7,7 +7,7 @@ from .basetask import BasePlayerTask
 class SingleArtistTask(BasePlayerTask):
 
     __group__ = ['play']
-    __regexp__ = '^play some (?:music|tracks?|songs?) by (.+)$'
+    __regexp__ = ['^play some (?:music|tracks?|songs?) by (.+)$']
     __priority__ = 20
     __actiontype__ = 'shuffle_artist'
 
@@ -20,13 +20,12 @@ class SingleArtistTask(BasePlayerTask):
             tracks = cls.lfm.get_top_tracks(cls.lfm.get_corrected_artist(artist))
             random.shuffle(tracks)
             for track in tracks:
-                print cls.exit_task
-                if cls.exit_task:
+                if cls.get_exit():
                     break
                 cls.play_full_track(track)
 
     @classmethod
-    def process(cls, message):
-        artist = re.match(cls.__regexp__, message).groups()[0]
+    def process(cls, regexp, message):
+        artist = re.match(regexp, message).groups()[0]
         cls.tts.say_put('Shuffling %s' % artist)
         cls.run_shuffle_artist(artist)

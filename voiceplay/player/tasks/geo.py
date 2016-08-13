@@ -1,10 +1,12 @@
+import random
+random.seed()
 import re
 from .basetask import BasePlayerTask
 
 class GeoTask(BasePlayerTask):
 
     __group__ = ['play']
-    __regexp__ = '^play top (?:songs|tracks)(?:\sin\s(.+))?$'
+    __regexp__ = ['^play top (?:songs|tracks)(?:\sin\s(.+))?$']
     __priority__ = 40
     __actiontype__ = 'top_tracks_geo'
 
@@ -19,13 +21,13 @@ class GeoTask(BasePlayerTask):
             tracks = cls.lfm.get_top_tracks_global()
         random.shuffle(tracks)
         for track in tracks:
-            if cls.exit_task:
+            if cls.get_exit():
                 break
             cls.play_full_track(track)
 
     @classmethod
-    def process(cls, message):
-        country = re.match(cls.__regexp__, action_phrase).groups()[0]
+    def process(cls, regexp, message):
+        country = re.match(regexp, message).groups()[0]
         if country:
             msg = 'Playing top track for country %s' % country
         else:

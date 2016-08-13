@@ -1,7 +1,5 @@
 ''' VickiPlayer module '''
 import os
-import random
-random.seed()
 import re
 import sys
 if sys.version_info.major == 2:
@@ -13,7 +11,6 @@ import threading
 import time
 
 from voiceplay.config import Config
-from voiceplay.cmdprocessor.parser import MyParser
 from voiceplay.logger import logger
 from voiceplay.utils.loader import PluginLoader
 from .backend.vlc import VLCPlayer
@@ -27,7 +24,6 @@ class VickiPlayer(object):
     def __init__(self, tts=None, cfg_file='config.yaml', debug=False):
         self.debug = debug
         self.tts = tts
-        self.parser = MyParser()
         self.queue = Queue()
         self.p_queue = Queue()
         self.cfg_data = Config.cfg_data()
@@ -36,10 +32,36 @@ class VickiPlayer(object):
         self.exit_task = False
         self.player_tasks = sorted(PluginLoader().find_classes('voiceplay.player.tasks', BasePlayerTask),
                          cmp=lambda x, y: cmp(x.__priority__, y.__priority__))
+        self.known_actions = self.get_actions(self.player_tasks)
 
+    @staticmethod
+    def get_actions(tasks):
+        actions = []
+        for task in tasks:
+            for action in task.__group__:
+                if not action in actions:
+                    actions.append(action)
+        return actions
+
+    def get_exit(self):
+        return self.exit_task
 
     def put(self, message):
         self.queue.put(message)
+
+    def parse(self, message):
+        '''
+        Parse incoming message
+        '''
+        start = False
+        action_phrase = []
+        for word in message.split(' '):
+            if word in self.known_actions:
+                start = True
+            if start and word:
+                action_phrase.append(word)
+        response = ' '.join(action_phrase)
+        return response
 
     def play_from_parser(self, message):
         stop_set = ['stop', 'stock', 'top']
@@ -82,7 +104,7 @@ class VickiPlayer(object):
     def task_loop(self):
         while not self.shutdown_flag:
             if not self.p_queue.empty():
-                parsed = self.parser.parse(self.p_queue.get())
+                parsed = self.parse(self.p_queue.get())
             else:
                 time.sleep(0.01)
                 continue
@@ -92,13 +114,14 @@ class VickiPlayer(object):
             self.exit_task = False
             ran = False
             for task in self.player_tasks:
-                if re.match(task.__regexp__, parsed) is not None:
-                    ran = True
-                    task.exit_task = self.exit_task
-                    task.player = self.player
-                    task.tts = self.tts
-                    task.process(parsed)
-                    break
+                for regexp in task.__regexp__:
+                    if re.match(regexp, parsed) is not None:
+                        ran = True
+                        task.get_exit = self.get_exit
+                        task.player = self.player
+                        task.tts = self.tts
+                        task.process(regexp, parsed)
+                        break
             if not ran:
                 msg = 'I think you said ' + message
                 self.tts.say_put(msg)
