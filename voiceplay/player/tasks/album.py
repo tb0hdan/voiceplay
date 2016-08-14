@@ -1,3 +1,5 @@
+import random
+random.seed()
 import re
 from .basetask import BasePlayerTask
 

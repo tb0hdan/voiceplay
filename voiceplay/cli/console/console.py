@@ -19,17 +19,26 @@ class Console(object):
         self.commands = {}
 
     def add_handler(self, keyword, method, aliases=None):
+        '''
+        Adds command handler to console
+        '''
         aliases = aliases if aliases else []
         self.commands[keyword] = {'method': method, 'aliases': aliases}
 
     @property
     def format_prompt(self):
+        '''
+        Format command line prompt
+        '''
         result = self.default_prompt % (time.strftime('%H:%M:%S'),
                                         colorama.Fore.GREEN + colorama.Style.BRIGHT + self.name + colorama.Style.RESET_ALL,
                                         colorama.Fore.CYAN + colorama.Style.BRIGHT + '>' + colorama.Style.RESET_ALL)
         return result
 
     def parse_command(self, command):
+        '''
+        Parse entered command
+        '''
         result = None
         should_be_printed = True
         command = command.strip().lower()
@@ -42,13 +51,20 @@ class Console(object):
                     pass
         return result, should_be_printed
 
-    def quit_command(self, cmd):
+    def quit_command(self, _):
+        '''
+        Handle quit / exit / logout command
+        '''
         self.exit = True
         result = None
         should_be_printed = False
         return result, should_be_printed
 
-    def clear_command(self, cmd):
+    @staticmethod
+    def clear_command(_):
+        '''
+        Handle clear command
+        '''
         sys.stderr.flush()
         sys.stderr.write("\x1b[2J\x1b[H")
         result = None
@@ -56,13 +72,20 @@ class Console(object):
         return result, should_be_printed
 
     def complete(self, _, state):
+        '''
+        Provide autocompletion support (buggy)
+        '''
         text = readline.get_line_buffer()
         if not text:
             return [c + ' ' for c in self.commands][state]
         results = [c + ' ' for c in self.commands if c.startswith(text)]
         return results[state]
 
-    def run_exit(self):
+    @staticmethod
+    def run_exit():
+        '''
+        Finalize exit (invoked after self.quit_command)
+        '''
         print ('Goodbye!')
 
     def run_console(self):

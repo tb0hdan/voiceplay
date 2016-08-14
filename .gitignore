@@ -99,3 +99,4 @@ config.yaml.bkp
 *.part
 state.txt
 .DS_*
+*.sublime-*

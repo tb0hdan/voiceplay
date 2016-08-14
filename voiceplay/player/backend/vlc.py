@@ -11,7 +11,7 @@ class VLCPlayer(object):
         self.debug = debug
         opts = ['--file-caching=10000', ' --disc-caching=10000',
                 ' --live-caching=10000', '--network-caching=10000',
-               '--metadata-network-access']
+                '--metadata-network-access']
         if not self.debug:
             opts.append('--quiet')
         self.exit = False

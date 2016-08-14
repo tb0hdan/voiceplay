@@ -1,5 +1,4 @@
 ''' VickiPlayer module '''
-import os
 import re
 import sys
 if sys.version_info.major == 2:
@@ -14,7 +13,6 @@ from voiceplay.config import Config
 from voiceplay.logger import logger
 from voiceplay.utils.loader import PluginLoader
 from .backend.vlc import VLCPlayer
-from .hooks.basehook import BasePlayerHook
 from .tasks.basetask import BasePlayerTask
 
 class VickiPlayer(object):
@@ -123,7 +121,7 @@ class VickiPlayer(object):
                         task.process(regexp, parsed)
                         break
             if not ran:
-                msg = 'I think you said ' + message
+                msg = 'I think you said ' + parsed
                 self.tts.say_put(msg)
                 logger.warning(msg)
         logger.debug('VickiPlayer.task_loop exit')

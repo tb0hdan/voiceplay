@@ -1,6 +1,6 @@
+''' VoicePlay loader module '''
 import inspect
 import os
-import re
 from voiceplay.logger import logger
 
 class PluginLoader(object):
@@ -9,6 +9,10 @@ class PluginLoader(object):
     '''
     @staticmethod
     def tryimport(package):
+        '''
+        Try to import module, on success return module, 
+        on error return None and log exception.
+        '''
         try:
             module = __import__(package, fromlist=['dummy'])
         except Exception as exc:
@@ -18,11 +22,18 @@ class PluginLoader(object):
 
     @staticmethod
     def file_to_package(fname, base_path, base_package):
-        result = fname.replace(os.path.join(base_path, ''), '').replace('.py', '').replace(os.path.sep, '.')
+        '''
+        Convert path to package suitable for import
+        '''
+        result = fname.replace(os.path.join(base_path, ''),
+                               '').replace('.py', '').replace(os.path.sep, '.')
         result = base_package + '.' + result
         return result
 
     def package_to_path(self, package):
+        '''
+        Convert package to path (absolute)
+        '''
         path = None
         module = self.tryimport(package)
         if module:
@@ -30,9 +41,14 @@ class PluginLoader(object):
             path = os.path.dirname(os.path.abspath(fname))
         return path
 
-    def find_files(self, start_dir):
+    @staticmethod
+    def find_files(start_dir):
+        '''
+        Iterate over directory recursively and return *.py files as a list
+        (omit package init)
+        '''
         fnames = []
-        for root, dirs, files in os.walk(start_dir, topdown=False):
+        for root, _, files in os.walk(start_dir, topdown=False):
             for name in files:
                 fname = os.path.join(root, name)
                 if not fname.endswith('.py') or name == '__init__.py':
@@ -61,7 +77,7 @@ class PluginLoader(object):
             if not module:
                 continue
             classes = inspect.getmembers(module, inspect.isclass)
-            for name, cls in classes:
+            for _, cls in classes:
                 if issubclass(cls, base_class) and cls != base_class:
                     cls_list.append(cls)
         return cls_list

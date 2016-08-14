@@ -1,3 +1,4 @@
+''' VoicePlay speech handler '''
 import logging
 import speech_recognition as sr
 import threading
@@ -23,6 +24,7 @@ class Vicki(object):
         logger.debug('Vicki init completed')
         self.player = VickiPlayer(tts=self.tts, debug=self.debug)
         self.wakeword_receiver = None
+        self.listener = None
 
     def wakeword_callback(self, message):
         logger.debug(message)
@@ -81,6 +83,9 @@ class Vicki(object):
         logger.debug('Vicki.Listener exit')
 
     def stop(self):
+        '''
+        Set shutdown flag and wait for the threads to exit
+        '''
         self.shutdown = True  # for threads
         self.tts.stop()
         self.player.shutdown()

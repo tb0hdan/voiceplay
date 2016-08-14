@@ -1,3 +1,4 @@
+''' Configuration reader module '''
 import kaptan
 
 class Config(object):
@@ -7,5 +8,8 @@ class Config(object):
 
     @classmethod
     def cfg_data(cls):
+        '''
+        Return configuration data as dictionary
+        '''
         obj = cls()
         return obj.config.configuration_data

@@ -1,3 +1,4 @@
+''' VoicePlay Text to Speech engine module '''
 import platform
 import sys
 if sys.version_info.major == 2:
@@ -15,7 +16,8 @@ class TextToSpeech(object):
     '''
     MAC/Linux TTS
     '''
-    def __init__(self, name=__title__):
+    def __init__(self):
+        self.thread = None
         self.shutdown = False
         system = platform.system()
         if system == 'Darwin':
@@ -57,6 +59,9 @@ class TextToSpeech(object):
         pass
 
     def poll_loop(self):
+        '''
+        Poll speech queue
+        '''
         while not self.shutdown:
             if not self.queue.empty():
                 self.say(self.queue.get())
@@ -65,12 +70,21 @@ class TextToSpeech(object):
         logger.debug('TTS poll_loop exit')
 
     def start(self):
-        self.th = threading.Thread(name='TTS', target=self.poll_loop)
-        self.th.start()
+        '''
+        Start TTS as a separate thread
+        '''
+        self.thread = threading.Thread(name='TTS', target=self.poll_loop)
+        self.thread.start()
 
     def stop(self):
+        '''
+        Set shutdown flag and wait for thread to exit
+        '''
         self.shutdown = True
-        self.th.join()
+        self.thread.join()
 
     def say_put(self, message):
+        '''
+        Add message to speech queue
+        '''
         self.queue.put(message)

@@ -1,3 +1,4 @@
+''' VoicePlay argument parser module '''
 import argparse
 import threading
 import sys
@@ -18,14 +19,18 @@ class MyArgumentParser(object):
         Configure argument parser
         '''
         group = self.parser.add_mutually_exclusive_group()
-        group.add_argument('-c', '--console', action='store_true', default=False, dest='console',
+        group.add_argument('-c', '--console', action='store_true', default=False, 
+                           dest='console',
                            help='Start console')
-        group.add_argument('-cd', '--console-devel', action='store_true', default=False, dest='console_devel',
+        group.add_argument('-cd', '--console-devel', action='store_true',
+                           default=False, dest='console_devel',
                            help='Start development console')
-        self.parser.add_argument('-V', '--version', action='version', version='%(prog)s ' +  __version__)
-        self.parser.add_argument('-v', '--verbose', action='store_true', default=False, 
-                                dest='debug',
-                                help='Enable debug mode')
+        self.parser.add_argument('-V', '--version', action='version',
+                                 version='%(prog)s ' +  __version__)
+        self.parser.add_argument('-v', '--verbose', action='store_true',
+                                 default=False, 
+                                 dest='debug',
+                                 help='Enable debug mode')
 
     @staticmethod
     def ipython_console():
@@ -41,9 +46,14 @@ class MyArgumentParser(object):
         embed = InteractiveShellEmbed(config=config, banner1='')
         embed.mainloop()
 
-    def player_console(self, vicki):
+    @staticmethod
+    def player_console(vicki):
+        '''
+        Start VickiPlayer console
+        '''
         console = Console()
-        console.add_handler('play', vicki.player.play_from_parser, ['pause', 'shuffle', 'next', 'stop', 'resume'])
+        console.add_handler('play', vicki.player.play_from_parser, 
+                            ['pause', 'shuffle', 'next', 'stop', 'resume'])
         console.add_handler('what', vicki.player.play_from_parser)
         console.run_console()
 
@@ -66,7 +76,7 @@ class MyArgumentParser(object):
             ThreadedRequestHandler.callback = vicki.wakeword_callback
             address = ('127.0.0.1', 63455)
             server = WakeWordReceiver(address,
-                                ThreadedRequestHandler)
-            t = threading.Thread(target=server.serve_forever)
-            t.start()
+                                      ThreadedRequestHandler)
+            thread = threading.Thread(target=server.serve_forever)
+            thread.start()
             vicki.run_forever_new(server)
