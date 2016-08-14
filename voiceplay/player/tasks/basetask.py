@@ -59,6 +59,8 @@ class BasePlayerTask(object):
                 url = source.__baseurl__ + tracks[0][1]
                 try:
                     filename = source.download(url)
+                    if not filename:
+                        continue
                     if cls.player.play(filename, trackname):
                         break
                 except Exception as exc:

@@ -27,14 +27,14 @@ Please make sure you have XCode installed prior to proceeding with other steps.
 Download and install VLC package from http://videolan.org
 
 ```
-brew install ffmpeg portaudio cmu-pocketsphinx swig
+brew install ffmpeg portaudio cmu-pocketsphinx swig libmagic
 ```
 
 ### Linux (Debian/Ubuntu)
 
 ```
 sudo apt-get install libav-tools python-dev festival festival-dev portaudio19-dev vlc
-sudo apt-get install pocketsphinx swig
+sudo apt-get install pocketsphinx swig libmagic1
 sudo pip install pyfestival
 ```
 

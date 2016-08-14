@@ -1,6 +1,7 @@
 beautifulsoup4==4.4.1
 colorama==0.3.7
 dailymotion==0.2.2
+filemagic==1.6
 google-api-python-client==1.5.1
 ipython==5.0.0
 kaptan==0.5.8

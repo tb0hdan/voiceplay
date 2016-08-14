@@ -9,6 +9,7 @@ elif sys.version_info.major == 3:
     from urllib.parse import quote
 
 from bs4 import BeautifulSoup
+from magic import Magic
 from tempfile import mkstemp
 from .basesource import TrackSource
 
@@ -62,4 +63,8 @@ class PleerSource(TrackSource):
         with open(filename, 'wb') as fd:
             for chunk in r.iter_content(cls.chunk_size):
                 fd.write(chunk)
+        with Magic() as magic:
+            ftype = magic.id_filename(filename)
+            if ftype.startswith('HTML'):
+                filename = None
         return filename
