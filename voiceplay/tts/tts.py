@@ -65,6 +65,7 @@ class TextToSpeech(object):
         while not self.shutdown:
             if not self.queue.empty():
                 self.say(self.queue.get())
+                self.queue.task_done()
             else:
                 time.sleep(0.01)
         logger.debug('TTS poll_loop exit')

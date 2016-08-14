@@ -97,6 +97,7 @@ class VickiPlayer(object):
                 time.sleep(0.01)
                 continue
             self.play_from_parser(message)
+            self.queue.task_done()
         logger.debug('Vickiplayer.cmd_loop exit')
 
     def task_loop(self):
@@ -124,6 +125,7 @@ class VickiPlayer(object):
                 msg = 'I think you said ' + parsed
                 self.tts.say_put(msg)
                 logger.warning(msg)
+            self.p_queue.task_done()
         logger.debug('VickiPlayer.task_loop exit')
 
     def start(self):

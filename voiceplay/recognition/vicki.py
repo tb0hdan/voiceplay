@@ -49,7 +49,7 @@ class Vicki(object):
                 continue
 
             volume = self.player.player.volume
-            self.player.player.player.audio_set_volume(30)
+            self.player.player.volume = 30
             logger.debug('recog start')
             # command goes next
             try:
