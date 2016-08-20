@@ -1,5 +1,20 @@
 import pylast
 from voiceplay.config import Config
+from voiceplay.logger import logger
+
+def lfm_retry(retry_count=1):
+    def lfm_retry_func(func):
+        def func_wrapper(*args, **kwargs):
+            result = None
+            for retry in xrange(1, retry_count + 1):
+                try:
+                    result = func(*args, **kwargs)
+                    break
+                except Exception as exc:
+                    logger.debug('Method/function %r failed with %r, retrying...', func.__name__, exc)
+            return result
+        return func_wrapper
+    return lfm_retry_func
 
 class VoicePlayLastFm(object):
     '''
@@ -10,6 +25,7 @@ class VoicePlayLastFm(object):
         self.network = pylast.LastFMNetwork(api_key=cfg_data['lastfm']['key'],
                                             api_secret=cfg_data['lastfm']['secret'])
 
+    @lfm_retry(retry_count=3)
     def get_top_tracks_geo(self, country_code):
         '''
         Country name: ISO 3166-1
@@ -17,6 +33,7 @@ class VoicePlayLastFm(object):
         tracks = self.network.get_geo_top_tracks(country_code)
         return self.trackarize(tracks)
 
+    @lfm_retry(retry_count=3)
     def get_top_tracks_global(self):
         '''
         Global top tracks (chart)
@@ -24,6 +41,7 @@ class VoicePlayLastFm(object):
         tracks = self.network.get_top_tracks()
         return self.trackarize(tracks)
 
+    @lfm_retry(retry_count=3)
     def get_top_tracks(self, artist):
         '''
         Get top tracks by artist
@@ -33,6 +51,7 @@ class VoicePlayLastFm(object):
         tracks = aobj.get_top_tracks()
         return self.trackarize(tracks)
 
+    @lfm_retry(retry_count=3)
     def get_station(self, station):
         '''
         Get station
@@ -41,6 +60,7 @@ class VoicePlayLastFm(object):
         tracks = aobj.get_top_tracks()
         return self.trackarize(tracks)
 
+    @lfm_retry(retry_count=3)
     def get_top_albums(self, artist):
         album_list = []
         artist = self.get_corrected_artist(artist)
@@ -50,6 +70,7 @@ class VoicePlayLastFm(object):
             album_list.append(album.item.title)
         return album_list
 
+    @lfm_retry(retry_count=3)
     def get_tracks_for_album(self, artist, album):
         result = []
         artist = self.get_corrected_artist(artist)
@@ -58,6 +79,7 @@ class VoicePlayLastFm(object):
             result.append(track.artist.name + ' - ' + track.title)
         return result
 
+    @lfm_retry(retry_count=3)
     def get_corrected_artist(self, artist):
         '''
         Get corrected artist
@@ -69,6 +91,7 @@ class VoicePlayLastFm(object):
         else:
             return artist
 
+    @lfm_retry(retry_count=3)
     def get_query_type(self, query):
         '''
         Detect whether query is just artist or artist - track
