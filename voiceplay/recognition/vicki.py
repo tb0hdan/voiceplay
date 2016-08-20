@@ -1,7 +1,6 @@
 ''' VoicePlay speech handler '''
 import logging
 import speech_recognition as sr
-import threading
 import time
 
 from voiceplay.logger import logger
@@ -97,10 +96,10 @@ class Vicki(object):
         Main loop
         '''
         self.wakeword_receiver = wakeword_receiver
-        self.listener = threading.Thread(name='BackgroundListener', target=self.background_listener)
-        self.listener.start()
         while not self.shutdown:
             try:
-                time.sleep(0.5)
+                self.background_listener()
             except KeyboardInterrupt:
                 self.stop()
+            except Exception as exc:
+                logger.debug('Background listener failed with %r, restarting...', exc)

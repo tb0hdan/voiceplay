@@ -17,4 +17,3 @@ class ThreadedRequestHandler(socketserver.BaseRequestHandler):
 
 class WakeWordReceiver(socketserver.ThreadingMixIn, socketserver.TCPServer):
     allow_reuse_address=True
-
