@@ -17,4 +17,4 @@ class Singleton(type):
         return cls.cls_instances[cls]
 
 def track_to_hash(track):
-    return hashlib.sha1(track).hexdigest()
+    return hashlib.sha1(track.encode('utf-8')).hexdigest()
