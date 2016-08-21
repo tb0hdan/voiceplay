@@ -37,10 +37,11 @@ class BasePlayerTask(object):
         total = len(tracklist)
         for idx, track in enumerate(tracklist):
             # do prefetch here
-            if idx + 1 <= total:
+            if idx + 1 <= total - 1:
                 trackname = tracklist[idx + 1]
                 full_path = os.path.join(cls.cfg_data.get('cache_dir'), track_to_hash(trackname)) + '.mp3'
-                cls.download_full_track(trackname)
+                if not os.path.exists(full_path):
+                    cls.download_full_track(trackname)
             yield track
 
     @classmethod
