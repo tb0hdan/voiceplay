@@ -17,7 +17,7 @@ class AlbumTask(BasePlayerTask):
         '''
         tracks = cls.lfm.get_tracks_for_album(artist, album)
         random.shuffle(tracks)
-        for track in tracks:
+        for track in cls.tracks_with_prefetch(tracks):
             if cls.get_exit():
                 break
             cls.play_full_track(track)

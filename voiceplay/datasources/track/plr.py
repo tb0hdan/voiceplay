@@ -1,6 +1,7 @@
 #-*- coding: utf-8 -*-
 
 import json
+import os
 import requests
 import sys
 if sys.version_info.major == 2:
@@ -10,7 +11,9 @@ elif sys.version_info.major == 3:
 
 from bs4 import BeautifulSoup
 from magic import Magic
-from tempfile import mkstemp
+
+from voiceplay.utils.helpers import track_to_hash
+
 from .basesource import TrackSource
 
 class PleerSource(TrackSource):
@@ -45,11 +48,13 @@ class PleerSource(TrackSource):
         return tracks
 
     @classmethod
-    def download(cls, track_url):
+    def download(cls, track_name, track_url):
         '''
         Download track
         '''
-        filename = mkstemp()[1]
+        filename = os.path.join(cls.cfg_data.get('cache_dir'), track_to_hash(track_name)) + '.mp3'
+        if isinstance(filename, str):
+            filename = filename.decode('utf-8')
         track_id = track_url.replace('http://pleer.net/en/download/page/', '')
         url = 'http://pleer.net/site_api/files/get_url'
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0',

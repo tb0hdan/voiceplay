@@ -1,15 +1,19 @@
+import os
 import re
+
+from voiceplay.config import Config
+from voiceplay.datasources.lastfm import VoicePlayLastFm
 from voiceplay.datasources.track.basesource import TrackSource
 from voiceplay.logger import logger
 from voiceplay.utils.loader import PluginLoader
-from voiceplay.datasources.lastfm import VoicePlayLastFm
-
+from voiceplay.utils.helpers import track_to_hash
 
 class BasePlayerTask(object):
     '''
     base player task
     '''
     lfm = VoicePlayLastFm()
+    cfg_data = Config.cfg_data()
 
     @staticmethod
     def trackfilter(search_term, search_result):
@@ -29,6 +33,17 @@ class BasePlayerTask(object):
         return track_is_ok
 
     @classmethod
+    def tracks_with_prefetch(cls, tracklist):
+        total = len(tracklist)
+        for idx, track in enumerate(tracklist):
+            # do prefetch here
+            if idx + 1 <= total:
+                trackname = tracklist[idx + 1]
+                full_path = os.path.join(cls.cfg_data.get('cache_dir'), track_to_hash(trackname)) + '.mp3'
+                cls.download_full_track(trackname)
+            yield track
+
+    @classmethod
     def track_filter_fn(cls, search_term, track_result_pair):
         '''
         wrapper around trackfilter
@@ -36,7 +51,7 @@ class BasePlayerTask(object):
         return cls.trackfilter(search_term, track_result_pair[0])
 
     @classmethod
-    def play_full_track(cls, trackname):
+    def download_full_track(cls, trackname):
         '''
         Play full track
         '''
@@ -45,6 +60,7 @@ class BasePlayerTask(object):
         sources = sorted(PluginLoader().find_classes('voiceplay.datasources.track', TrackSource),
                          cmp=lambda x, y: cmp(x.__priority__, y.__priority__))
 
+        filename = None
         for source in sources:
             try:
                 results = source.search(trackname)
@@ -55,15 +71,25 @@ class BasePlayerTask(object):
                 logger.debug(message)
             tracks = [track for track in results if cls.track_filter_fn(trackname, track)]
             if tracks:
-                logger.debug('Starting playback using %r', source.__name__)
+                logger.debug('Getting track using %r', source.__name__)
                 url = source.__baseurl__ + tracks[0][1]
                 try:
-                    filename = source.download(url)
+                    filename = source.download(trackname, url)
                     if not filename:
                         continue
-                    if cls.player.play(filename, trackname):
-                        break
+                    break
                 except Exception as exc:
-                    message = 'Playback of source url %s failed with %r\n' % (url, exc)
+                    message = 'Processing of source url %s failed with %r\n' % (url, exc)
                     message += 'Continuing using next source url...'
                     logger.debug(message)
+        return filename
+
+    @classmethod
+    def play_full_track(cls, trackname):
+        full_path = os.path.join(cls.cfg_data.get('cache_dir'), track_to_hash(trackname)) + '.mp3'
+        if not os.path.exists(full_path):
+            logger.debug('Track %r is not cached at %r', trackname, full_path)
+            full_path = cls.download_full_track(trackname)
+        else:
+            logger.debug('Using cache for %r at %r', trackname, full_path)
+        cls.player.play(full_path, trackname)

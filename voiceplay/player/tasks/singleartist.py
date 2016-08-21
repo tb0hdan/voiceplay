@@ -19,7 +19,7 @@ class SingleArtistTask(BasePlayerTask):
         if cls.lfm.get_query_type(artist) == 'artist':
             tracks = cls.lfm.get_top_tracks(cls.lfm.get_corrected_artist(artist))
             random.shuffle(tracks)
-            for track in tracks:
+            for track in cls.tracks_with_prefetch(tracks):
                 if cls.get_exit():
                     break
                 cls.play_full_track(track)

@@ -3,11 +3,11 @@
 import os
 import re
 
-from tempfile import mkdtemp
 from youtube_dl import YoutubeDL
 
 from voiceplay.config import Config
 from voiceplay.logger import logger
+from voiceplay.utils.helpers import track_to_hash
 
 class TrackSource(object):
     '''
@@ -28,9 +28,8 @@ class TrackSource(object):
             cls.target_filename = response['filename']
 
     @classmethod
-    def download(cls, url):
-        tmp = mkdtemp()
-        template = os.path.join(tmp, '%(title)s-%(id)s.%(ext)s')
+    def download(cls, trackname, url):
+        template = os.path.join(cls.cfg_data.get('cache_dir'), track_to_hash(trackname)) + '.%(ext)s'
         if isinstance(template, str):
             template = template.decode('utf-8')
         ydl_opts = {'keepvideo': False, 'verbose': False, 'format': 'bestaudio/best',
@@ -43,5 +42,5 @@ class TrackSource(object):
         logger.debug('Using source url %s', url)
         with YoutubeDL(ydl_opts) as ydl:
             ydl.download([url])
-            audio_file = re.sub('\.(.+)$', '.mp3', cls.target_filename)
+            audio_file = re.sub('\.[^\.]+$', '.mp3', cls.target_filename)
         return audio_file

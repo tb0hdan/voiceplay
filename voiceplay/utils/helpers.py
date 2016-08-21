@@ -1,6 +1,7 @@
 #-*- coding: utf-8 -*-
 ''' Helper functions / methods / classes '''
 
+import hashlib
 
 class Singleton(type):
     '''
@@ -14,3 +15,6 @@ class Singleton(type):
         if cls not in cls.cls_instances:
             cls.cls_instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
         return cls.cls_instances[cls]
+
+def track_to_hash(track):
+    return hashlib.sha1(track).hexdigest()
