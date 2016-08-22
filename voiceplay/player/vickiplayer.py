@@ -132,13 +132,15 @@ class VickiPlayer(object):
         # non-blocking start
         self.player.start()
         self.task_thread = threading.Thread(name='player_task_pool', target=self.task_loop)
+        self.task_thread.setDaemon(True)
         self.task_thread.start()
         self.cmd_thread = threading.Thread(name='player_cmd_pool', target=self.cmd_loop)
+        self.cmd_thread.setDaemon(True)
         self.cmd_thread.start()
 
     def shutdown(self):
         self.shutdown_flag = True
         self.exit_task = True
         self.player.shutdown()
-        self.task_thread.join()
-        self.cmd_thread.join()
+        self.task_thread.join(timeout=1.0)
+        self.cmd_thread.join(timeout=1.0)
