@@ -40,8 +40,9 @@ class BasePlayerTask(object):
             if idx + 1 <= total - 1:
                 trackname = tracklist[idx + 1]
                 full_path = os.path.join(cls.cfg_data.get('cache_dir'), track_to_hash(trackname)) + '.mp3'
-                if not os.path.exists(full_path):
-                    cls.download_full_track(trackname)
+                if not os.path.exists(full_path) and cls.prefetch_callback and callable(cls.prefetch_callback):
+                    logger.debug('Adding %r to prefetch queue', trackname.encode('utf-8'))
+                    cls.prefetch_callback(trackname)
             yield track
 
     @classmethod

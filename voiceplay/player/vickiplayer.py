@@ -24,6 +24,7 @@ class VickiPlayer(object):
         self.tts = tts
         self.queue = Queue()
         self.p_queue = Queue()
+        self.prefetch_q = Queue()
         self.cfg_data = Config.cfg_data()
         self.player = VLCPlayer(debug=self.debug)
         self.shutdown_flag = False
@@ -116,6 +117,7 @@ class VickiPlayer(object):
                 for regexp in task.__regexp__:
                     if re.match(regexp, parsed) is not None:
                         ran = True
+                        task.prefetch_callback = self.add_to_prefetch_q
                         task.get_exit = self.get_exit
                         task.player = self.player
                         task.tts = self.tts
@@ -128,6 +130,23 @@ class VickiPlayer(object):
             self.p_queue.task_done()
         logger.debug('VickiPlayer.task_loop exit')
 
+    def prefetch_loop(self):
+        while not self.shutdown_flag:
+            if not self.prefetch_q.empty():
+                trackname = self.prefetch_q.get()
+            else:
+                time.sleep(0.01)
+                continue
+            logger.debug('prefetch_loop got from queue: %r', trackname.encode('utf-8'))
+            start = time.time()
+            BasePlayerTask.download_full_track(trackname)
+            elapsed = round(time.time() - start, 3)
+            logger.debug('prefetch_loop finished downloading, took %ss', elapsed)
+
+
+    def add_to_prefetch_q(self, item):
+        self.prefetch_q.put(item)
+
     def start(self):
         # non-blocking start
         self.player.start()
@@ -137,6 +156,9 @@ class VickiPlayer(object):
         self.cmd_thread = threading.Thread(name='player_cmd_pool', target=self.cmd_loop)
         self.cmd_thread.setDaemon(True)
         self.cmd_thread.start()
+        self.prefetch_thread = threading.Thread(name='player_prefetch_pool', target=self.prefetch_loop)
+        self.prefetch_thread.setDaemon(True)
+        self.prefetch_thread.start()
 
     def shutdown(self):
         self.shutdown_flag = True
@@ -144,3 +166,4 @@ class VickiPlayer(object):
         self.player.shutdown()
         self.task_thread.join(timeout=1.0)
         self.cmd_thread.join(timeout=1.0)
+        self.prefetch_thread.join(timeout=1.0)
