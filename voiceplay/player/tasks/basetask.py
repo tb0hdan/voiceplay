@@ -34,16 +34,27 @@ class BasePlayerTask(object):
 
     @classmethod
     def tracks_with_prefetch(cls, tracklist):
+        '''
+        Add tracks to prefetch to queue
+        '''
+        prefetch = cls.cfg_data['prefetch_count']
+        cnt = 1
         total = len(tracklist)
-        for idx, track in enumerate(tracklist):
-            # do prefetch here
-            if idx + 1 <= total - 1:
-                trackname = tracklist[idx + 1]
-                full_path = os.path.join(cls.cfg_data.get('cache_dir'), track_to_hash(trackname)) + '.mp3'
-                if not os.path.exists(full_path) and cls.prefetch_callback and callable(cls.prefetch_callback):
-                    logger.debug('Adding %r to prefetch queue', trackname.encode('utf-8'))
-                    cls.prefetch_callback(trackname)
-            yield track
+        for idx in xrange(0, total):
+            prefs = []
+            if cnt + prefetch <= total - 1:
+                for i in xrange(cnt, cnt + prefetch):
+                    prefs.append(tracklist[i])
+                cnt += prefetch
+            elif cnt <= idx + 1 <= total - 1:
+                prefs.append(tracklist[idx + 1])
+            if prefs:
+                for item in prefs:
+                    full_path = os.path.join(cls.cfg_data.get('cache_dir'), track_to_hash(item)) + '.mp3'
+                    if not os.path.exists(full_path) and cls.prefetch_callback and callable(cls.prefetch_callback):
+                        logger.debug('Adding %r to prefetch queue', item.encode('utf-8'))
+                        cls.prefetch_callback(item)
+            yield tracklist[idx]
 
     @classmethod
     def track_filter_fn(cls, search_term, track_result_pair):

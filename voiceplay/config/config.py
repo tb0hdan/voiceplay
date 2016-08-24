@@ -13,6 +13,7 @@ class Config(with_metaclass(Singleton)):
     VoicePlay configuration object
     '''
     cache_dir = '~/.cache/voiceplay'
+    prefetch_count = 3
 
     def __init__(self, cfg_file='config.yaml'):
         self.config = kaptan.Kaptan()
@@ -21,7 +22,9 @@ class Config(with_metaclass(Singleton)):
     @classmethod
     def extend_local(cls, data):
         '''
+        TODO: extend config class with __getattr__
         '''
+        # cache_dir
         cache_dir = data.get('cache_dir', None)
         if not cache_dir:
             cache_dir = cls.cache_dir
@@ -29,6 +32,12 @@ class Config(with_metaclass(Singleton)):
         if not os.path.exists(cache_dir):
             os.makedirs(cache_dir)
         data['cache_dir'] = cache_dir
+        # prefetch count
+        prefetch_count = data.get('prefetch_count', None)
+        if not prefetch_count:
+            prefetch_count = cls.prefetch_count
+        data['prefetch_count'] = prefetch_count
+        #
         return data
 
     @classmethod
