@@ -104,6 +104,16 @@ class VoicePlayLastFm(object):
             reply = 'artist_track'
         return reply
 
+    @lfm_retry(retry_count=3)
+    def get_artist_icon(self, artist, image_size=pylast.COVER_SMALL):
+        '''
+        Get artist icon
+        supported sizes: small, medium, large
+        '''
+        artist = self.get_corrected_artist(artist)
+        aobj = pylast.Artist(artist, self.network)
+        return aobj.get_cover_image(image_size)
+
     @staticmethod
     def trackarize(array):
         '''
