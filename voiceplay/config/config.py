@@ -13,10 +13,16 @@ class Config(with_metaclass(Singleton)):
     VoicePlay configuration object
     '''
     cache_dir = '~/.cache/voiceplay'
+    config_search_order = ['config.yaml', os.path.expanduser('~/.config/voiceplay/config.yaml')]
     prefetch_count = 3
 
-    def __init__(self, cfg_file='config.yaml'):
+    def __init__(self, cfg_file=None):
         self.config = kaptan.Kaptan()
+        if not cfg_file:
+            for fname in self.config_search_order:
+                if os.path.exists(fname):
+                    cfg_file = fname
+                    break
         self.config.import_config(cfg_file)
 
     @classmethod
