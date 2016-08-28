@@ -6,6 +6,10 @@ from voiceplay import __version__, __title__
 from voiceplay.recognition.vicki import Vicki
 from voiceplay.recognition.wakeword.receiver import ThreadedRequestHandler, WakeWordReceiver
 from voiceplay.cli.console.console import Console
+from voiceplay.utils.loader import PluginLoader
+from voiceplay.player.tasks.basetask import BasePlayerTask
+from voiceplay.player.hooks.basehook import BasePlayerHook
+
 
 class MyArgumentParser(object):
     '''
@@ -19,7 +23,7 @@ class MyArgumentParser(object):
         Configure argument parser
         '''
         group = self.parser.add_mutually_exclusive_group()
-        group.add_argument('-c', '--console', action='store_true', default=False, 
+        group.add_argument('-c', '--console', action='store_true', default=False,
                            dest='console',
                            help='Start console')
         group.add_argument('-cd', '--console-devel', action='store_true',
@@ -28,9 +32,23 @@ class MyArgumentParser(object):
         self.parser.add_argument('-V', '--version', action='version',
                                  version='%(prog)s ' +  __version__)
         self.parser.add_argument('-v', '--verbose', action='store_true',
-                                 default=False, 
+                                 default=False,
                                  dest='debug',
                                  help='Enable debug mode')
+        # configure args for plugins
+        plugins = sorted(PluginLoader().find_classes('voiceplay.player.tasks', BasePlayerTask),
+                         cmp=lambda x, y: cmp(x.__priority__, y.__priority__))
+        plugins += sorted(PluginLoader().find_classes('voiceplay.player.hooks', BasePlayerHook),
+                         cmp=lambda x, y: cmp(x.__priority__, y.__priority__))
+        for plugin in plugins:
+            try:
+                attr = getattr(plugin, 'configure_argparser')
+            except Exception as exc:
+                attr = None
+            if attr:
+                plugin.configure_argparser(self.parser)
+
+
 
     @staticmethod
     def ipython_console():
@@ -52,7 +70,7 @@ class MyArgumentParser(object):
         Start VickiPlayer console
         '''
         console = Console()
-        console.add_handler('play', vicki.player.play_from_parser, 
+        console.add_handler('play', vicki.player.play_from_parser,
                             ['pause', 'shuffle', 'next', 'stop', 'resume'])
         console.add_handler('what', vicki.player.play_from_parser)
         console.run_console()
@@ -64,6 +82,7 @@ class MyArgumentParser(object):
         argv = sys.argv if not argv else argv
         result = self.parser.parse_args(argv[1:])
         vicki = Vicki(debug=result.debug)
+        vicki.player.argparser = result
         if result.console:
             vicki.player.start()
             self.player_console(vicki)

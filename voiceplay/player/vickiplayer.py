@@ -29,9 +29,19 @@ class VickiPlayer(object):
         self.player = VLCPlayer(debug=self.debug)
         self.shutdown_flag = False
         self.exit_task = False
+        self._argparser = None
         self.player_tasks = sorted(PluginLoader().find_classes('voiceplay.player.tasks', BasePlayerTask),
                          cmp=lambda x, y: cmp(x.__priority__, y.__priority__))
         self.known_actions = self.get_actions(self.player_tasks)
+
+    @property
+    def argparser(self):
+        return self._argparser
+
+    @argparser.setter
+    def argparser(self, argobj):
+        self._argparser = argobj
+        self.player.argparser = argobj
 
     @staticmethod
     def get_actions(tasks):
@@ -118,6 +128,7 @@ class VickiPlayer(object):
                     if re.match(regexp, parsed) is not None:
                         ran = True
                         task.prefetch_callback = self.add_to_prefetch_q
+                        task.argparser = self._argparser
                         task.get_exit = self.get_exit
                         task.player = self.player
                         task.tts = self.tts

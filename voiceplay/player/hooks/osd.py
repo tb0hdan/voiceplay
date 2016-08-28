@@ -9,8 +9,9 @@ class OSDNotification(object):
     '''
     @classmethod
     def notify(cls, *args, **kwargs):
+        argparser = kwargs.get('argparser', '')
         track = kwargs.get('track', '')
-        if not track:
+        if not (track and argparser and argparser.osd):
             return
         artist = track.split(' - ')[0]
         if platform.system() == 'Darwin':
@@ -43,5 +44,12 @@ class OSDPlayerHook(BasePlayerHook):
     __priority__ = 20
 
     @classmethod
+    def configure_argparser(cls, parser):
+        parser.add_argument('-o', '--osd', action='store_true',
+                                 default=False,
+                                 dest='osd',
+                                 help='Enable OSD')
+
+    @classmethod
     def on_playback_start(cls, *args, **kwargs):
-         OSDNotification.notify(*args, **kwargs)
+        OSDNotification.notify(*args, argparser=cls.argparser, **kwargs)

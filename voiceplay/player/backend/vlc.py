@@ -14,6 +14,7 @@ class VLCPlayer(object):
                 '--metadata-network-access']
         if not self.debug:
             opts.append('--quiet')
+        self.argparser = None
         self.exit = False
         self.instance = Instance(tuple(opts))
         self.player = None
@@ -23,6 +24,7 @@ class VLCPlayer(object):
 
     def run_hooks(self, evt, *args, **kwargs):
         for hook in self.player_hooks:
+            hook.argparser = self.argparser
             attr = getattr(hook, evt)
             if attr:
                 attr(*args, **kwargs)

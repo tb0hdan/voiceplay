@@ -2,6 +2,7 @@ class BasePlayerHook(object):
     '''
     base hook
     '''
+    argparser = None
     @classmethod
     def on_playback_start(cls, *args, **kwargs):
         pass
