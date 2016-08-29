@@ -9,7 +9,7 @@ from voiceplay.cli.console.console import Console
 from voiceplay.utils.loader import PluginLoader
 from voiceplay.player.tasks.basetask import BasePlayerTask
 from voiceplay.player.hooks.basehook import BasePlayerHook
-
+from voiceplay.utils.helpers import purge_cache
 
 class MyArgumentParser(object):
     '''
@@ -99,3 +99,4 @@ class MyArgumentParser(object):
             thread = threading.Thread(target=server.serve_forever)
             thread.start()
             vicki.run_forever_new(server)
+        purge_cache()
