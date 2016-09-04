@@ -9,10 +9,12 @@ class VLCPlayer(object):
     '''
     def __init__(self, debug=False):
         self.debug = debug
-        opts = ['--file-caching=10000', ' --disc-caching=10000',
-                ' --live-caching=10000', '--network-caching=10000',
+        opts = ['--file-caching=10000', '--disc-caching=10000',
+                '--live-caching=10000', '--network-caching=10000',
                 '--metadata-network-access']
-        if not self.debug:
+        if self.debug:
+            opts.append('--verbose=2')
+        else:
             opts.append('--quiet')
         self.argparser = None
         self.exit = False
