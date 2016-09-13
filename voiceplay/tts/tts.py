@@ -50,7 +50,7 @@ class TextToSpeech(object):
         '''
         self.speech.startSpeakingString_(message)
         while self.speech.isSpeaking():
-            time.sleep(0.5)
+            time.sleep(0.1)
 
     def __say_dummy(self, message):
         '''
@@ -64,7 +64,9 @@ class TextToSpeech(object):
         '''
         while not self.shutdown:
             if not self.queue.empty():
-                self.say(self.queue.get())
+                message = self.queue.get()
+                logger.debug('TTS: %r', message)
+                self.say(message)
                 self.queue.task_done()
             else:
                 time.sleep(0.01)
@@ -74,6 +76,7 @@ class TextToSpeech(object):
         '''
         Start TTS as a separate thread
         '''
+        logger.debug('Starting TTS engine...')
         self.thread = threading.Thread(name='TTS', target=self.poll_loop)
         self.thread.start()
 
