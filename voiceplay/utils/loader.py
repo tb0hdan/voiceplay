@@ -1,6 +1,7 @@
 ''' VoicePlay loader module '''
 import inspect
 import os
+import sys
 from voiceplay.logger import logger
 
 class PluginLoader(object):
@@ -66,7 +67,7 @@ class PluginLoader(object):
             packages.append(self.file_to_package(fname, path, base_package))
         return packages
 
-    def find_classes(self, base_package, base_class):
+    def find_classes(self, base_package, base_class, try_sys=True):
         '''
         Return list of classes within base package that are descendants of base_class
         '''
@@ -80,4 +81,12 @@ class PluginLoader(object):
             for _, cls in classes:
                 if issubclass(cls, base_class) and cls != base_class:
                     cls_list.append(cls)
+        if try_sys:
+            for module_name in sys.modules:
+                if module_name.startswith(base_package):
+                    module = sys.modules.get(module_name)
+                    classes = inspect.getmembers(module, inspect.isclass)
+                    for _, cls in classes:
+                        if issubclass(cls, base_class) and cls != base_class and not cls in cls_list:
+                            cls_list.append(cls)
         return cls_list

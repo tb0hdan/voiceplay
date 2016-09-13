@@ -100,3 +100,4 @@ config.yaml.bkp
 state.txt
 .DS_*
 *.sublime-*
+*.dmg

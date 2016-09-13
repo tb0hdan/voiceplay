@@ -90,6 +90,7 @@ class MyArgumentParser(object):
         elif result.console_devel:
             self.ipython_console()
         else:
+            print 'z'
             vicki.player.start()
             vicki.tts.start()
             ThreadedRequestHandler.callback = vicki.wakeword_callback

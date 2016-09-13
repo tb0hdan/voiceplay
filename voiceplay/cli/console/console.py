@@ -1,7 +1,7 @@
 from __future__ import print_function
 
 import colorama
-import readline
+import rl
 import sys
 import time
 
@@ -75,7 +75,7 @@ class Console(object):
         '''
         Provide autocompletion support (buggy)
         '''
-        text = readline.get_line_buffer()
+        text = rl.readline.get_line_buffer()
         if not text:
             return [c + ' ' for c in self.commands][state]
         results = [c + ' ' for c in self.commands if c.startswith(text)]
@@ -92,11 +92,11 @@ class Console(object):
         inp = None
         colorama.init()
         # FSCK! Details here: http://stackoverflow.com/questions/7116038/python-tab-completion-mac-osx-10-7-lion
-        if 'libedit' in readline.__doc__:
-            readline.parse_and_bind("bind ^I rl_complete")
+        if 'libedit' in rl.readline.__doc__:
+            rl.readline.parse_and_bind("bind ^I rl_complete")
         else:
-            readline.parse_and_bind("tab: complete")
-        readline.set_completer(self.complete)
+            rl.readline.parse_and_bind("tab: complete")
+        rl.readline.set_completer(self.complete)
         # Add handlers
         self.add_handler('quit', self.quit_command, ['exit', 'logout'])
         self.add_handler('clear', self.clear_command, ['cls', 'clr'])

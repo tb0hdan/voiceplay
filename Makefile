@@ -11,4 +11,14 @@ vlcpython:
 	@cp -v vlcpython/generated/vlc.py extlib/vlcpython
 
 deps:	snowboy vlcpython
-	@pip install -r requirements.txt
+	@sudo pip install -r requirements.txt
+
+py2app:	deps
+	@python setup.py py2app
+
+dmg:	py2app
+	@hdiutil create -srcfolder dist/voiceplay.app ./voiceplay.dmg
+
+clean:
+	@rm -rf build/ dist/
+	@rm -f ./*.dmg
