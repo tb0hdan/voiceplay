@@ -2,6 +2,7 @@
 import inspect
 import os
 import sys
+from copy import copy
 from voiceplay.logger import logger
 
 class PluginLoader(object):
@@ -82,7 +83,8 @@ class PluginLoader(object):
                 if issubclass(cls, base_class) and cls != base_class:
                     cls_list.append(cls)
         if try_sys:
-            for module_name in sys.modules:
+            sys_modules = copy(sys.modules)
+            for module_name in sys_modules:
                 if module_name.startswith(base_package):
                     module = sys.modules.get(module_name)
                     classes = inspect.getmembers(module, inspect.isclass)

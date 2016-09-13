@@ -28,6 +28,7 @@ Download and install VLC package from http://videolan.org
 
 ```
 brew install ffmpeg portaudio cmu-pocketsphinx swig libmagic
+sudo pip install pyobjc
 ```
 
 ### Linux (Debian/Ubuntu)
