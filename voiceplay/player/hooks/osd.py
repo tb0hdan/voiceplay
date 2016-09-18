@@ -20,7 +20,7 @@ class OSDNotification(object):
             url = lfm.get_artist_icon(artist)
             cls.darwin_notify(track, url)
         elif platform.system() == 'Linux':
-            cls.linux_notify(track, url)
+            cls.linux_notify(track, '')
 
     @classmethod
     def linux_notify(cls, message, icon_url):
