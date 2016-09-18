@@ -1,5 +1,6 @@
 import platform
 import requests
+from voiceplay import __title__
 from voiceplay.datasources.lastfm import VoicePlayLastFm
 from .basehook import BasePlayerHook
 
@@ -17,24 +18,35 @@ class OSDNotification(object):
         if platform.system() == 'Darwin':
             lfm = VoicePlayLastFm()
             url = lfm.get_artist_icon(artist)
+            cls.darwin_notify(track, url)
+        elif platform.system() == 'Linux':
+            cls.linux_notify(track, url)
 
-            import gntp.notifier
+    @classmethod
+    def linux_notify(cls, message, icon_url):
+        from gi.repository import Notify
+        Notify.init(__title__)
+        n = Notify.Notification.new(message, '', '')
+        n.show()
 
-            growl = gntp.notifier.GrowlNotifier(
-                applicationName="VoicePlay",
+    @classmethod
+    def darwin_notify(cls, message, icon_url):
+        import gntp.notifier
+
+        growl = gntp.notifier.GrowlNotifier(
+                applicationName=__title__,
                 notifications=["Played tracks"],
                 defaultNotifications=["Played tracks"],
-            )
-            growl.register()
-
-            growl.notify(
+        )
+        growl.register()
+        growl.notify(
                 noteType="Played tracks",
-                title=track.encode('utf-8'),
+                title=message.encode('utf-8'),
                 description='',
-                icon=url,
+                icon=icon_url,
                 sticky=False,
                 priority=1,
-            )
+        )
 
 
 class OSDPlayerHook(BasePlayerHook):
