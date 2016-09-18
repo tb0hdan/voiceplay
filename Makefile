@@ -11,6 +11,8 @@ vlcpython:
 	@cp -v vlcpython/generated/vlc.py extlib/vlcpython
 
 deps:	snowboy vlcpython
+	@git submodule init
+	@git submodule update
 	@sudo pip install -r requirements.txt
 
 py2app:	deps

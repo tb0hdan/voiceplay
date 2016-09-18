@@ -75,7 +75,7 @@ class MyArgumentParser(object):
         console.add_handler('what', vicki.player.play_from_parser)
         console.run_console()
 
-    def parse(self, argv=None):
+    def parse(self, argv=None, noblock=False):
         '''
         Parse command line arguments
         '''
@@ -98,5 +98,5 @@ class MyArgumentParser(object):
                                       ThreadedRequestHandler)
             thread = threading.Thread(target=server.serve_forever)
             thread.start()
-            vicki.run_forever_new(server)
+            vicki.run_forever_new(server, noblock=noblock)
         purge_cache()

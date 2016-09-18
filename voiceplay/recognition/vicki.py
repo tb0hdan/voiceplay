@@ -1,6 +1,7 @@
 ''' VoicePlay speech handler '''
 import logging
 import speech_recognition as sr
+import threading
 import time
 
 from voiceplay.logger import logger
@@ -91,11 +92,15 @@ class Vicki(object):
         if self.wakeword_receiver:
             self.wakeword_receiver.shutdown()
 
-    def run_forever_new(self, wakeword_receiver):
+    def run_forever_new(self, wakeword_receiver, noblock=False):
         '''
         Main loop
         '''
         self.wakeword_receiver = wakeword_receiver
+        if noblock:
+            th = threading.Thread(target=self.background_listener)
+            th.start()
+            return
         while not self.shutdown:
             try:
                 self.background_listener()
