@@ -32,16 +32,17 @@ class TextToSpeech(object):
                 # osx lacks appkit support for python3 (sigh)
                 self.say = self.__say_dummy
         elif system == 'Linux':
-            from festival import sayText
             self.say = self.__say_linux
         else:
             raise NotImplementedError('Platform not supported')
         self.queue = Queue()
 
-    def __say_linux(self, message):
+    @staticmethod
+    def __say_linux(message):
         '''
         Read aloud message Linux
         '''
+        from festival import sayText
         sayText(message)
 
     def __say_mac(self, message):
