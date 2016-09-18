@@ -1,5 +1,7 @@
+import os
 import platform
 import requests
+from tempfile import mkstemp
 from voiceplay import __title__
 from voiceplay.datasources.lastfm import VoicePlayLastFm
 from .basehook import BasePlayerHook
@@ -15,19 +17,25 @@ class OSDNotification(object):
         if not (track and argparser and argparser.osd):
             return
         artist = track.split(' - ')[0]
+        lfm = VoicePlayLastFm()
+        url = lfm.get_artist_icon(artist)
         if platform.system() == 'Darwin':
-            lfm = VoicePlayLastFm()
-            url = lfm.get_artist_icon(artist)
             cls.darwin_notify(track, url)
         elif platform.system() == 'Linux':
-            cls.linux_notify(track, '')
+            cls.linux_notify(track, url)
 
     @classmethod
     def linux_notify(cls, message, icon_url):
         from gi.repository import Notify
         Notify.init(__title__)
-        n = Notify.Notification.new(message, '', '')
+        icon_file = mkstemp()[1]
+        r = requests.get(icon_url, stream=True)
+        with open(icon_file, 'wb') as fh:
+            for chunk in r.iter_content(1024):
+                fh.write(chunk)
+        n = Notify.Notification.new(message, '', icon_file)
         n.show()
+        os.remove(icon_file)
 
     @classmethod
     def darwin_notify(cls, message, icon_url):
