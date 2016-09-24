@@ -15,7 +15,7 @@ vlcpython:	submodules
 	@cp -v vlcpython/generated/vlc.py extlib/vlcpython
 
 deps:	snowboy vlcpython
-	@sudo pip install -r requirements.txt
+	@pip install -r requirements.txt
 
 py2app:	deps
 	@python setup.py py2app
@@ -26,3 +26,4 @@ dmg:	py2app
 clean:
 	@rm -rf build/ dist/
 	@rm -f ./*.dmg
+	@rm -rf vlcpython/ snowboy/
