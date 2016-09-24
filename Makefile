@@ -26,4 +26,4 @@ dmg:	py2app
 clean:
 	@rm -rf build/ dist/
 	@rm -f ./*.dmg
-	@rm -rf vlcpython/ snowboy/
+	@rm -rf ./vlcpython/ ./snowboy/; mkdir ./vlcpython ./snowboy
