@@ -111,6 +111,21 @@ class VickiPlayer(object):
             self.queue.task_done()
         logger.debug('Vickiplayer.cmd_loop exit')
 
+    def run_player_tasks(self, message):
+        ran = False
+        for task in self.player_tasks:
+            for regexp in task.__regexp__:
+                if re.match(regexp, message) is not None:
+                    ran = True
+                    task.prefetch_callback = self.add_to_prefetch_q
+                    task.argparser = self._argparser
+                    task.get_exit = self.get_exit
+                    task.player = self.player
+                    task.tts = self.tts
+                    task.process(regexp, message)
+                    break
+        return ran
+
     def task_loop(self):
         while not self.shutdown_flag:
             if not self.p_queue.empty():
@@ -122,18 +137,7 @@ class VickiPlayer(object):
             if not parsed:
                 continue
             self.exit_task = False
-            ran = False
-            for task in self.player_tasks:
-                for regexp in task.__regexp__:
-                    if re.match(regexp, parsed) is not None:
-                        ran = True
-                        task.prefetch_callback = self.add_to_prefetch_q
-                        task.argparser = self._argparser
-                        task.get_exit = self.get_exit
-                        task.player = self.player
-                        task.tts = self.tts
-                        task.process(regexp, parsed)
-                        break
+            ran = self.run_player_tasks(parsed)
             if not ran:
                 msg = 'I think you said ' + parsed
                 self.tts.say_put(msg)
