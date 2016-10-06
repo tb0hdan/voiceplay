@@ -17,6 +17,9 @@ vlcpython:	submodules
 deps:	snowboy vlcpython
 	@pip install -r requirements.txt
 
+piprot:	deps
+	@piprot -o requirements.txt; exit 0
+
 py2app:	deps
 	@python setup.py py2app
 
