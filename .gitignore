@@ -90,6 +90,9 @@ ENV/
 # Rope project settings
 .ropeproject
 
+# PyCharm project settings
+.idea
+
 # local files
 config.yaml
 config.yaml.bkp
