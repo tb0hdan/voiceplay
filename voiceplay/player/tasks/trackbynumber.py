@@ -2,7 +2,7 @@ import re
 from .basetask import BasePlayerTask
 
 
-class TrackByNumber(BasePlayerTask):
+class TrackByNumberTask(BasePlayerTask):
 
     __group__ = ['play']
     __regexp__ = ['^play top (?:songs|tracks) by (.+)$']
@@ -109,5 +109,6 @@ class TrackByNumber(BasePlayerTask):
 
     @classmethod
     def process(cls, regexp, message):
+        cls.logger.debug('Running task: %s with %r -> %r', 'TrackByNumberTask', regexp, message)
         artist = re.match(regexp, message).groups()[0]
         cls.run_play_cmd(artist)

@@ -11,5 +11,6 @@ class SingleTrackArtistTask(BasePlayerTask):
 
     @classmethod
     def process(cls, regexp, message):
+        cls.logger.debug('Running task: %s with %r -> %r', 'SingleTrackArtistTask', regexp, message)
         track, artist = re.match(regexp, message).groups()
         cls.play_full_track('%s - %s' % (artist, track))

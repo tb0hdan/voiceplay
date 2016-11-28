@@ -24,5 +24,6 @@ class AlbumTask(BasePlayerTask):
 
     @classmethod
     def process(cls, regexp, message):
+        cls.logger.debug('Running task: %s with %r -> %r', 'AlbumTask', regexp, message)
         album, artist = re.match(regexp, message).groups()
         cls.play_artist_album(artist, album)

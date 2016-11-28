@@ -26,6 +26,7 @@ class SingleArtistTask(BasePlayerTask):
 
     @classmethod
     def process(cls, regexp, message):
+        cls.logger.debug('Running task: %s with %r -> %r', 'SingleArtistTask', regexp, message)
         artist = re.match(regexp, message).groups()[0]
         cls.tts.say_put('Shuffling %s' % artist)
         cls.run_shuffle_artist(artist)

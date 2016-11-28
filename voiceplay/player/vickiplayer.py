@@ -81,8 +81,8 @@ class VickiPlayer(object):
         all_set = stop_set + next_set + pause_set + resume_set + quit_set
         if message in all_set:
             if message in stop_set:
-                self.exit_task = True
                 self.player.stop()
+                self.exit_task = True
             elif message in next_set:
                 self.player.stop()
             elif message in pause_set:
@@ -90,9 +90,9 @@ class VickiPlayer(object):
             elif message in resume_set:
                 self.player.resume()
             elif message in quit_set:
+                self.player.shutdown()
                 self.shutdown_flag = True
                 self.exit_task = True
-                self.player.shutdown()
         else:
             self.exit_task = True
             if message.startswith('play'):
@@ -124,6 +124,8 @@ class VickiPlayer(object):
                     task.tts = self.tts
                     task.process(regexp, message)
                     break
+            if ran:
+                break
         return ran
 
     def task_loop(self):

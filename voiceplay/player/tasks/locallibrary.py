@@ -29,6 +29,7 @@ class LocalLibraryTask(BasePlayerTask):
 
     @classmethod
     def process(cls, regexp, message):
+        cls.logger.debug('Running task: %s with %r -> %r', 'LocalLibraryTask', regexp, message)
         msg = re.match(regexp, message).groups()[0]
         logger.warning(msg)
         cls.tts.say_put('Shuffling local library')

@@ -14,6 +14,7 @@ class BasePlayerTask(object):
     '''
     lfm = VoicePlayLastFm()
     cfg_data = Config.cfg_data()
+    logger = logger
 
     @staticmethod
     def trackfilter(search_term, search_result):
@@ -52,7 +53,7 @@ class BasePlayerTask(object):
                 for item in prefs:
                     full_path = os.path.join(cls.cfg_data.get('cache_dir'), track_to_hash(item)) + '.mp3'
                     if not os.path.exists(full_path) and cls.prefetch_callback and callable(cls.prefetch_callback):
-                        logger.debug('Adding %r to prefetch queue', item.encode('utf-8'))
+                        cls.logger.debug('Adding %r to prefetch queue', item.encode('utf-8'))
                         cls.prefetch_callback(item)
             yield tracklist[idx]
 
@@ -81,10 +82,10 @@ class BasePlayerTask(object):
                 results = []
                 message = 'Source %r search failed with %r\n' % (source, exc)
                 message += 'Continuing using next source provider...'
-                logger.debug(message)
+                cls.logger.debug(message)
             tracks = [track for track in results if cls.track_filter_fn(trackname, track)]
             if tracks:
-                logger.debug('Getting track using %r', source.__name__)
+                cls.logger.debug('Getting track using %r', source.__name__)
                 url = source.__baseurl__ + tracks[0][1]
                 try:
                     filename = source.download(trackname, url)
@@ -94,15 +95,16 @@ class BasePlayerTask(object):
                 except Exception as exc:
                     message = 'Processing of source url %s failed with %r\n' % (url, exc)
                     message += 'Continuing using next source url...'
-                    logger.debug(message)
+                    cls.logger.debug(message)
         return filename
 
     @classmethod
     def play_full_track(cls, trackname):
+        cls.logger.debug('PFT: ' + trackname)
         full_path = os.path.join(cls.cfg_data.get('cache_dir'), track_to_hash(trackname)) + '.mp3'
         if not os.path.exists(full_path):
-            logger.debug('Track %r is not cached at %r', trackname, full_path)
+            cls.logger.debug('Track %r is not cached at %r', trackname, full_path)
             full_path = cls.download_full_track(trackname)
         else:
-            logger.debug('Using cache for %r at %r', trackname, full_path)
+            cls.logger.debug('Using cache for %r at %r', trackname, full_path)
         cls.player.play(full_path, trackname)
