@@ -1,4 +1,4 @@
-voiceplay (proof of concept) - Voice controlled console playback (OSX/Linux)
+voiceplay - Music centered voice controlled player (OSX/Linux)
 
 - [DESCRIPTION](#description)
 - [INSTALLATION](#installation)
