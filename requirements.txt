@@ -3,6 +3,7 @@ beautifulsoup4==4.5.1
 colorama==0.3.7
 dailymotion==0.2.2
 filemagic==1.6
+flake8==3.2.1
 gntp==1.0.3
 google-api-python-client==1.5.3
 ipython==5.1.0
@@ -13,6 +14,7 @@ piprot==0.9.7
 pocketsphinx==0.1.3
 PyAudio==0.2.9
 pylast==1.6.0
+pylint==1.6.4
 PyVimeo==0.3.4
 rl==2.4
 SpeechRecognition==3.4.6
