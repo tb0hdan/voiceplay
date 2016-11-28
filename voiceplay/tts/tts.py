@@ -27,6 +27,9 @@ class TextToSpeech(object):
                 base = 'com.apple.speech.synthesis.voice'
                 self.voice = base + '.' + voice
                 self.speech = NSSpeechSynthesizer.alloc().initWithVoice_(self.voice)
+                # sierra?
+                if not self.speech:
+                    self.speech = NSSpeechSynthesizer.alloc().initWithVoice_(base + '.' + 'Victoria')
                 self.say = self.__say_mac
             except ImportError:
                 # osx lacks appkit support for python3 (sigh)
