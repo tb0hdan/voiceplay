@@ -5,11 +5,11 @@ dailymotion==0.2.2
 filemagic==1.6
 flake8==3.2.1
 gntp==1.0.3
-google-api-python-client==1.5.3
+google-api-python-client==1.5.5
 ipython==5.1.0
 kaptan==0.5.8
 monotonic==1.2
-mutagen==1.34.1
+mutagen==1.35.1
 piprot==0.9.7
 pocketsphinx==0.1.3
 PyAudio==0.2.9
@@ -17,5 +17,5 @@ pylast==1.6.0
 pylint==1.6.4
 PyVimeo==0.3.4
 rl==2.4
-SpeechRecognition==3.4.6
-youtube-dl==2016.10.2
+SpeechRecognition==3.5.0
+youtube-dl==2016.11.27
