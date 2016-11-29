@@ -11,7 +11,8 @@ class VLCPlayer(object):
         self.debug = debug
         opts = ['--file-caching=10000', '--disc-caching=10000',
                 '--live-caching=10000', '--network-caching=10000',
-                '--metadata-network-access']
+                '--metadata-network-access', '--audio-replay-gain-mode=track',
+                '--no-playlist-cork']
         if self.debug:
             opts.append('--verbose=2')
         else:
