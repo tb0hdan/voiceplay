@@ -109,6 +109,6 @@ class TrackByNumberTask(BasePlayerTask):
 
     @classmethod
     def process(cls, regexp, message):
-        cls.logger.debug('Message: %r matches %r, running %r', message, regexp, 'TrackByNumberTask')
+        cls.logger.debug('Message: %r matches %r, running %r', message, regexp, cls.__name__)
         artist = re.match(regexp, message).groups()[0]
         cls.run_play_cmd(artist)

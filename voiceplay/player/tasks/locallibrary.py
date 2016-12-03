@@ -29,7 +29,7 @@ class LocalLibraryTask(BasePlayerTask):
 
     @classmethod
     def process(cls, regexp, message):
-        cls.logger.debug('Message: %r matches %r, running %r', message, regexp, 'LocalLibraryTask')
+        cls.logger.debug('Message: %r matches %r, running %r', message, regexp, cls.__name__)
         msg = re.match(regexp, message).groups()[0]
         logger.warning(msg)
         cls.tts.say_put('Shuffling songs in local library')
