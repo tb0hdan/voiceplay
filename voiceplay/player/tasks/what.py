@@ -13,7 +13,7 @@ class WhatTask(BasePlayerTask):
 
     @classmethod
     def process(cls, regexp, message):
-        cls.logger.debug('Running task: %s with %r -> %r', cls.__class__, regexp, message)
+        cls.logger.debug('Message: %r matches %r, running %r', message, regexp, 'WhatTask')
         artist = re.match(regexp, message).groups()[0]
         if 'albums' in regexp:
             albums = cls.lfm.get_top_albums(artist)

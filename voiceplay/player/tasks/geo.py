@@ -27,7 +27,7 @@ class GeoTask(BasePlayerTask):
 
     @classmethod
     def process(cls, regexp, message):
-        cls.logger.debug('Running task: %s with %r -> %r', 'GeoTask', regexp, message)
+        cls.logger.debug('Message: %r matches %r, running %r', message, regexp, 'GeoTask')
         country = re.match(regexp, message).groups()[0]
         if country:
             msg = 'Playing top track for country %s' % country

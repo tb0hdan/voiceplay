@@ -25,7 +25,7 @@ class StationTask(BasePlayerTask):
 
     @classmethod
     def process(cls, regexp, message):
-        cls.logger.debug('Running task: %s with %r -> %r', 'StationTask', regexp, message)
+        cls.logger.debug('Message: %r matches %r, running %r', message, regexp, 'StationTask')
         station = re.match(regexp, message).groups()[0]
         cls.tts.say_put('Playing %s station' % station)
         cls.play_station(station)
