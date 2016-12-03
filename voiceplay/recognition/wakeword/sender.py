@@ -51,7 +51,7 @@ class WakeWordListener(object):
         th = threading.Thread(name='TCPAsync', target=self.async_worker)
         th.setDaemon(True)
         th.start()
-        sensitivity = [0.5] * len(self.models)
+        sensitivity = [0.5, 0.3, 0.3]#[0.5] * len(self.models)
         self.detector = snowboydecoder.HotwordDetector(self.models, sensitivity=sensitivity, audio_gain=1)
         try:
             self.detector.start(detected_callback=self.wakeword_callback, interrupt_check=self.interrupt_check, sleep_time=0.03)
