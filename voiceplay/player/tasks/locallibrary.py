@@ -32,5 +32,5 @@ class LocalLibraryTask(BasePlayerTask):
         cls.logger.debug('Running task: %s with %r -> %r', 'LocalLibraryTask', regexp, message)
         msg = re.match(regexp, message).groups()[0]
         logger.warning(msg)
-        cls.tts.say_put('Shuffling local library')
+        cls.tts.say_put('Shuffling songs in local library')
         cls.play_local_library(msg)

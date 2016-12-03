@@ -62,7 +62,7 @@ class Vicki(object):
             try:
                 result = self.rec.recognize_google(audio)
             except sr.UnknownValueError:
-                msg = 'Vicki could not understand audio'
+                msg = 'I could not understand audio'
                 self.tts.say_put(msg)
                 logger.warning(msg)
                 result = None
