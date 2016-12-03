@@ -74,11 +74,12 @@ class Vicki(object):
             logger.debug('recog end')
             self.player.player.volume = volume
             if result:
+                result = result.lower()
                 logger.debug('Putting %r into processing queue', repr(result))
                 # allow commands to be processed by player instance first
                 self.player.put(result)
                 # process local cmd
-                if result.lower() in ['shutdown']:
+                if result in ['shutdown']:
                     self.stop()
         logger.debug('Vicki.Listener exit')
 
