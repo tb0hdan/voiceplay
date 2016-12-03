@@ -19,6 +19,10 @@ class WakeWordListener(object):
     '''
     Separate wakeword listener process class
     '''
+    models = ["extlib/snowboydetect/resources/Vicki_en.pmdl",
+              "extlib/snowboydetect/resources/Viki_de.pmdl",
+              "extlib/snowboydetect/resources/Viki_fr.pmdl"]
+
     def __init__(self):
         self.wake_up = False
         self.exit = False
@@ -47,7 +51,8 @@ class WakeWordListener(object):
         th = threading.Thread(name='TCPAsync', target=self.async_worker)
         th.setDaemon(True)
         th.start()
-        self.detector = snowboydecoder.HotwordDetector("extlib/snowboydetect/resources/Vicki.pmdl", sensitivity=0.5, audio_gain=1)
+        sensitivity = [0.5] * len(self.models)
+        self.detector = snowboydecoder.HotwordDetector(self.models, sensitivity=sensitivity, audio_gain=1)
         try:
             self.detector.start(detected_callback=self.wakeword_callback, interrupt_check=self.interrupt_check, sleep_time=0.03)
         except KeyboardInterrupt:
