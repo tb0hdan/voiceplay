@@ -13,4 +13,6 @@ class SingleTrackArtistTask(BasePlayerTask):
     def process(cls, regexp, message):
         cls.logger.debug('Message: %r matches %r, running %r', message, regexp, cls.__name__)
         track, artist = re.match(regexp, message).groups()
+        # TODO add track correction here
+        cls.tts.say_put('%s by %s' % (track, artist))
         cls.play_full_track('%s - %s' % (artist, track))

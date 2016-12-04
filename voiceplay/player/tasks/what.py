@@ -1,3 +1,4 @@
+#-*- coding: utf-8 -*-
 import re
 from voiceplay.logger import logger
 from .basetask import BasePlayerTask
