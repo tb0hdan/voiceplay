@@ -13,6 +13,7 @@ class Config(with_metaclass(Singleton)):
     VoicePlay configuration object
     '''
     cache_dir = '~/.cache/voiceplay'
+    persistent_dir = '~/.cache/voiceplay-persistent'
     config_search_order = ['config.yaml', os.path.expanduser('~/.config/voiceplay/config.yaml')]
     prefetch_count = 3
 
