@@ -4,6 +4,7 @@ import requests
 from tempfile import mkstemp
 from voiceplay import __title__
 from voiceplay.datasources.lastfm import VoicePlayLastFm
+from voiceplay.logger import logger
 from .basehook import BasePlayerHook
 
 class OSDNotification(object):
@@ -34,7 +35,11 @@ class OSDNotification(object):
             for chunk in r.iter_content(1024):
                 fh.write(chunk)
         n = Notify.Notification.new(message, '', icon_file)
-        n.show()
+        try:
+            n.show()
+        except Exception as exc:
+            # No X running, etc
+            logger.error('OSD failed with: %r', exc)
         os.remove(icon_file)
 
     @classmethod
