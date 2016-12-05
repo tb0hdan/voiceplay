@@ -1,4 +1,4 @@
-voiceplay - Music centered voice controlled player (OSX/Linux)
+voiceplay - Client-side first, music centered voice controlled player (OSX/Linux)
 
 - [DESCRIPTION](#description)
 - [INSTALLATION](#installation)
