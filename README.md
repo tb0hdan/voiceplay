@@ -22,9 +22,14 @@ redistribute it or use it however you like.
 
 ### MAC
 
+Please make sure you have following dependencies resolved prior to proceeding with other steps:
 
-Please make sure you have XCode installed prior to proceeding with other steps.
-Download and install VLC package from http://videolan.org
+1. Xcode (https://itunes.apple.com/ua/app/xcode/id497799835?l=uk&mt=12)
+2. Growl (http://growl.info/)
+3. VLC (http://videolan.org)
+
+
+then continue to:
 
 ```
 brew install ffmpeg portaudio cmu-pocketsphinx swig libmagic
@@ -141,6 +146,24 @@ or just
 play top tracks
 ```
 
+Billboard top 100:
+
+```
+play top 100 tracks
+```
+
+Rolling Stone top 500:
+
+```
+play top 500 tracks
+```
+
+Reddit music (/r/Music/):
+
+```
+play top reddit tracks
+```
+
 ### Shuffle specific album
 
 ```
@@ -160,6 +183,8 @@ play melodic death metal station
 ```
 
 ## Console mode
+
+Note: Add `-v` for increased verbosity level.
 
 ```
 ./voiceplay.sh -c
