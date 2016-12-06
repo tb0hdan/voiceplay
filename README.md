@@ -24,7 +24,7 @@ redistribute it or use it however you like.
 
 Please make sure you have following dependencies resolved prior to proceeding with other steps:
 
-1. Xcode (https://itunes.apple.com/ua/app/xcode/id497799835?l=uk&mt=12)
+1. Xcode (https://itunes.apple.com/ua/app/xcode/id497799835?l=en&mt=12)
 2. Growl (http://growl.info/)
 3. VLC (http://videolan.org)
 
