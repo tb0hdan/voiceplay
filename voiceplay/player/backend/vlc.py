@@ -1,3 +1,5 @@
+#-*- coding: utf-8 -*-
+
 import time
 from extlib.vlcpython.vlc import Instance
 from voiceplay.player.hooks.basehook import BasePlayerHook

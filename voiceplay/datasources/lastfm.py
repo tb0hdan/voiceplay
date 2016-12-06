@@ -1,3 +1,5 @@
+#-*- coding: utf-8 -*-
+
 import pylast
 from voiceplay.config import Config
 from voiceplay.logger import logger

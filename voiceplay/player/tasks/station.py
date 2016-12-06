@@ -1,3 +1,5 @@
+#-*- coding: utf-8 -*-
+
 import random
 random.seed()
 import re

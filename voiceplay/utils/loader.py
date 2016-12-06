@@ -1,4 +1,6 @@
+#-*- coding: utf-8 -*-
 ''' VoicePlay loader module '''
+
 import inspect
 import os
 import sys

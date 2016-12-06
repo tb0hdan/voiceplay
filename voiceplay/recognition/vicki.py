@@ -1,4 +1,6 @@
+#-*- coding: utf-8 -*-
 ''' VoicePlay speech handler '''
+
 import logging
 import speech_recognition as sr
 import threading

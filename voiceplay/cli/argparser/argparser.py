@@ -1,4 +1,6 @@
+#-*- coding: utf-8 -*-
 ''' VoicePlay argument parser module '''
+
 import argparse
 import threading
 import sys

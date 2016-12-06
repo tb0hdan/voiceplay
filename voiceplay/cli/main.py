@@ -1,4 +1,6 @@
+#-*- coding: utf-8 -*-
 ''' VoicePlay CLI module '''
+
 from .argparser.argparser import MyArgumentParser
 
 def main(noblock=False):

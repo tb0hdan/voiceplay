@@ -1,3 +1,5 @@
+#-*- coding: utf-8 -*-
+
 import SocketServer as socketserver
 import threading
 

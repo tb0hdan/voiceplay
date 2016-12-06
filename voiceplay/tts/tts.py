@@ -1,4 +1,6 @@
+#-*- coding: utf-8 -*-
 ''' VoicePlay Text to Speech engine module '''
+
 import platform
 import sys
 if sys.version_info.major == 2:

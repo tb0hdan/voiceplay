@@ -1,3 +1,5 @@
+#-*- coding: utf-8 -*-
+
 import inspect
 from voiceplay.logger import logger
 from .basehook import BasePlayerHook
