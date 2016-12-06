@@ -4,9 +4,9 @@
 import re
 import sys
 if sys.version_info.major == 2:
-    from Queue import Queue
+    from Queue import Queue  # pylint:disable=import-error
 elif sys.version_info.major == 3:
-    from queue import Queue
+    from queue import Queue  # pylint:disable=import-error
 
 import threading
 import time

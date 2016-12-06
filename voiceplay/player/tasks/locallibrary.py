@@ -25,7 +25,7 @@ class LocalLibraryTask(BasePlayerTask):
                     fnames.append(os.path.join(root, name))
         random.shuffle(fnames)
         for fname in fnames:
-            if cls.get_exit():
+            if cls.get_exit():  # pylint:disable=no-member
                 break
             cls.play(fname, fname.rstrip('.mp3'))
 

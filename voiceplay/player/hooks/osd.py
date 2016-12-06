@@ -29,7 +29,7 @@ class OSDNotification(object):
 
     @classmethod
     def linux_notify(cls, message, icon_url):
-        from gi.repository import Notify
+        from gi.repository import Notify  # pylint:disable=import-error
         Notify.init(__title__)
         icon_file = mkstemp()[1]
         r = requests.get(icon_url, stream=True)
@@ -46,7 +46,7 @@ class OSDNotification(object):
 
     @classmethod
     def darwin_notify(cls, message, icon_url):
-        import gntp.notifier
+        import gntp.notifier  # pylint:disable=import-error
 
         growl = gntp.notifier.GrowlNotifier(
                 applicationName=__title__,

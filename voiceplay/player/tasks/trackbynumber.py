@@ -1,6 +1,7 @@
 #-*- coding: utf-8 -*-
 
 import re
+from voiceplay.logger import logger
 from .basetask import BasePlayerTask
 
 
@@ -63,6 +64,7 @@ class TrackByNumberTask(BasePlayerTask):
             for track in tracks:
                 file_handle.write(track + '\n')
 
+    @classmethod
     def play_track_by_number(cls, number):
         '''
         Play track by number
@@ -83,6 +85,7 @@ class TrackByNumberTask(BasePlayerTask):
         if track:
             cls.play_full_track(track)
 
+    @classmethod
     def get_track_by_number(cls, number):
         '''
         Get Artist - Track by number

@@ -1,7 +1,7 @@
 #-*- coding: utf-8 -*-
 
-from apiclient.discovery import build
-from apiclient.errors import HttpError
+from apiclient.discovery import build  # pylint:disable=import-error
+from apiclient.errors import HttpError  # pylint:disable=import-error
 
 from .basesource import TrackSource
 

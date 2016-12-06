@@ -26,14 +26,14 @@ class WSRequestor(object):
             os.makedirs(os.path.expanduser(Config.persistent_dir))
         except Exception as exc:
             logger.debug('Persistent directory exists, good...')
-        cache_file = os.path.expanduser(os.path.join(Config.persistent_dir, self.cache_file))
+        cache_file = os.path.expanduser(os.path.join(Config.persistent_dir, self.cache_file))  # pylint:disable=no-member
         # 1w cache
-        if os.path.exists(cache_file) and time.time() - os.path.getmtime(cache_file) <= 3600*24*7:
-            logger.debug('Using %s cached version...', self.cache_file)
+        if os.path.exists(cache_file) and time.time() - os.path.getmtime(cache_file) <= 3600 * 24 * 7:
+            logger.debug('Using %s cached version...', self.cache_file)  # pylint:disable=no-member
             result = json.loads(open(cache_file, 'r').read())
         else:
-            logger.debug('Fetching and storing fresh %s version...', self.cache_file)
-            result = self.get_all()
+            logger.debug('Fetching and storing fresh %s version...', self.cache_file)  # pylint:disable=no-member
+            result = self.get_all()  # pylint:disable=no-member
             if result:
                 with open(cache_file, 'w') as file_handle:
                     file_handle.write(json.dumps(result))
@@ -130,7 +130,7 @@ class TopTracksTask(BasePlayerTask):
             tracks = cls.lfm.get_top_tracks_global()
         random.shuffle(tracks)
         for track in cls.tracks_with_prefetch(tracks):
-            if cls.get_exit():
+            if cls.get_exit():  # pylint:disable=no-member
                 break
             cls.play_full_track(track)
 
@@ -140,7 +140,7 @@ class TopTracksTask(BasePlayerTask):
         tracks = [u'{0!s} - {1!s}'.format(artist, track) for artist, track in rs.get_check_all()]
         random.shuffle(tracks)
         for track in cls.tracks_with_prefetch(tracks):
-            if cls.get_exit():
+            if cls.get_exit():  # pylint:disable=no-member
                 break
             cls.play_full_track(track)
 
@@ -150,7 +150,7 @@ class TopTracksTask(BasePlayerTask):
         tracks = bb.get_check_all()
         random.shuffle(tracks)
         for track in cls.tracks_with_prefetch(tracks):
-            if cls.get_exit():
+            if cls.get_exit():  # pylint:disable=no-member
                 break
             cls.play_full_track(track)
 
@@ -160,7 +160,7 @@ class TopTracksTask(BasePlayerTask):
         tracks = rm.get_check_all()
         random.shuffle(tracks)
         for track in cls.tracks_with_prefetch(tracks):
-            if cls.get_exit():
+            if cls.get_exit():  # pylint:disable=no-member
                 break
             cls.play_full_track(track)
 
@@ -170,7 +170,7 @@ class TopTracksTask(BasePlayerTask):
         param = None
         if re.match(regexp, message).groups():
             param = re.match(regexp, message).groups()[0]
-            msg = 'Playing top track for country %s' % country
+            msg = 'Playing top track for country %s' % param
             method = cls.run_top_tracks_geo
         elif '100' in regexp:
             msg = 'Playing Billboard top 100 tracks'

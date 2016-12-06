@@ -5,9 +5,9 @@ import os
 import requests
 import sys
 if sys.version_info.major == 2:
-    from urllib import quote
+    from urllib import quote  # pylint:disable=no-name-in-module,import-error
 elif sys.version_info.major == 3:
-    from urllib.parse import quote
+    from urllib.parse import quote  # pylint:disable=no-name-in-module,import-error
 
 from bs4 import BeautifulSoup
 from magic import Magic

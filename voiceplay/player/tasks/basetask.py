@@ -20,11 +20,11 @@ class BasePlayerTask(object):
 
     @classmethod
     def say(cls, msg):
-        cls.tts.say_put(msg)
+        cls.tts.say_put(msg)  # pylint:disable=no-member
 
     @classmethod
     def play(cls, path, track, block=True):
-        cls.player.play(path, track, block=True)
+        cls.player.play(path, track, block=True)  # pylint:disable=no-member
 
     @staticmethod
     def trackfilter(search_term, search_result):
@@ -66,9 +66,9 @@ class BasePlayerTask(object):
             if prefs:
                 for item in prefs:
                     full_path = os.path.join(cls.cfg_data.get('cache_dir'), track_to_hash(item)) + '.mp3'
-                    if not os.path.exists(full_path) and cls.prefetch_callback and callable(cls.prefetch_callback):
+                    if not os.path.exists(full_path) and cls.prefetch_callback and callable(cls.prefetch_callback):  # pylint:disable=no-member
                         cls.logger.debug('Adding %r to prefetch queue', item.encode('utf-8'))
-                        cls.prefetch_callback(item)
+                        cls.prefetch_callback(item)  # pylint:disable=no-member
             yield tracklist[idx]
 
     @classmethod
@@ -122,4 +122,4 @@ class BasePlayerTask(object):
             full_path = cls.download_full_track(trackname)
         else:
             cls.logger.debug('Using cache for %r at %r', trackname, full_path)
-        cls.player.play(full_path, trackname)
+        cls.player.play(full_path, trackname)  # pylint:disable=no-member

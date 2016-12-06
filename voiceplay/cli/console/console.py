@@ -77,7 +77,7 @@ class Console(object):
         '''
         Provide autocompletion support (buggy)
         '''
-        text = rl.readline.get_line_buffer()
+        text = rl.readline.get_line_buffer()  # pylint:disable=no-member
         if not text:
             return [c + ' ' for c in self.commands][state]
         results = [c + ' ' for c in self.commands if c.startswith(text)]
@@ -94,11 +94,11 @@ class Console(object):
         inp = None
         colorama.init()
         # FSCK! Details here: http://stackoverflow.com/questions/7116038/python-tab-completion-mac-osx-10-7-lion
-        if 'libedit' in rl.readline.__doc__:
-            rl.readline.parse_and_bind("bind ^I rl_complete")
+        if 'libedit' in rl.readline.__doc__:  # pylint:disable=unsupported-membership-test
+            rl.readline.parse_and_bind("bind ^I rl_complete")  # pylint:disable=no-member
         else:
-            rl.readline.parse_and_bind("tab: complete")
-        rl.readline.set_completer(self.complete)
+            rl.readline.parse_and_bind("tab: complete")  # pylint:disable=no-member
+        rl.readline.set_completer(self.complete)  # pylint:disable=no-member
         # Add handlers
         self.add_handler('quit', self.quit_command, ['exit', 'logout'])
         self.add_handler('clear', self.clear_command, ['cls', 'clr'])
