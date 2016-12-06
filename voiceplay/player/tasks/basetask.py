@@ -41,6 +41,10 @@ class BasePlayerTask(object):
                 break
         return track_is_ok
 
+    @staticmethod
+    def track_normalizer(track):
+        return ' '.join(word.capitalize() for word in track.split(' '))
+
     @classmethod
     def tracks_with_prefetch(cls, tracklist):
         '''
@@ -108,6 +112,7 @@ class BasePlayerTask(object):
 
     @classmethod
     def play_full_track(cls, trackname):
+        trackname = cls.track_normalizer(trackname)
         cls.logger.debug('PFT: ' + trackname)
         full_path = os.path.join(cls.cfg_data.get('cache_dir'), track_to_hash(trackname)) + '.mp3'
         if not os.path.exists(full_path):
