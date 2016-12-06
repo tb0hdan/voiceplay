@@ -25,12 +25,12 @@ class LocalLibraryTask(BasePlayerTask):
         for fname in fnames:
             if cls.get_exit():
                 break
-            cls.player.play(fname, fname.rstrip('.mp3'))
+            cls.play(fname, fname.rstrip('.mp3'))
 
     @classmethod
     def process(cls, regexp, message):
         cls.logger.debug('Message: %r matches %r, running %r', message, regexp, cls.__name__)
         msg = re.match(regexp, message).groups()[0]
         logger.warning(msg)
-        cls.tts.say_put('Shuffling songs in local library')
+        cls.say('Shuffling songs in local library')
         cls.play_local_library(msg)

@@ -4,6 +4,7 @@ import random
 random.seed()
 import re
 import requests
+import time
 
 from bs4 import BeautifulSoup
 
@@ -24,8 +25,8 @@ class WSRequestor(object):
         except Exception as exc:
             logger.debug('Persistent directory exists, good...')
         cache_file = os.path.expanduser(os.path.join(Config.persistent_dir, self.cache_file))
-
-        if os.path.exists(cache_file):
+        # 1w cache
+        if os.path.exists(cache_file) and time.time() - os.path.getmtime(cache_file) <= 3600*24*7:
             logger.debug('Using %s cached version...', self.cache_file)
             result = json.loads(open(cache_file, 'r').read())
         else:
@@ -85,13 +86,28 @@ class BB100Requestor(WSRequestor):
             all_tracks.append(u'{0!s} - {1!s}'.format(artist.text.strip(), title.text.strip()))
         return all_tracks
 
+class RedditMusicRequestor(WSRequestor):
+    cache_file = 'reddit_music.dat'
+    base_url = 'https://www.reddit.com/r/Music/search.json?q=flair%3A%22music+streaming%22&sort=hot&restrict_sr=on&t=week'
+
+    def get_all(self):
+        all_tracks = []
+        data = requests.get(self.base_url, headers=self.headers)
+        children = json.loads(data.text).get('data', {}).get('children', [])
+        for element in children:
+            track = element.get('data', {}).get('title', '')
+            if not track:
+                continue
+            track = re.sub('\s\[(.+)$', '', track)
+            all_tracks.append(track)
+        return all_tracks
 
 
 class TopTracksTask(BasePlayerTask):
 
     __group__ = ['play', 'top']
     __regexp__ = ['^play top (?:songs|tracks)(?:\sin\s(.+))?$', '^(?:play\stop|top) 500 tracks?$',
-                  '^(?:play\stop|top) 100 tracks?$']
+                  '^(?:play\stop|top) 100 tracks?$', '^(?:play\stop|top) reddit tracks?$']
     __priority__ = 40
     __actiontype__ = 'top_tracks_task'
 
@@ -111,7 +127,7 @@ class TopTracksTask(BasePlayerTask):
             cls.play_full_track(track)
 
     @classmethod
-    def run_rs500(cls):
+    def run_rs500(cls, *args):
         rs = RS500Requestor()
         tracks = [u'{0!s} - {1!s}'.format(artist, track) for artist, track in rs.get_check_all()]
         random.shuffle(tracks)
@@ -121,7 +137,7 @@ class TopTracksTask(BasePlayerTask):
             cls.play_full_track(track)
 
     @classmethod
-    def run_bb100(cls):
+    def run_bb100(cls, *args):
         bb = BB100Requestor()
         tracks = bb.get_check_all()
         random.shuffle(tracks)
@@ -130,24 +146,35 @@ class TopTracksTask(BasePlayerTask):
                 break
             cls.play_full_track(track)
 
+    @classmethod
+    def run_reddit_music(cls, *args):
+        rm = RedditMusicRequestor()
+        tracks = rm.get_check_all()
+        random.shuffle(tracks)
+        for track in cls.tracks_with_prefetch(tracks):
+            if cls.get_exit():
+                break
+            cls.play_full_track(track)
 
     @classmethod
     def process(cls, regexp, message):
         cls.logger.debug('Message: %r matches %r, running %r', message, regexp, cls.__name__)
+        param = None
         if re.match(regexp, message).groups():
-            country = re.match(regexp, message).groups()[0]
+            param = re.match(regexp, message).groups()[0]
             msg = 'Playing top track for country %s' % country
-            cls.tts.say_put(msg)
-            cls.run_top_tracks_geo(country)
+            method = cls.run_top_tracks_geo
         elif '100' in regexp:
             msg = 'Playing Billboard top 100 tracks'
-            cls.tts.say_put(msg)
-            cls.run_bb100()
+            method = cls.run_bb100
         elif '500' in regexp:
             msg = 'Playing Rolling Stone top 500 greatest songs'
-            cls.tts.say_put(msg)
-            cls.run_rs500()
+            method = cls.run_rs500
+        elif 'reddit' in regexp:
+            msg = 'Playing Reddit music (hot week)'
+            method = cls.run_reddit_music
         else:
             msg = 'Playing global top tracks'
-            cls.tts.say_put(msg)
-            cls.run_top_tracks_geo(country)
+            method = cls.run_top_tracks_geo
+        cls.say(msg)
+        method(param)

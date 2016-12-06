@@ -38,7 +38,7 @@ class TrackByNumberTask(BasePlayerTask):
                 key = arr[0]
             adj = cls.numbers[key]['adjective']
             artist = cls.get_track_by_number(key)[0]
-            cls.tts.say_put('Playing %s track by %s' % (adj, artist))
+            cls.say('Playing %s track by %s' % (adj, artist))
             # play track with track number
             cls.play_track_by_number(key)
         else:
@@ -46,7 +46,7 @@ class TrackByNumberTask(BasePlayerTask):
                 tracks = cls.lfm.get_top_tracks(cls.lfm.get_corrected_artist(phrase))[:10]
                 numerized = ', '.join(cls.lfm.numerize(tracks))
                 reply = re.sub(r'^(.+)\.\s\d\:\s', '1: ', numerized)
-                cls.tts.say_put('Here are some top tracks by %s: %s' % (phrase,
+                cls.say('Here are some top tracks by %s: %s' % (phrase,
                                                                      reply))
                 # record track numbers
                 cls.store_tracks(tracks)

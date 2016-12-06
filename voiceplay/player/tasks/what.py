@@ -23,17 +23,17 @@ class WhatTask(BasePlayerTask):
             albums = cls.lfm.get_top_albums(artist)
             msg = cls.lfm.numerize(albums[:10])
             logger.warning('Here are top albums by %s - %s', artist, msg)
-            cls.tts.say_put('Here are top albums by %s - %s' % (artist, msg))
+            cls.say('Here are top albums by %s - %s' % (artist, msg))
         elif 'songs' in regexp or 'tracks' in regexp:
             tracks = cls.lfm.get_top_tracks(artist)[:10]
             numerized = ', '.join(cls.lfm.numerize(tracks))
             reply = re.sub(r'^(.+)\.\s\d\:\s', '1: ', numerized)
             logger.warning('Here are some top tracks by %s: %s', artist, reply)
-            cls.tts.say_put('Here are some top tracks by %s: %s' % (artist, reply))
+            cls.say('Here are some top tracks by %s: %s' % (artist, reply))
         elif 'time' in regexp:
-            cls.tts.say_put('It is %s %s right now' % (int(time.strftime('%H')), int(time.strftime('%M'))))
+            cls.say('It is %s %s right now' % (int(time.strftime('%H')), int(time.strftime('%M'))))
         elif 'date' in regexp or 'day' in regexp:
             weekday = time.strftime('%A')
             month_name = time.strftime('%B')
             daynum = int(time.strftime('%d'))
-            cls.tts.say_put('It is %s %s %s' % (weekday, month_name, daynum))
+            cls.say('It is %s %s %s' % (weekday, month_name, daynum))

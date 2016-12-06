@@ -34,9 +34,11 @@ sudo pip install pyobjc
 ### Linux (Debian/Ubuntu)
 
 ```
-sudo apt-get install libav-tools python-dev festival festival-dev portaudio19-dev vlc
+sudo apt-get install python-all-dev python-setuptools
+sudo apt-get install libav-tools festival festival-dev portaudio19-dev vlc
 sudo apt-get install pocketsphinx swig libmagic1 libpulse-dev libreadline-dev
 sudo apt-get install libblas-dev liblapack-dev libatlas-dev libatlas-base-dev python-gobject
+sudo easy_install pip
 sudo pip install pyfestival
 ```
 

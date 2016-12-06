@@ -16,6 +16,14 @@ class BasePlayerTask(object):
     cfg_data = Config.cfg_data()
     logger = logger
 
+    @classmethod
+    def say(cls, msg):
+        cls.tts.say_put(msg)
+
+    @classmethod
+    def play(cls, path, track, block=True):
+        cls.player.play(path, track, block=True)
+
     @staticmethod
     def trackfilter(search_term, search_result):
         track_is_ok = True
