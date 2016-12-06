@@ -32,8 +32,9 @@ class WSRequestor(object):
         else:
             logger.debug('Fetching and storing fresh %s version...', self.cache_file)
             result = self.get_all()
-            with open(cache_file, 'w') as file_handle:
-                file_handle.write(json.dumps(result))
+            if result:
+                with open(cache_file, 'w') as file_handle:
+                    file_handle.write(json.dumps(result))
         return result
 
 
@@ -77,13 +78,18 @@ class BB100Requestor(WSRequestor):
         data = requests.get(self.base_url, headers=self.headers)
         soup = BeautifulSoup(''.join(data.text), 'html.parser')
         for element in soup.find_all(lambda tag: tag.name == 'div' and 'chart-row__title' in tag.get('class', [])):
+            artist = None
+            title = None
             for title in element.find_all(lambda tag: tag.name == 'h2' and 'chart-row__song' in tag.get('class', [])):
                 if title.text:
+                    title = title.text.strip()
                     break
-            for artist in element.find_all(lambda tag: tag.name == 'a' and 'chart-row__artist' in tag.get('class', [])):
+            for artist in element.find_all(lambda tag: tag.name == 'h3' and 'chart-row__artist' in tag.get('class', [])):
                 if artist.text:
+                    artist = artist.text.strip()
                     break
-            all_tracks.append(u'{0!s} - {1!s}'.format(artist.text.strip(), title.text.strip()))
+            if title and artist:
+                all_tracks.append(u'{0!s} - {1!s}'.format(artist, title))
         return all_tracks
 
 class RedditMusicRequestor(WSRequestor):
