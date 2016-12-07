@@ -18,4 +18,4 @@ pylint==1.6.4
 PyVimeo==0.3.4
 rl==2.4
 SpeechRecognition==3.5.0
-youtube-dl>=2016.11.27
+youtube-dl
