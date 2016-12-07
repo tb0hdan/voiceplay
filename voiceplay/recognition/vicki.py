@@ -9,7 +9,7 @@ import time
 from voiceplay.logger import logger
 from voiceplay.tts.tts import TextToSpeech
 from voiceplay.player.vickiplayer import VickiPlayer
-
+from voiceplay.utils.helpers import restart_on_crash
 
 class Vicki(object):
     '''
@@ -101,13 +101,13 @@ class Vicki(object):
         '''
         self.wakeword_receiver = wakeword_receiver
         if noblock:
-            th = threading.Thread(target=self.background_listener)
+            th = threading.Thread(target=restart_on_crash, args=(self.background_listener,))
             th.start()
             return
         while not self.shutdown:
             try:
                 self.background_listener()
-            except KeyboardInterrupt:
+            except (KeyboardInterrupt, SystemExit):
                 self.stop()
             except Exception as exc:
                 logger.debug('Background listener failed with %r, restarting...', exc)

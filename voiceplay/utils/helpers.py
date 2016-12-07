@@ -5,6 +5,8 @@ import hashlib
 import os
 from glob import glob
 
+from voiceplay.logger import logger
+
 class Singleton(type):
     '''
     Singleton base class
@@ -33,3 +35,19 @@ def purge_cache():
                 os.remove(fname)
             except Exception as exc:
                 logger.debug('Removal of %r failed, please check permissions')
+
+def restart_on_crash(method, *args, **kwargs):
+    while True:
+        result = None
+        try:
+            result = method(*args, **kwargs)
+        except (KeyboardInterrupt, SystemExit):
+            break
+        except Exception as exc:
+            logger.debug('Method %r crashed with %r, restarting...', method, exc)
+            # allow interrupt
+            time.sleep(1)
+        else:
+            break
+    logger.debug('Method %r completed without exception', method)
+    return result

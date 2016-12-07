@@ -11,7 +11,7 @@ from voiceplay.cli.console.console import Console
 from voiceplay.utils.loader import PluginLoader
 from voiceplay.player.tasks.basetask import BasePlayerTask
 from voiceplay.player.hooks.basehook import BasePlayerHook
-from voiceplay.utils.helpers import purge_cache
+from voiceplay.utils.helpers import purge_cache, restart_on_crash
 
 class MyArgumentParser(object):
     '''
@@ -98,7 +98,7 @@ class MyArgumentParser(object):
             address = ('127.0.0.1', 63455)
             server = WakeWordReceiver(address,
                                       ThreadedRequestHandler)
-            thread = threading.Thread(target=server.serve_forever)
+            thread = threading.Thread(target=restart_on_crash, args=(server.serve_forever,))
             thread.start()
             vicki.run_forever_new(server, noblock=noblock)
         purge_cache()

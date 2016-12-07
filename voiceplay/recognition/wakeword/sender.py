@@ -13,6 +13,7 @@ import time
 import extlib.snowboydetect.snowboydecoder as snowboydecoder
 
 from voiceplay.logger import logger
+from voiceplay.utils.helpers import restart_on_crash
 
 class WakeWordListener(object):
     '''
@@ -47,14 +48,14 @@ class WakeWordListener(object):
 
     def wakeword_listener(self):
         print ('starting detector!')
-        th = threading.Thread(name='TCPAsync', target=self.async_worker)
+        th = threading.Thread(name='TCPAsync', target=restart_on_crash, args=(self.async_worker,))
         th.setDaemon(True)
         th.start()
         sensitivity = [0.5, 0.3, 0.3]#[0.5] * len(self.models)
         self.detector = snowboydecoder.HotwordDetector(self.models, sensitivity=sensitivity, audio_gain=1)
         try:
             self.detector.start(detected_callback=self.wakeword_callback, interrupt_check=self.interrupt_check, sleep_time=0.03)
-        except KeyboardInterrupt:
+        except (KeyboardInterrupt, SystemExit):
             self.exit = True
             th.join()
 

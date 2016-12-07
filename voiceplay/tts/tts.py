@@ -13,6 +13,7 @@ import time
 
 from voiceplay import __title__
 from voiceplay.logger import logger
+from voiceplay.utils.helpers import restart_on_crash
 
 class TextToSpeech(object):
     '''
@@ -83,7 +84,7 @@ class TextToSpeech(object):
         Start TTS as a separate thread
         '''
         logger.debug('Starting TTS engine...')
-        self.thread = threading.Thread(name='TTS', target=self.poll_loop)
+        self.thread = threading.Thread(name='TTS', target=restart_on_crash, args=(self.poll_loop,))
         self.thread.start()
 
     def stop(self):
