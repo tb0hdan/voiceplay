@@ -1,0 +1,7 @@
+_build
+_static
+_templates
+extlib*
+voiceplay*.rst
+modules.rst
+setup.rst
