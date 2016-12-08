@@ -1,4 +1,4 @@
-.PHONY: snowboy vlcpython
+.PHONY: docs snowboy vlcpython
 
 submodules:
 	@git submodule init
@@ -26,7 +26,11 @@ py2app:	deps
 dmg:	py2app
 	@hdiutil create -srcfolder dist/voiceplay.app ./voiceplay.dmg
 
+docs:
+	@cd docs; make docs; cd ../
+
 clean:
 	@rm -rf build/ dist/
 	@rm -f ./*.dmg
 	@rm -rf ./vlcpython/ ./snowboy/; mkdir ./vlcpython ./snowboy
+	@cd docs; make clean; cd ../
