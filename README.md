@@ -202,6 +202,20 @@ to quit, either type 'quit' or press CTRL+D
 ./voiceplay.sh -cd
 ```
 
+# Similar projects
+
+## Console players
+
+https://github.com/jkramer/shell-fm
+
+https://github.com/dbrgn/orochi
+
+
+## Voice controlled applications
+
+https://github.com/jasperproject/jasper-client
+
+https://github.com/MycroftAI/mycroft-core
 
 # COPYRIGHT
 
