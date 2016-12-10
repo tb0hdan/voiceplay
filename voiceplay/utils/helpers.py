@@ -3,6 +3,7 @@
 
 import hashlib
 import os
+import threading
 import time
 from glob import glob
 
@@ -52,3 +53,37 @@ def restart_on_crash(method, *args, **kwargs):
             break
     logger.debug('Method %r completed without exception', method)
     return result
+
+class ThreadGroup(object):
+    """
+    """
+    def __init__(self, daemon=True, timeout=1.0, restart=True):
+        self.daemon = daemon
+        self.restart = restart
+        self.threads = []
+        self._targets = []
+        self.timeout = timeout
+
+    @property
+    def targets(self):
+        return self._targets
+
+    @targets.setter
+    def targets(self, th):
+        self._targets = th
+
+    def start_all(self):
+        for target in self._targets:
+            args = ()
+            name = repr(target)
+            if self.restart:
+                args = (target,)
+                target = restart_on_crash
+            thread = threading.Thread(name=name, target=target, args=args)
+            thread.daemon = self.daemon
+            thread.start()
+            self.threads.append(thread)
+
+    def stop_all(self):
+        for thread in self.threads:
+            thread.join(timeout=self.timeout)

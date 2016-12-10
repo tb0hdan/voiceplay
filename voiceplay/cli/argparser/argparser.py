@@ -2,7 +2,6 @@
 ''' VoicePlay argument parser module '''
 
 import argparse
-import threading
 import sys
 from voiceplay import __version__, __title__
 from voiceplay.recognition.vicki import Vicki
@@ -11,7 +10,7 @@ from voiceplay.cli.console.console import Console
 from voiceplay.utils.loader import PluginLoader
 from voiceplay.player.tasks.basetask import BasePlayerTask
 from voiceplay.player.hooks.basehook import BasePlayerHook
-from voiceplay.utils.helpers import purge_cache, restart_on_crash
+from voiceplay.utils.helpers import purge_cache, ThreadGroup
 
 class MyArgumentParser(object):
     '''
@@ -98,7 +97,8 @@ class MyArgumentParser(object):
             address = ('127.0.0.1', 63455)
             server = WakeWordReceiver(address,
                                       ThreadedRequestHandler)
-            thread = threading.Thread(target=restart_on_crash, args=(server.serve_forever,))
-            thread.start()
+            threads = ThreadGroup()
+            threads.targets = [server.serve_forever]
+            threads.start_all()
             vicki.run_forever_new(server, noblock=noblock)
         purge_cache()

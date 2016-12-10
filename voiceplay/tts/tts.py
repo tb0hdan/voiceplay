@@ -8,12 +8,11 @@ if sys.version_info.major == 2:
 elif sys.version_info.major == 3:
     from queue import Queue  # pylint:disable=import-error
 
-import threading
 import time
 
 from voiceplay import __title__
 from voiceplay.logger import logger
-from voiceplay.utils.helpers import restart_on_crash
+from voiceplay.utils.helpers import ThreadGroup
 
 class TextToSpeech(object):
     '''
@@ -84,15 +83,16 @@ class TextToSpeech(object):
         Start TTS as a separate thread
         '''
         logger.debug('Starting TTS engine...')
-        self.thread = threading.Thread(name='TTS', target=restart_on_crash, args=(self.poll_loop,))
-        self.thread.start()
+        self.threads = ThreadGroup()
+        self.threads.targets = [self.poll_loop]
+        self.threads.start_all()
 
     def stop(self):
         '''
         Set shutdown flag and wait for thread to exit
         '''
         self.shutdown = True
-        self.thread.join()
+        self.threads.stop_all()
 
     def say_put(self, message):
         '''

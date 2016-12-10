@@ -8,13 +8,12 @@ if sys.version_info.major == 2:
 elif sys.version_info.major == 3:
     from queue import Queue  # pylint:disable=import-error
 
-import threading
 import time
 
 from voiceplay.config import Config
 from voiceplay.logger import logger
 from voiceplay.utils.loader import PluginLoader
-from voiceplay.utils.helpers import restart_on_crash
+from voiceplay.utils.helpers import ThreadGroup
 from .backend.vlc import VLCPlayer
 from .tasks.basetask import BasePlayerTask
 
@@ -170,20 +169,12 @@ class VickiPlayer(object):
     def start(self):
         # non-blocking start
         self.player.start()
-        self.task_thread = threading.Thread(name='player_task_pool', target=restart_on_crash, args=(self.task_loop,))
-        self.task_thread.setDaemon(True)
-        self.task_thread.start()
-        self.cmd_thread = threading.Thread(name='player_cmd_pool', target=restart_on_crash, args=(self.cmd_loop,))
-        self.cmd_thread.setDaemon(True)
-        self.cmd_thread.start()
-        self.prefetch_thread = threading.Thread(name='player_prefetch_pool', target=restart_on_crash, args=(self.prefetch_loop,))
-        self.prefetch_thread.setDaemon(True)
-        self.prefetch_thread.start()
+        self.thread_group = ThreadGroup()
+        self.thread_group.targets = [self.task_loop, self.cmd_loop, self.prefetch_loop]
+        self.thread_group.start_all()
 
     def shutdown(self):
         self.shutdown_flag = True
         self.exit_task = True
         self.player.shutdown()
-        self.task_thread.join(timeout=1.0)
-        self.cmd_thread.join(timeout=1.0)
-        self.prefetch_thread.join(timeout=1.0)
+        self.thread_group.stop_all()

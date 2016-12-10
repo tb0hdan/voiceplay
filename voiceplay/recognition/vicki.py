@@ -3,13 +3,12 @@
 
 import logging
 import speech_recognition as sr
-import threading
 import time
 
 from voiceplay.logger import logger
 from voiceplay.tts.tts import TextToSpeech
 from voiceplay.player.vickiplayer import VickiPlayer
-from voiceplay.utils.helpers import restart_on_crash
+from voiceplay.utils.helpers import ThreadGroup
 
 class Vicki(object):
     '''
@@ -101,8 +100,9 @@ class Vicki(object):
         '''
         self.wakeword_receiver = wakeword_receiver
         if noblock:
-            th = threading.Thread(target=restart_on_crash, args=(self.background_listener,))
-            th.start()
+            threads = ThreadGroup()
+            threads.targets = [self.background_listener]
+            threads.start_all()
             return
         while not self.shutdown:
             try:
