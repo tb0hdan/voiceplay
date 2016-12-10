@@ -15,7 +15,7 @@ vlcpython:	submodules
 	@cp -v vlcpython/generated/vlc.py extlib/vlcpython
 
 deps:	snowboy vlcpython
-	@pip install -r requirements.txt
+	@pip install -U -r requirements.txt
 
 piprot:	deps
 	@piprot -o requirements.txt; exit 0
