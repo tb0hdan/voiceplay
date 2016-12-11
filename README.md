@@ -182,6 +182,14 @@ or
 play melodic death metal station
 ```
 
+### Online radio
+
+#### TuneIn
+
+```
+play dj fm station from tunein
+```
+
 ## Console mode
 
 Note: Add `-v` for increased verbosity level.
