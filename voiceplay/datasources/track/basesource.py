@@ -1,5 +1,6 @@
 #-*- coding: utf-8 -*-
 
+import logging
 import os
 import re
 
@@ -32,8 +33,9 @@ class TrackSource(object):
         template = os.path.join(cls.cfg_data.get('cache_dir'), track_to_hash(trackname)) + '.%(ext)s'
         if isinstance(template, str):
             template = template.decode('utf-8')
-        ydl_opts = {'keepvideo': False, 'verbose': False, 'format': 'bestaudio/best',
-                    'quiet': True, 'outtmpl': template,
+        verbose = logger.level == logging.DEBUG
+        ydl_opts = {'keepvideo': False, 'verbose': verbose, 'format': 'bestaudio/best',
+                    'quiet': not verbose, 'outtmpl': template,
                     'postprocessors': [{'preferredcodec': 'mp3', 'preferredquality': '0',
                                         'nopostoverwrites': True, 'key': 'FFmpegExtractAudio'}],
                     'logger': logger,
