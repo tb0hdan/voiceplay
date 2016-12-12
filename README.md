@@ -190,6 +190,19 @@ play melodic death metal station
 play dj fm station from tunein
 ```
 
+### Radionomy
+
+```
+play folk metal station from radionomy
+```
+
+### IceCast
+
+```
+play etn.fm station from icecast
+```
+
+
 ## Console mode
 
 Note: Add `-v` for increased verbosity level.
