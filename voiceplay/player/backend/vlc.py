@@ -1,9 +1,10 @@
 #-*- coding: utf-8 -*-
 
 import time
-from extlib.vlcpython.vlc import Instance
+from extlib.vlcpython.vlc import Instance, Meta
 from voiceplay.player.hooks.basehook import BasePlayerHook
 from voiceplay.utils.loader import PluginLoader
+from voiceplay.utils.track import normalize
 
 class VLCPlayer(object):
     '''
@@ -49,6 +50,11 @@ class VLCPlayer(object):
         self.player.stop()
         self.exit = True
 
+    def meta_or_track(self, track):
+        meta = self.player.get_media().get_meta(Meta.NowPlaying)
+        result = meta if meta else track
+        return normalize(result)
+
     def play(self, path, track, block=True):
         try:
             media = self.instance.media_new(path)
@@ -57,18 +63,21 @@ class VLCPlayer(object):
         except Exception as exc:
             self.run_hooks('on_playback_error', exception=exc)
             return False
-        self.run_hooks('on_playback_start', path=path, track=track)
+        track_name = None
         # allow playback to start
         time.sleep(3)
         while True:
             if self.exit:
                 break
             try:
-                time.sleep(0.01)
+                time.sleep(0.5)
             except KeyboardInterrupt:
                 pass
             if not self.player.is_playing() and not self.paused:
                 break
+            if self.meta_or_track(track) != track_name:
+                track_name = self.meta_or_track(track)
+                self.run_hooks('on_playback_start', path=path, track=track_name)
         return True
 
     def pause(self):
