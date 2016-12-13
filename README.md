@@ -22,17 +22,21 @@ redistribute it or use it however you like.
 
 ### MAC
 
+WARNING: Some systems require System Integrity Check (SIC!) disabled prior to installing system-wide python modules.
+If this is the case either use `csrutil` to disable or `virtualenv` to install packages locally.
+
 Please make sure you have following dependencies resolved prior to proceeding with other steps:
 
-1. Xcode (https://itunes.apple.com/ua/app/xcode/id497799835?l=en&mt=12)
-2. Growl (http://growl.info/)
-3. VLC (http://videolan.org)
+1. Xcode (https://itunes.apple.com/us/app/xcode/id497799835)
+2. Growl (http://growl.info/) installed and running
+3. VLC (http://videolan.org) installed and up to date
 
 
 then continue to:
 
 ```
 brew install ffmpeg portaudio cmu-pocketsphinx swig libmagic
+sudo easy_install-2.7 pip
 sudo pip install pyobjc
 ```
 
@@ -53,6 +57,7 @@ sudo pip install pyfestival
 git clone https://github.com/tb0hdan/voiceplay
 cd voiceplay
 ./voiceplay.sh requirements
+make deps
 ```
 
 ## Configuration
