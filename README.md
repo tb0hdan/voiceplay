@@ -207,6 +207,12 @@ play folk metal station from radionomy
 play etn.fm station from icecast
 ```
 
+### Direct URL
+
+```
+play url http://66.207.196.218:8130/
+```
+
 
 ## Console mode
 
