@@ -3,8 +3,10 @@
 
 import hashlib
 import os
+import sys
 import threading
 import time
+import traceback
 from glob import glob
 
 from voiceplay.logger import logger
@@ -46,7 +48,9 @@ def restart_on_crash(method, *args, **kwargs):
         except (KeyboardInterrupt, SystemExit):
             break
         except Exception as exc:
-            logger.debug('Method %r crashed with %r, restarting...', method, exc)
+            exc_type, exc_value, exc_trace = sys.exc_info()
+            trace = ''.join(traceback.format_exception(exc_type, exc_value, exc_trace))
+            logger.debug('Method %r crashed with %r:%s, restarting...', method, exc.message, trace)
             # allow interrupt
             time.sleep(1)
         else:
