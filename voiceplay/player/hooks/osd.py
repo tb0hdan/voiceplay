@@ -30,6 +30,9 @@ class OSDNotification(object):
     @classmethod
     def linux_notify(cls, message, icon_url):
         from gi.repository import Notify  # pylint:disable=import-error
+        if not os.environ.get('DISPLAY'):
+            # try default
+            os.environ['DISPLAY'] = ':0.0'
         Notify.init(__title__)
         icon_file = mkstemp()[1]
         r = requests.get(icon_url, stream=True)
