@@ -122,9 +122,9 @@ class BasePlayerTask(object):
             full_path = cls.download_full_track(trackname)
         else:
             cls.logger.debug('Using cache for %r at %r', trackname, full_path)
-        cls.player.play(full_path, trackname)  # pylint:disable=no-member
+        cls.play(full_path, trackname)  # pylint:disable=no-member
 
     @classmethod
     def play_url(cls, url, description):
         cls.logger.debug('Playing URL: ' + url)
-        cls.player.play(url, description)
+        cls.play(url, description)

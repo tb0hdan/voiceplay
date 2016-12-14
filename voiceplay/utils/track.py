@@ -12,7 +12,7 @@ class TrackNormalizer(object):
             title = ' '.join([w.capitalize() for w in match.groups()[0].lower().split(' ')])
             trackname = u'{0!s} - {1!s}'.format(artist.strip(), title.strip())
         # radioRoks
-        match = re.match('^@\sRock(?:.+)\:\s(.+)$', trackname)
+        match = re.match('^@\s(?:Rock|Made)(?:.+)\:\s(.+)$', trackname)
         if match:
             trackname = match.groups()[0]
         return trackname
