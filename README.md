@@ -223,6 +223,7 @@ play url http://66.207.196.218:8130/
 ## Console mode
 
 Note: Add `-v` for increased verbosity level.
+Note: Add `-s` to set Skype status on track change.
 
 ```
 ./voiceplay.sh -c
