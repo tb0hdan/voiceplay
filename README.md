@@ -133,6 +133,12 @@ or
 play some songs by Michael Jackson
 ```
 
+### Shuffle recent/new tracks
+
+```
+play new tracks by Robin Schulz
+```
+
 ### Shuffle local library (~/Music, .mp3 only)
 
 ```
