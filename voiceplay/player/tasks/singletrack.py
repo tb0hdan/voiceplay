@@ -7,7 +7,7 @@ from .basetask import BasePlayerTask
 class SingleTrackArtistTask(BasePlayerTask):
 
     __group__ = ['play']
-    __regexp__ = ['^play (.+) bu?(?:t|y) (.+)$']
+    __regexp__ = ['^play (?!fresh|new)\s?(?!tracks|songs)(.+) bu?(?:t|y) (.+)$']
     __priority__ = 70
     __actiontype__ = 'single_track_artist'
 

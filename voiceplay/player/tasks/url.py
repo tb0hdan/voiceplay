@@ -9,7 +9,7 @@ class URLTask(BasePlayerTask):
 
     __group__ = ['play']
     __regexp__ = ['^play url (.+)$']
-    __priority__ = 130
+    __priority__ = 140
     __actiontype__ = 'url_task'
 
     @classmethod

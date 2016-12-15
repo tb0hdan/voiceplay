@@ -9,7 +9,7 @@ from .basetask import BasePlayerTask
 class SingleArtistTask(BasePlayerTask):
 
     __group__ = ['play']
-    __regexp__ = ['^play some (?:music|tracks?|songs?) by (.+)$']
+    __regexp__ = ['^play some (?!fresh|new)\s?(?:music|tracks?|songs?) by (.+)$']
     __priority__ = 20
     __actiontype__ = 'shuffle_artist'
 
