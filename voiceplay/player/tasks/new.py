@@ -6,6 +6,7 @@ random.seed()
 import re
 
 from voiceplay.datasources.mbapi import MBAPI
+from voiceplay.utils.track import TrackNormalizer
 
 from .basetask import BasePlayerTask
 
@@ -22,16 +23,19 @@ class NewTask(BasePlayerTask):
         '''
         Play top tracks for station
         '''
-        artist = cls.lfm.get_corrected_artist(artist)
         mbapi = MBAPI()
-        mbid = mbapi.get_artist_mbid(artist)
-        releases = mbapi.get_releases(mbid, rtypes=['album'])
+        artist = cls.lfm.get_corrected_artist(artist)
+        artist_mbid = mbapi.get_artist_mbid(artist)
+        releases = mbapi.get_releases(artist_mbid, rtypes=['album'])
         # get this year's albums
         year = datetime.date.today().year
         albums = []
         tracks = []
         for release in releases:
-            if year >= int(release.get('date', 0)) >= year - 1:
+            if not release.get('date', 0):
+                continue
+            date = int(release.get('date', 0))
+            if year >= date >= year - 1:
                 album_mbid = release.get('mbid', '')
                 if album_mbid:
                     albums.append(album_mbid)
@@ -39,15 +43,16 @@ class NewTask(BasePlayerTask):
         for album in albums:
             for release in mbapi.get_recordings(album):
                 title = release.get('title', '')
-                if title:
+                if title and TrackNormalizer.track_ok(title):
                     tracks.append(u'{0!s} - {1!s}'.format(artist, title))
 
-        releases = mbapi.get_releases(mbid, rtypes=['single'])
+        releases = mbapi.get_releases(artist_mbid, rtypes=['single'])
         for release in releases:
-            if year >= int(release.get('date', 0)) >= year - 1:
+            date = int(release.get('date', 0))
+            if year >= date >= year - 1:
                 title = release.get('title', '')
                 # TODO: move this out to track blacklists
-                if title and not 'remix' in title.lower():
+                if title and TrackNormalizer.track_ok(title):
                     tracks.append(u'{0!s} - {1!s}'.format(artist, title))
 
         random.shuffle(tracks)

@@ -3,6 +3,17 @@ import re
 class TrackNormalizer(object):
     """
     """
+    keywords = ['remix', 'karaoke']
+
+    @classmethod
+    def track_ok(cls, track):
+        status = True
+        for keyword in cls.keywords:
+            if keyword in track.lower():
+                status = False
+                break
+        return status
+
     @classmethod
     def normalize(cls, trackname):
         # djfm.ca
@@ -17,6 +28,11 @@ class TrackNormalizer(object):
             trackname = match.groups()[0]
         return trackname
 
+    def filter_tracks(cls, tracks):
+        return filter(cls.track_ok, tracks)
 
 def normalize(trackname):
     return TrackNormalizer.normalize(trackname)
+
+def filter_tracks(tracks):
+    return TrackNormalizer.filter_tracks(tracks)
