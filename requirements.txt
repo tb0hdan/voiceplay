@@ -18,5 +18,6 @@ pylast==1.6.0
 pylint==1.6.4
 PyVimeo==0.3.4
 rl==2.4
+Skype4Py==1.0.35
 SpeechRecognition==3.5.0
 youtube-dl
