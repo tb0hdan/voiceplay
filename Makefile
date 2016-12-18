@@ -30,10 +30,10 @@ docs:
 	@cd docs; make docs; cd ../
 
 test:
-	@py.test -c ./tests/etc/pytest.ini -v
+	@py.test -c ./tests/etc/pytest.ini -v tests/
 
 coverage:
-	@py.test -c ./tests/etc/pytest.ini --cov=./voiceplay
+	@py.test -c ./tests/etc/pytest.ini --cov=./voiceplay --cov-config=./tests/etc/coveragerc tests/
 
 clean:
 	@rm -rf build/ dist/
