@@ -1,7 +1,10 @@
 #-*- coding: utf-8 -*-
 
+import sys
 import time
+import traceback
 from extlib.vlcpython.vlc import Instance, Meta
+from voiceplay.logger import logger
 from voiceplay.player.hooks.basehook import BasePlayerHook
 from voiceplay.utils.loader import PluginLoader
 from voiceplay.utils.track import normalize
@@ -31,9 +34,14 @@ class VLCPlayer(object):
     def run_hooks(self, evt, *args, **kwargs):
         for hook in self.player_hooks:
             hook.argparser = self.argparser
-            attr = getattr(hook, evt)
-            if attr:
-                attr(*args, **kwargs)
+            method = getattr(hook, evt)
+            if method:
+                try:
+                    method(*args, **kwargs)
+                except Exception as exc:
+                    exc_type, exc_value, exc_trace = sys.exc_info()
+                    trace = ''.join(traceback.format_exception(exc_type, exc_value, exc_trace))
+                    logger.debug('Method %r crashed with %r:%s, restarting...', method, exc.message, trace)
 
     @property
     def volume(self):

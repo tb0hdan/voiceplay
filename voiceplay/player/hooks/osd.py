@@ -5,7 +5,7 @@ import platform
 import requests
 from tempfile import mkstemp
 from voiceplay import __title__
-from voiceplay.datasources.lastfm import VoicePlayLastFm
+from voiceplay.datasources.albumart import AlbumArt
 from voiceplay.logger import logger
 from .basehook import BasePlayerHook
 
@@ -20,15 +20,15 @@ class OSDNotification(object):
         if not (track and argparser and argparser.osd):
             return
         artist = track.split(' - ')[0]
-        lfm = VoicePlayLastFm()
-        url = lfm.get_artist_icon(artist)
-        if platform.system() == 'Darwin':
-            cls.darwin_notify(track, url)
-        elif platform.system() == 'Linux':
-            cls.linux_notify(track, url)
+        album_art = AlbumArt()
+        icon = album_art.get(artist)
+        if platform.system() == 'Darwin' and icon:
+            cls.darwin_notify(track, icon)
+        elif platform.system() == 'Linux' and icon:
+            cls.linux_notify(track, icon)
 
     @classmethod
-    def linux_notify(cls, message, icon_url):
+    def linux_notify(cls, message, icon):
         from gi.repository import Notify  # pylint:disable=import-error
         if not os.environ.get('DISPLAY'):
             # try default
@@ -37,8 +37,7 @@ class OSDNotification(object):
         icon_file = mkstemp()[1]
         r = requests.get(icon_url, stream=True)
         with open(icon_file, 'wb') as fh:
-            for chunk in r.iter_content(1024):
-                fh.write(chunk)
+            fh.write(icon)
         n = Notify.Notification.new(message, '', icon_file)
         try:
             n.show()
@@ -48,7 +47,7 @@ class OSDNotification(object):
         os.remove(icon_file)
 
     @classmethod
-    def darwin_notify(cls, message, icon_url):
+    def darwin_notify(cls, message, icon):
         import gntp.notifier  # pylint:disable=import-error
 
         growl = gntp.notifier.GrowlNotifier(
@@ -61,7 +60,7 @@ class OSDNotification(object):
                 noteType="Played tracks",
                 title=message.encode('utf-8'),
                 description='',
-                icon=icon_url,
+                icon=icon,
                 sticky=False,
                 priority=1,
         )
