@@ -52,8 +52,13 @@ class TuneInClient(object):
 
     @staticmethod
     def extract_streamurl(station_data):
+        # try with 'Station'
         station_url = station_data.get('Station', {}).get('broadcast', {}).get('StreamUrl', '')
-        if not station_url.startswith('http://') and station_url.startswith('//'):
+        if station_url and not station_url.startswith('http://') and station_url.startswith('//'):
+            station_url = 'http:' + station_url
+        # try with 'Program'
+        station_url = station_data.get('Program', {}).get('broadcast', {}).get('StreamUrl', '')
+        if station_url and not station_url.startswith('http://') and station_url.startswith('//'):
             station_url = 'http:' + station_url
         return station_url
 
