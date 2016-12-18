@@ -29,6 +29,12 @@ dmg:	py2app
 docs:
 	@cd docs; make docs; cd ../
 
+test:
+	@py.test -c ./tests/etc/pytest.ini -v
+
+coverage:
+	@py.test -c ./tests/etc/pytest.ini --cov=./voiceplay
+
 clean:
 	@rm -rf build/ dist/
 	@rm -f ./*.dmg

@@ -17,6 +17,8 @@ pony==0.7
 PyAudio==0.2.9
 pylast==1.6.0
 pylint==1.6.4
+pytest==3.0.5
+pytest-coverage==0.0
 PyVimeo==0.3.4
 rl==2.4
 Skype4Py==1.0.35
