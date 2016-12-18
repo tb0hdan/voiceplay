@@ -23,7 +23,7 @@ redistribute it or use it however you like.
 ### MAC
 
 WARNING: Some systems require System Integrity Check (SIC!) disabled prior to installing system-wide python modules.
-If this is the case either use `csrutil` to disable or `virtualenv` to install packages locally.
+If this is the case either use `csrutil` to disable or `virtualenv/virtualenvwrapper` (recommended) to install packages locally.
 
 Please make sure you have following dependencies resolved prior to proceeding with other steps:
 
@@ -143,6 +143,12 @@ play new tracks by Robin Schulz
 
 ```
 play my library
+```
+
+### Shuffle track history (songs that were already played)
+
+```
+play my history
 ```
 
 ### Shuffle top tracks (global or country)
