@@ -63,6 +63,10 @@ class VoicePlayDB(object):
                 tracks = PlayedTracks(track=trackname, created_at=dt, updated_at=dt, playcount=1)
                 return 1
 
+    def get_played_tracks(self):
+        with db_session:
+            return [record.track for record in PlayedTracks.select()]
+
 
 voiceplaydb = VoicePlayDB()
 voiceplaydb.configure()
