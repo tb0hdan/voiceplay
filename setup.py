@@ -25,7 +25,8 @@ setup(name='voiceplay',
                         'musicbrainzngs', 'mutagen', 'piprot', 'pocketsphinx', 'pony', 'PyAudio',
                         'pylast', 'pylint', 'pytest', 'pytest-coverage', 'PyVimeo', 'rl', 'Skype4Py',
                         'SpeechRecognition', 'youtube-dl'],
-      entry_points={},
+      entry_points={'console_scripts': [
+                        'voiceplay=voiceplay.cli:main']},
       classifiers=[
           'Development Status :: 4 - Beta',
           'Environment :: Console',
