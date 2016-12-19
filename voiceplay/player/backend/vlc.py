@@ -3,7 +3,7 @@
 import sys
 import time
 import traceback
-from extlib.vlcpython.vlc import Instance, Meta
+from voiceplay.extlib.vlcpython.vlc import Instance, Meta
 from voiceplay.logger import logger
 from voiceplay.player.hooks.basehook import BasePlayerHook
 from voiceplay.utils.loader import PluginLoader

@@ -9,7 +9,7 @@ elif sys.version_info.major == 3:
     from queue import Queue  # pylint:disable=import-error
 
 import time
-import extlib.snowboydetect.snowboydecoder as snowboydecoder
+import voiceplay.extlib.snowboydetect.snowboydecoder as snowboydecoder
 
 from voiceplay.logger import logger
 from voiceplay.utils.helpers import ThreadGroup
