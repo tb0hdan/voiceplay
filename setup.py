@@ -6,7 +6,7 @@ import re
 from setuptools import setup, find_packages
 from voiceplay import __title__, __version__, __description__, __author__, __author_email__, __copyright__
 
-readme = io.open('README.md', mode='r', encoding='utf8').read()
+#readme = io.open('README.md', mode='r', encoding='utf8').read()
 
 setup(name='voiceplay',
       version=__version__,
@@ -19,8 +19,12 @@ setup(name='voiceplay',
       zip_safe=False,
       license=__copyright__,
       keywords='voiceplay music playlists vlc player',
-      long_description=readme,
-      install_requires=[re.sub('\=\=(.+)$', '', p.strip()) for p in open('requirements.txt', 'r').read().splitlines()],
+      long_description='',#readme,
+      install_requires=['Babel', 'beautifulsoup4', 'colorama', 'dailymotion', 'filemagic', 'flake8',
+                        'gntp', 'google-api-python-client', 'ipython', 'kaptan', 'monotonic',
+                        'musicbrainzngs', 'mutagen', 'piprot', 'pocketsphinx', 'pony', 'PyAudio',
+                        'pylast', 'pylint', 'pytest', 'pytest-coverage', 'PyVimeo', 'rl', 'Skype4Py',
+                        'SpeechRecognition', 'youtube-dl'],
       entry_points={},
       classifiers=[
           'Development Status :: 4 - Beta',
