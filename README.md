@@ -56,6 +56,7 @@ sudo pip install pyfestival
 ```
 git clone https://github.com/tb0hdan/voiceplay
 cd voiceplay
+sudo pip install --global-option='build_ext' --global-option='-I/usr/local/include' --global-option='-L/usr/local/lib' pyaudio
 ./voiceplay.sh requirements
 make deps
 ```
