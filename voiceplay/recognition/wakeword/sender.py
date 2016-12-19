@@ -18,9 +18,9 @@ class WakeWordListener(object):
     '''
     Separate wakeword listener process class
     '''
-    models = ["extlib/snowboydetect/resources/Vicki_en.pmdl",
-              "extlib/snowboydetect/resources/Viki_de.pmdl",
-              "extlib/snowboydetect/resources/Viki_fr.pmdl"]
+    models = ["voiceplay/extlib/snowboydetect/resources/Vicki_en.pmdl",
+              "voiceplay/extlib/snowboydetect/resources/Viki_de.pmdl",
+              "voiceplay/extlib/snowboydetect/resources/Viki_fr.pmdl"]
 
     def __init__(self):
         self.wake_up = False
