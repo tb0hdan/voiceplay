@@ -28,3 +28,12 @@ class PlayedTracks(db.Entity):
     updated_at = Required(datetime)
     playcount = Required(int)
 
+
+class LastFmCache(db.Entity):
+    '''
+    Cache last.fm results
+    '''
+    method_args = PrimaryKey(str)
+    created_at = Required(datetime)
+    updated_at = Required(datetime)
+    content = Required(str)

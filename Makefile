@@ -23,6 +23,10 @@ piprot:	deps
 py2app:	deps
 	@python setup_py2app.py py2app
 
+pypi:	deps
+	@python setup.py build sdist
+	@twine upload dist/*
+
 dmg:	py2app
 	@hdiutil create -srcfolder dist/voiceplay.app ./voiceplay.dmg
 

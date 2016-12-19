@@ -13,7 +13,7 @@ if os.path.exists('README.md'):
 else:
     readme = ''
 
-system_specific_packages = ['pyobjc'] if platform.system() == 'Darwin' else []
+system_specific_packages = ['gntp', 'pyobjc'] if platform.system() == 'Darwin' else ['pyfestival']
 setup(name='voiceplay',
       version=__version__,
       description=__description__,
@@ -27,7 +27,7 @@ setup(name='voiceplay',
       keywords='voiceplay music playlists vlc player',
       long_description=readme,
       install_requires=['Babel', 'beautifulsoup4', 'colorama', 'dailymotion', 'filemagic', 'flake8',
-                        'gntp', 'google-api-python-client', 'ipython', 'kaptan', 'monotonic',
+                        'google-api-python-client', 'ipython', 'kaptan', 'monotonic',
                         'musicbrainzngs', 'mutagen', 'piprot', 'pocketsphinx', 'pony', 'PyAudio',
                         'pylast', 'pylint', 'pytest', 'pytest-coverage', 'PyVimeo', 'rl', 'Skype4Py',
                         'SpeechRecognition', 'youtube-dl'] + system_specific_packages,

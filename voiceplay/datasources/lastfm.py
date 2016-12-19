@@ -1,19 +1,30 @@
 #-*- coding: utf-8 -*-
 
+import json
 import pylast
 from voiceplay.config import Config
+from voiceplay.database import voiceplaydb
 from voiceplay.logger import logger
 
 def lfm_retry(retry_count=1):
     def lfm_retry_func(func):
         def func_wrapper(*args, **kwargs):
-            result = None
+            rargs = list(args)
+            rargs.pop(0)
+            rargs = str(rargs) + str(kwargs)
+            func_name = str(func.func_name)
+            result = voiceplaydb.get_lastfm_method(func_name, rargs)
+            result = json.loads(result) if result else None
+            if result:
+                return result
             for retry in xrange(1, retry_count + 1):
                 try:
                     result = func(*args, **kwargs)
+                    if result:
+                        voiceplaydb.set_lastfm_method(func_name, rargs, json.dumps(result))
                     break
                 except Exception as exc:
-                    logger.debug('Method/function %r failed with %r, retrying...', func.__name__, exc)
+                    logger.debug('Method/function %r failed with %r, retrying...', func_name, exc)
             return result
         return func_wrapper
     return lfm_retry_func

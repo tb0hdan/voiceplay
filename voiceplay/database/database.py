@@ -4,10 +4,10 @@
 import datetime
 import os
 import time
-from pony.orm import db_session, select
+from pony.orm import db_session, select, commit
 from voiceplay.logger import logger
 from voiceplay.config import Config
-from .entities import db, Artist, PlayedTracks
+from .entities import db, Artist, PlayedTracks, LastFmCache
 
 class VoicePlayDB(object):
     '''
@@ -66,6 +66,23 @@ class VoicePlayDB(object):
     def get_played_tracks(self):
         with db_session:
             return [record.track for record in PlayedTracks.select()]
+
+    def get_lastfm_method(self, method, args, expires=7):
+        with db_session:
+            result = None
+            record = LastFmCache.get(method_args=method + args)
+            dt = self.get_dt()
+            if record and dt - record.updated_at <= datetime.timedelta(days=expires):
+                result = record.content
+            elif record:
+                LastFmCache[record.method_args].delete()
+            return result
+
+    def set_lastfm_method(self, method, args, content):
+        with db_session:
+            dt = self.get_dt()
+            cache = LastFmCache(method_args=method + args, created_at=dt, updated_at=dt, content=content)
+            commit()
 
 
 voiceplaydb = VoicePlayDB()
