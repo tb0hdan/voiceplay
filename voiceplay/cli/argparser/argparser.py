@@ -2,7 +2,10 @@
 ''' VoicePlay argument parser module '''
 
 import argparse
+import os
+import subprocess
 import sys
+import threading
 from voiceplay import __version__, __title__
 from voiceplay.recognition.vicki import Vicki
 from voiceplay.recognition.wakeword.receiver import ThreadedRequestHandler, WakeWordReceiver
@@ -30,6 +33,9 @@ class MyArgumentParser(object):
         group.add_argument('-cd', '--console-devel', action='store_true',
                            default=False, dest='console_devel',
                            help='Start development console')
+        group.add_argument('-w', '--wakeword', action='store_true',
+                           default=False, dest='wakeword',
+                           help='Start wakeword listener')
         self.parser.add_argument('-V', '--version', action='version',
                                  version='%(prog)s ' +  __version__)
         self.parser.add_argument('-v', '--verbose', action='store_true',
@@ -76,6 +82,22 @@ class MyArgumentParser(object):
         console.add_handler('what', vicki.player.play_from_parser)
         console.run_console()
 
+    def vicki_loop(self, vicki, noblock=False):
+        vicki.player.start()
+        vicki.tts.start()
+        ThreadedRequestHandler.callback = vicki.wakeword_callback
+        address = ('127.0.0.1', 63455)
+        server = WakeWordReceiver(address,
+                                      ThreadedRequestHandler)
+        threads = ThreadGroup()
+        threads.targets = [server.serve_forever]
+        threads.start_all()
+        vicki.run_forever_new(server, noblock=noblock)
+
+    def wakeword_loop(self):
+        thread = threading.Thread(target=subprocess.call, args=(['python', '-m', 'voiceplay.recognition.wakeword.sender'],))
+        thread.start()
+
     def parse(self, argv=None, noblock=False):
         '''
         Parse command line arguments
@@ -88,17 +110,11 @@ class MyArgumentParser(object):
             vicki.player.start()
             self.player_console(vicki)
             vicki.player.shutdown()
+        elif result.wakeword:
+            self.vicki_loop(vicki, noblock=True)
+            self.wakeword_loop()
         elif result.console_devel:
             self.ipython_console()
         else:
-            vicki.player.start()
-            vicki.tts.start()
-            ThreadedRequestHandler.callback = vicki.wakeword_callback
-            address = ('127.0.0.1', 63455)
-            server = WakeWordReceiver(address,
-                                      ThreadedRequestHandler)
-            threads = ThreadGroup()
-            threads.targets = [server.serve_forever]
-            threads.start_all()
-            vicki.run_forever_new(server, noblock=noblock)
+            self.vicki_loop(vicki)
         purge_cache()

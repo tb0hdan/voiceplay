@@ -85,13 +85,13 @@ paste Google API key (for Server) into config.yaml and enable Youtube data api.
 Start application:
 
 ```
-./voiceplay.sh
+voiceplay.py -w
 ```
 
-Start wake word listener:
+or just (if installed via pip):
 
 ```
-./voiceplay.sh wakeword
+voiceplay -w
 ```
 
 
