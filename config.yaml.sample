@@ -7,3 +7,5 @@ vimeo:
 lastfm:
    key: yz0
    secret: yz1
+   username: abc
+   password: def

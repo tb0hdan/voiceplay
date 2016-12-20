@@ -1,7 +1,9 @@
 #-*- coding: utf-8 -*-
 
+import datetime
 import json
 import pylast
+import time
 from voiceplay.config import Config
 from voiceplay.database import voiceplaydb
 from voiceplay.logger import logger
@@ -36,7 +38,9 @@ class VoicePlayLastFm(object):
     def __init__(self):
         cfg_data = Config.cfg_data()
         self.network = pylast.LastFMNetwork(api_key=cfg_data['lastfm']['key'],
-                                            api_secret=cfg_data['lastfm']['secret'])
+                                            api_secret=cfg_data['lastfm']['secret'],
+                                            username=cfg_data['lastfm']['username'],
+                                            password_hash=pylast.md5(cfg_data['lastfm']['password']))
 
     @lfm_retry(retry_count=3)
     def get_top_tracks_geo(self, country_code):
@@ -126,6 +130,14 @@ class VoicePlayLastFm(object):
         artist = self.get_corrected_artist(artist)
         aobj = pylast.Artist(artist, self.network)
         return aobj.get_cover_image(image_size)
+
+    def scrobble(self, artist, track):
+        if self.scrobble:
+            logger.debug('Scrobbling track: %s - %s', artist, track)
+            timestamp = int(time.mktime(datetime.datetime.now().timetuple()))
+            self.network.scrobble(artist=artist, title=track, timestamp=timestamp)
+        else:
+            logger.debug('Scrobbling disabled, track %s - %s not sent', artist, track)
 
     @staticmethod
     def trackarize(array):

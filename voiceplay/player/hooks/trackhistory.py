@@ -24,7 +24,7 @@ class TrackHistory(object):
 
 class TrackHistoryHook(BasePlayerHook):
     '''
-    Log only hook
+    Track history hook
     '''
     __priority__ = 40
 
