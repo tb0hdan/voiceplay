@@ -8,6 +8,7 @@ if sys.version_info.major == 2:
 elif sys.version_info.major == 3:
     from queue import Queue  # pylint:disable=import-error
 
+import os
 import time
 import voiceplay.extlib.snowboydetect.snowboydecoder as snowboydecoder
 
@@ -18,9 +19,9 @@ class WakeWordListener(object):
     '''
     Separate wakeword listener process class
     '''
-    models = ["voiceplay/extlib/snowboydetect/resources/Vicki_en.pmdl",
-              "voiceplay/extlib/snowboydetect/resources/Viki_de.pmdl",
-              "voiceplay/extlib/snowboydetect/resources/Viki_fr.pmdl"]
+    models = ["resources/Vicki_en.pmdl",
+              "resources/Viki_de.pmdl",
+              "resources/Viki_fr.pmdl"]
 
     def __init__(self):
         self.wake_up = False
@@ -28,6 +29,7 @@ class WakeWordListener(object):
         self.ip = '127.0.0.1'
         self.port = '63455'
         self.queue = Queue()
+        self.basedir = os.path.dirname(snowboydecoder.__file__)
 
     def async_worker(self):
         while not self.exit:
@@ -51,7 +53,7 @@ class WakeWordListener(object):
         threads.targets = [self.async_worker]
         threads.start_all()
         sensitivity = [0.5, 0.3, 0.3]#[0.5] * len(self.models)
-        self.detector = snowboydecoder.HotwordDetector(self.models, sensitivity=sensitivity, audio_gain=1)
+        self.detector = snowboydecoder.HotwordDetector([os.path.join(self.basedir, model) for model in self.models], sensitivity=sensitivity, audio_gain=1)
         try:
             self.detector.start(detected_callback=self.wakeword_callback, interrupt_check=self.interrupt_check, sleep_time=0.03)
         except (KeyboardInterrupt, SystemExit):
