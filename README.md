@@ -71,7 +71,7 @@ cp config.yaml.sample config.yaml
 
 
 Register at [http://www.last.fm/api](http://www.last.fm/api) and then
-paste Last.fm API key and secret into config.yaml
+paste Last.fm API key, secret, username and password into config.yaml
 
 Register at [https://developer.vimeo.com](https://developer.vimeo.com) and then
 paste client id(key), token and secret into config.yaml
