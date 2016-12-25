@@ -3,22 +3,55 @@
 import sys
 import time
 import traceback
+from voiceplay import __title__
 from voiceplay.extlib.vlcpython.vlc import Instance, Meta
 from voiceplay.logger import logger
 from voiceplay.player.hooks.basehook import BasePlayerHook
 from voiceplay.utils.loader import PluginLoader
 from voiceplay.utils.track import normalize
 
+
+class VLCProfileModel(object):
+    headers = {}
+    opts = ['--file-caching=10000', '--disc-caching=10000',
+            '--live-caching=10000', '--network-caching=10000',
+            '--metadata-network-access', '--audio-replay-gain-mode=track',
+            '--no-playlist-cork']
+    @classmethod
+    def get_options(cls):
+        return cls.opts
+
+    @classmethod
+    def get_headers(cls):
+        return cls.headers
+
+
+class VLCDefaultProfile(VLCProfileModel):
+    pass
+
+
+class VLCDIFMProfile(VLCProfileModel):
+    @classmethod
+    def get_options(cls):
+        opts = ["--http-referrer=http://www.di.fm"]
+        return cls.opts + opts
+
+    @classmethod
+    def get_headers(cls):
+        headers = cls.headers
+        headers['user-agent'] = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.97 Safari/537.36'
+
+
 class VLCPlayer(object):
     '''
     VLC player backend
     '''
-    def __init__(self, debug=False):
+    def __init__(self, debug=False, profile=VLCDefaultProfile):
+        #
+        opts = profile.get_options()
+        headers = profile.get_headers()
+        #
         self.debug = debug
-        opts = ['--file-caching=10000', '--disc-caching=10000',
-                '--live-caching=10000', '--network-caching=10000',
-                '--metadata-network-access', '--audio-replay-gain-mode=track',
-                '--no-playlist-cork']
         if self.debug:
             opts.append('--verbose=2')
         else:
@@ -26,6 +59,8 @@ class VLCPlayer(object):
         self.argparser = None
         self.exit = False
         self.instance = Instance(tuple(opts))
+        if headers.get('user-agent', ''):
+            self.instance.set_user_agent(__title__, headers.get('user-agent'))
         self.player = None
         self.paused = False
         self.player_hooks = sorted(PluginLoader().find_classes('voiceplay.player.hooks', BasePlayerHook),
