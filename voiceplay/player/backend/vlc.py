@@ -57,6 +57,7 @@ class VLCPlayer(object):
         self.player_hooks = sorted(PluginLoader().find_classes('voiceplay.player.hooks', BasePlayerHook),
                          cmp=lambda x, y: cmp(x.__priority__, y.__priority__))
         self.instance = self.reinit_instance(debug=debug, profile=profile)
+        self._current_track = None
 
     @staticmethod
     def reinit_instance(debug=False, profile='default'):
@@ -98,6 +99,15 @@ class VLCPlayer(object):
     def volume(self, value):
         return self.player.audio_set_volume(value)
 
+    @property
+    def current_track(self):
+        return self._current_track
+
+    @current_track.setter
+    def current_track(self, track_name):
+        self._current_track = track_name
+        return self._current_track
+
     def start(self):
         self.player = self.instance.media_player_new()
 
@@ -112,7 +122,7 @@ class VLCPlayer(object):
 
     def play(self, path, track, block=True):
         # to some magic here
-        if re.match('^http://(.+)\.di\.fm\:?(?:[0-9]+)?/(.+)$', path):
+        if path and re.match('^http://(.+)\.di\.fm\:?(?:[0-9]+)?/(.+)$', path):
             logger.debug('Reinitializing player...')
             self.instance = self.reinit_instance(debug=self.debug, profile='difm')
         try:
@@ -136,6 +146,7 @@ class VLCPlayer(object):
                 break
             if self.meta_or_track(track) != track_name:
                 track_name = self.meta_or_track(track)
+                self.current_track = track_name
                 self.run_hooks('on_playback_start', path=path, track=track_name)
         return True
 

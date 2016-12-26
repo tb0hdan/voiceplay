@@ -131,6 +131,18 @@ class VoicePlayLastFm(object):
         aobj = pylast.Artist(artist, self.network)
         return aobj.get_cover_image(image_size)
 
+    @lfm_retry(retry_count=3)
+    def get_similar_artists(self, artist, limit=10):
+        '''
+        Get similar artists
+        '''
+        artist = self.get_corrected_artist(artist)
+        result = []
+        aobj = pylast.Artist(artist, self.network)
+        for artist in aobj.get_similar():
+            result.append(artist.item.name)
+        return result[:limit]
+
     def scrobble(self, artist, track):
         if self.scrobble:
             logger.debug('Scrobbling track: %s - %s', artist, track)

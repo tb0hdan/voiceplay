@@ -128,3 +128,7 @@ class BasePlayerTask(object):
     def play_url(cls, url, description):
         cls.logger.debug('Playing URL: ' + url)
         cls.play(url, description)
+
+    @classmethod
+    def get_current_track(cls):
+        return cls.player.current_track
