@@ -1,5 +1,6 @@
 #-*- coding: utf-8 -*-
 
+import re
 import sys
 import time
 import traceback
@@ -40,31 +41,42 @@ class VLCDIFMProfile(VLCProfileModel):
     def get_headers(cls):
         headers = cls.headers
         headers['user-agent'] = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.97 Safari/537.36'
+        return headers
 
 
 class VLCPlayer(object):
     '''
     VLC player backend
     '''
-    def __init__(self, debug=False, profile=VLCDefaultProfile):
-        #
-        opts = profile.get_options()
-        headers = profile.get_headers()
-        #
+    def __init__(self, debug=False, profile='default'):
         self.debug = debug
-        if self.debug:
-            opts.append('--verbose=2')
-        else:
-            opts.append('--quiet')
         self.argparser = None
         self.exit = False
-        self.instance = Instance(tuple(opts))
-        if headers.get('user-agent', ''):
-            self.instance.set_user_agent(__title__, headers.get('user-agent'))
         self.player = None
         self.paused = False
         self.player_hooks = sorted(PluginLoader().find_classes('voiceplay.player.hooks', BasePlayerHook),
                          cmp=lambda x, y: cmp(x.__priority__, y.__priority__))
+        self.instance = self.reinit_instance(debug=debug, profile=profile)
+
+    @staticmethod
+    def reinit_instance(debug=False, profile='default'):
+        if profile == 'difm':
+            profile = VLCDIFMProfile
+        # store other profiles somewhere here
+        # fallback to default
+        else:
+            profile = VLCDefaultProfile
+        opts = profile.get_options()
+        headers = profile.get_headers()
+        if debug:
+            opts.append('--verbose=2')
+        else:
+            opts.append('--quiet')
+        instance = Instance(tuple(opts))
+        if headers.get('user-agent', ''):
+            logger.debug('Setting user agent to: %s', headers.get('user-agent'))
+            instance.set_user_agent(__title__, headers.get('user-agent'))
+        return instance
 
     def run_hooks(self, evt, *args, **kwargs):
         for hook in self.player_hooks:
@@ -99,6 +111,10 @@ class VLCPlayer(object):
         return normalize(result)
 
     def play(self, path, track, block=True):
+        # to some magic here
+        if re.match('^http://(.+)\.di\.fm\:?(?:[0-9]+)?/(.+)$', path):
+            logger.debug('Reinitializing player...')
+            self.instance = self.reinit_instance(debug=self.debug, profile='difm')
         try:
             media = self.instance.media_new(path)
             self.player.set_media(media)
