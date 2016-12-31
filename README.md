@@ -12,8 +12,8 @@ voiceplay - Client-side first music centered voice controlled player (OSX/Linux)
 activated by a wake word - **Vicki** (processing is done offline using [Kitt.ai snowboy](https://snowboy.kitt.ai/) and only
 after that records audio later transcribed by Google Voice Recognition (code can be modified to
 use any of engines supported by [SpeechRecognition](https://github.com/Uberi/speech_recognition) library). It requires the Python interpreter,
-version 2.7, 3.5 (so far) and is not platform specific. It should work on
-your Linux or on Mac OS X (Python 2.7 only). It is released to the public domain, which means you can modify it,
+version 2.7.x and is not platform specific. It should work on
+your Linux or on Mac OS X (Python 2.7.x only). It is released to the public domain, which means you can modify it,
 redistribute it or use it however you like.
 
 
@@ -262,6 +262,9 @@ https://github.com/dbrgn/orochi
 https://github.com/jasperproject/jasper-client
 
 https://github.com/MycroftAI/mycroft-core
+
+https://github.com/alexa-pi/AlexaPi
+
 
 # COPYRIGHT
 
