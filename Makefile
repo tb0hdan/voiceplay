@@ -1,5 +1,7 @@
 .PHONY: docs snowboy vlcpython
 
+VERSION = $(shell cat voiceplay/__init__.py|grep '__version__'|sed -E "s/((.+)=|'|\ )//g")
+
 submodules:
 	@git submodule init
 	@git submodule update
@@ -32,6 +34,10 @@ dmg:	py2app
 
 docs:
 	@cd docs; make docs; cd ../
+
+tag:
+	@git tag -a v$(VERSION) -m 'v$(VERSION)'
+	@git push origin v$(VERSION)
 
 test:
 	@py.test -c ./tests/etc/pytest.ini -v tests/
