@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-''' Skype mood setter '''
+""" Skype mood setter hook """
 
 import platform
 
@@ -9,9 +9,9 @@ from .basehook import BasePlayerHook
 
 
 class SkypeClient(object):
-    '''
+    """
     Skype client class
-    '''
+    """
     def __init__(self, simulate=False):
         self.simulate = simulate
         self.setobj = None
@@ -20,9 +20,9 @@ class SkypeClient(object):
 
     @staticmethod
     def macobj():
-        '''
+        """
         Return usable MAC object
-        '''
+        """
         # pylint:disable=no-name-in-module
         from Foundation import NSAppleScript
         obj = NSAppleScript.alloc()
@@ -30,16 +30,16 @@ class SkypeClient(object):
 
     @staticmethod
     def format(message):
-        '''
+        """
         Formats mood message, Skype specific
-        '''
+        """
         message = '(music) ' + message
         return message
 
     def settext_apple(self, message):
-        '''
+        """
         Set text on Mac system
-        '''
+        """
         command = "tell app \"Skype\"  to send command "
         command += "\"SET PROFILE MOOD_TEXT %s\" script name " % message
         command += "\"%s\"" % __title__
@@ -50,23 +50,23 @@ class SkypeClient(object):
 
     @staticmethod
     def settext_dummy(message):
-        '''
+        """
         Just print status message without actually setting it
-        '''
+        """
         # pylint:disable=superfluous-parens
         print(message)
 
     def settext_linux(self, message):
-        '''
+        """
         Set text on any other NIX system (via skype4py)
-        '''
+        """
         # pylint:disable=protected-access
         self.setobj.CurrentUserProfile._SetMoodText(message)
 
     def initialize_transport(self):
-        '''
+        """
         Select setter transport
-        '''
+        """
         if self.simulate:
             self.settext = self.settext_dummy
             return
@@ -88,6 +88,9 @@ class SkypeNotification(object):
     """
     @classmethod
     def notify(cls, *args, **kwargs):
+        """
+        Notification dispatcher
+        """
         argparser = kwargs.get('argparser', '')
         track = kwargs.get('track', '')
         if not (track and argparser and argparser.skype):
@@ -97,13 +100,16 @@ class SkypeNotification(object):
 
 
 class SkypeMoodHook(BasePlayerHook):
-    '''
+    """
     Skype Mood hook
-    '''
+    """
     __priority__ = 30
 
     @classmethod
     def configure_argparser(cls, parser):
+        """
+        Configure argument parser for this hook
+        """
         parser.add_argument('-s', '--skype', action='store_true',
                                  default=False,
                                  dest='skype',
@@ -111,4 +117,7 @@ class SkypeMoodHook(BasePlayerHook):
 
     @classmethod
     def on_playback_start(cls, *args, **kwargs):
+        """
+        watch for on_playback_start events only
+        """
         SkypeNotification.notify(*args, argparser=cls.argparser, **kwargs)

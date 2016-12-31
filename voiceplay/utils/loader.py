@@ -1,5 +1,5 @@
 #-*- coding: utf-8 -*-
-''' VoicePlay loader module '''
+""" VoicePlay pluging loader module """
 
 import inspect
 import os
@@ -8,15 +8,15 @@ from copy import copy
 from voiceplay.logger import logger
 
 class PluginLoader(object):
-    '''
-    Recursive plugin loaded
-    '''
+    """
+    Recursive plugin loader
+    """
     @staticmethod
     def tryimport(package):
-        '''
-        Try to import module, on success return module, 
+        """
+        Try to import module, on success return module,
         on error return None and log exception.
-        '''
+        """
         try:
             module = __import__(package, fromlist=['dummy'])
         except Exception as exc:
@@ -26,18 +26,18 @@ class PluginLoader(object):
 
     @staticmethod
     def file_to_package(fname, base_path, base_package):
-        '''
+        """
         Convert path to package suitable for import
-        '''
+        """
         result = fname.replace(os.path.join(base_path, ''),
                                '').replace('.py', '').replace(os.path.sep, '.')
         result = base_package + '.' + result
         return result
 
     def package_to_path(self, package):
-        '''
+        """
         Convert package to path (absolute)
-        '''
+        """
         path = None
         module = self.tryimport(package)
         if module:
@@ -47,10 +47,10 @@ class PluginLoader(object):
 
     @staticmethod
     def find_files(start_dir):
-        '''
+        """
         Iterate over directory recursively and return *.py files as a list
         (omit package init)
-        '''
+        """
         fnames = []
         for root, _, files in os.walk(start_dir, topdown=False):
             for name in files:
@@ -61,9 +61,9 @@ class PluginLoader(object):
         return fnames
 
     def find_packages(self, base_package):
-        '''
+        """
         Return list of packages within base package
-        '''
+        """
         packages = []
         path = self.package_to_path(base_package)
         for fname in self.find_files(path):
@@ -71,9 +71,9 @@ class PluginLoader(object):
         return packages
 
     def find_classes(self, base_package, base_class, try_sys=True):
-        '''
+        """
         Return list of classes within base package that are descendants of base_class
-        '''
+        """
         cls_list = []
         packages = self.find_packages(base_package)
         for package in packages:

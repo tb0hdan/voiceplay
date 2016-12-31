@@ -1,4 +1,5 @@
 #-*- coding: utf-8 -*-
+""" Base player task module """
 
 import os
 import re
@@ -10,24 +11,35 @@ from voiceplay.logger import logger
 from voiceplay.utils.loader import PluginLoader
 from voiceplay.utils.helpers import track_to_hash
 
+
 class BasePlayerTask(object):
-    '''
-    base player task
-    '''
+    """
+    base player task model
+    """
     lfm = VoicePlayLastFm()
     cfg_data = Config.cfg_data()
     logger = logger
 
     @classmethod
     def say(cls, msg):
+        """
+        Use TTS to read message aloud. Does nothing in console mode
+        """
         cls.tts.say_put(msg)  # pylint:disable=no-member
 
     @classmethod
     def play(cls, path, track, block=True):
+        """
+        Play specified item
+        """
         cls.player.play(path, track, block=True)  # pylint:disable=no-member
 
     @staticmethod
     def trackfilter(search_term, search_result):
+        """
+        Track filter
+        TODO: move this to utils/track.py
+        """
         track_is_ok = True
         regset = ['(\(|\]|\{).?FULL (ALBUM|SET|CONCERT|MOVIE)?.+(\(|\]|\})?',
                   '(\(|\[|\{)KARAOKE?.+(\)|\]\})',
@@ -45,13 +57,17 @@ class BasePlayerTask(object):
 
     @staticmethod
     def track_normalizer(track):
+        """
+        Normalize track by splitting it in words and capitalizing first letters
+        TODO: move this to utils/track.py
+        """
         return ' '.join(word.capitalize() for word in track.split(' '))
 
     @classmethod
     def tracks_with_prefetch(cls, tracklist):
-        '''
-        Add tracks to prefetch to queue
-        '''
+        """
+        Add tracks to prefetch to queue (speeds up playback)
+        """
         prefetch = cls.cfg_data['prefetch_count']
         cnt = 1
         total = len(tracklist)
@@ -73,16 +89,16 @@ class BasePlayerTask(object):
 
     @classmethod
     def track_filter_fn(cls, search_term, track_result_pair):
-        '''
+        """
         wrapper around trackfilter
-        '''
+        """
         return cls.trackfilter(search_term, track_result_pair[0])
 
     @classmethod
     def download_full_track(cls, trackname):
-        '''
+        """
         Play full track
-        '''
+        """
         vid = None
         baseurl = None
         sources = sorted(PluginLoader().find_classes('voiceplay.datasources.track', TrackSource),
@@ -114,6 +130,9 @@ class BasePlayerTask(object):
 
     @classmethod
     def play_full_track(cls, trackname):
+        """
+        Playback track in form: Artist - Title
+        """
         trackname = cls.track_normalizer(trackname)
         cls.logger.debug('PFT: ' + trackname)
         full_path = os.path.join(cls.cfg_data.get('cache_dir'), track_to_hash(trackname)) + '.mp3'
@@ -126,9 +145,15 @@ class BasePlayerTask(object):
 
     @classmethod
     def play_url(cls, url, description):
+        """
+        Playback item in form: http://domain/path
+        """
         cls.logger.debug('Playing URL: ' + url)
         cls.play(url, description)
 
     @classmethod
     def get_current_track(cls):
+        """
+        Return currently playing track
+        """
         return cls.player.current_track

@@ -1,5 +1,5 @@
 #-*- coding: utf-8 -*-
-''' VoicePlay wakeword module '''
+""" VoicePlay wakeword sender module """
 
 import socket
 import sys
@@ -16,9 +16,10 @@ from voiceplay.logger import logger
 from voiceplay.utils.helpers import ThreadGroup
 
 class WakeWordListener(object):
-    '''
+    """
     Separate wakeword listener process class
-    '''
+    Multiple models are supported
+    """
     models = ["resources/Vicki_en.pmdl",
               "resources/Viki_de.pmdl",
               "resources/Viki_fr.pmdl"]
@@ -32,6 +33,9 @@ class WakeWordListener(object):
         self.basedir = os.path.dirname(snowboydecoder.__file__)
 
     def async_worker(self):
+        """
+        Asynchronous notifier
+        """
         while not self.exit:
             if not self.queue.empty():
                 message = self.queue.get()
@@ -48,7 +52,10 @@ class WakeWordListener(object):
                 logger.error('TCPAsync worker failed with %r, restarting...', exc)
 
     def wakeword_listener(self):
-        print ('starting detector!')
+        """
+        Wakeword listener
+        """
+        logger.warning('starting detector!')
         threads = ThreadGroup()
         threads.targets = [self.async_worker]
         threads.start_all()
@@ -61,10 +68,17 @@ class WakeWordListener(object):
             threads.stop_all()
 
     def interrupt_check(self):
+        """
+        interrupt checker
+        Returns true if exit was requested
+        """
         return self.exit
 
     def wakeword_callback(self):
-        print ('wakey!')
+        """
+        Wakeword callback. Puts "wakeup" command in queue
+        """
+        logger.warning('wakey!')
         self.queue.put('wakeup')
 
 if __name__ == '__main__':

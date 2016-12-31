@@ -1,4 +1,5 @@
 #-*- coding: utf-8 -*-
+""" tracksource model """
 
 import logging
 import os
@@ -11,25 +12,32 @@ from voiceplay.logger import logger
 from voiceplay.utils.helpers import track_to_hash
 
 class TrackSource(object):
-    '''
-    '''
+    """
+    TrackSource model (parent) for actual sources
+    """
     cfg_data = Config.cfg_data()
 
     @classmethod
     def search(cls, *args, **kwargs):
+        """
+        Run track search
+        """
         raise NotImplementedError('{0} {1}'.format(cls.__name__, 'does not provide search method'))
 
     @classmethod
     def download_hook(cls, response):
-        '''
+        """
         YDL download hook
-        '''
+        """
         if response['status'] == 'finished':
             logger.debug('Done downloading, now converting ...')
             cls.target_filename = response['filename']
 
     @classmethod
     def download(cls, trackname, url):
+        """
+        Run track download, use cache to store data
+        """
         template = os.path.join(cls.cfg_data.get('cache_dir'), track_to_hash(trackname)) + '.%(ext)s'
         if isinstance(template, str):
             template = template.decode('utf-8')

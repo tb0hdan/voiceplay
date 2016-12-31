@@ -1,4 +1,5 @@
 #-*- coding: utf-8 -*-
+""" Vimeo track source module """
 
 import json
 import sys
@@ -16,9 +17,9 @@ class VimeoSource(TrackSource):
 
     @classmethod
     def search(cls, query, max_results=25):
-        '''
+        """
         Run vimeo search
-        '''
+        """
         if isinstance(query, unicode):
             query = query.encode('utf-8')
         client = vimeo.VimeoClient(token=cls.cfg_data['vimeo']['token'],

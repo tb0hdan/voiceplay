@@ -1,4 +1,5 @@
 #-*- coding: utf-8 -*-
+""" Pleer.net track source module """
 
 import json
 import os
@@ -17,14 +18,18 @@ from voiceplay.utils.helpers import track_to_hash
 from .basesource import TrackSource
 
 class PleerSource(TrackSource):
-    '''
-    '''
+    """
+    Pleer.net track source
+    """
     __baseurl__ =  'http://pleer.net/en/download/page/'
     __priority__ = 10
     chunk_size=8196
 
     @classmethod
     def search(cls, query, max_results=25):
+        """
+        Run track source
+        """
         if isinstance(query, unicode):
             query = query.encode('utf-8')
         term = quote(query)
@@ -49,9 +54,9 @@ class PleerSource(TrackSource):
 
     @classmethod
     def download(cls, track_name, track_url):
-        '''
+        """
         Download track
-        '''
+        """
         filename = os.path.join(cls.cfg_data.get('cache_dir'), track_to_hash(track_name)) + '.mp3'
         if isinstance(filename, str):
             filename = filename.decode('utf-8')

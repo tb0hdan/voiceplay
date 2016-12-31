@@ -1,4 +1,5 @@
 #-*- coding: utf-8 -*-
+""" Single artist playback module """
 
 import random
 random.seed()
@@ -7,7 +8,9 @@ from .basetask import BasePlayerTask
 
 
 class SingleArtistTask(BasePlayerTask):
-
+    """
+    Single artist playback class
+    """
     __group__ = ['play']
     __regexp__ = ['^play some (?!fresh|new)\s?(?:music|tracks?|songs?) by (.+)$']
     __priority__ = 20
@@ -15,9 +18,9 @@ class SingleArtistTask(BasePlayerTask):
 
     @classmethod
     def run_shuffle_artist(cls, artist):
-        '''
+        """
         Shuffle artist tracks
-        '''
+        """
         if cls.lfm.get_query_type(artist) == 'artist':
             tracks = cls.lfm.get_top_tracks(cls.lfm.get_corrected_artist(artist))
             random.shuffle(tracks)
@@ -28,6 +31,9 @@ class SingleArtistTask(BasePlayerTask):
 
     @classmethod
     def process(cls, regexp, message):
+        """
+        Run task
+        """
         cls.logger.debug('Message: %r matches %r, running %r', message, regexp, cls.__name__)
         artist = re.match(regexp, message).groups()[0]
         cls.say('Shuffling songs by %s' % artist)

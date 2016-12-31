@@ -1,4 +1,5 @@
 #-*- coding: utf-8 -*-
+""" IceCast directory search """
 
 import json
 import random
@@ -22,6 +23,9 @@ class IcecastClient(object):
                                             ])}
 
     def search(self, query):
+        """
+        Run directory search
+        """
         stations = []
         data = requests.get('http://dir.xiph.org/search?search={0!s}'.format(quote(query)), headers=self.headers)
         soup = BeautifulSoup(''.join(data.text), 'html.parser')
@@ -37,6 +41,9 @@ class IcecastClient(object):
         return stations
 
     def extract_streams(self, m3u_url):
+        """
+        Extract stream urls from playlist
+        """
         streams = []
         data = requests.get(m3u_url, headers=self.headers)
         for stream in data.text.splitlines():
@@ -53,6 +60,9 @@ class IcecastTask(BasePlayerTask):
 
     @classmethod
     def process(cls, regexp, message):
+        """
+        Run task
+        """
         cls.logger.debug('Message: %r matches %r, running %r', message, regexp, cls.__name__)
         station = re.match(regexp, message).groups()[0]
         icc = IcecastClient()

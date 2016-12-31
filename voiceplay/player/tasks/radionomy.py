@@ -1,4 +1,5 @@
 #-*- coding: utf-8 -*-
+""" Radionomy directory module """
 
 import json
 import random
@@ -15,6 +16,10 @@ from .basetask import BasePlayerTask
 
 
 class RadionomyClient(object):
+    """
+    Radionomy directory class.
+    Beware of geographical restrictions
+    """
     headers = {'User-Agent': random.choice(['Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:50.0) Gecko/20100101 Firefox/50.0',
                                             'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36',
                                             'Mozilla/5.0 (MSIE 10.0; Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2486.0 Safari/537.36 Edge/13.10586',
@@ -22,6 +27,9 @@ class RadionomyClient(object):
                                             ])}
 
     def search(self, query):
+        """
+        Run radionomy directory search
+        """
         stations = []
         data = requests.get('http://www.radionomy.com/en/search/index?query={0!s}'.format(quote(query)), headers=self.headers)
         soup = BeautifulSoup(''.join(data.text), 'html.parser')
@@ -36,7 +44,9 @@ class RadionomyClient(object):
 
 
 class RadionomyTask(BasePlayerTask):
-
+    """
+    Radionomy player task
+    """
     __group__ = ['play']
     __regexp__ = ['^play (.+) station from radionomy$']
     __priority__ = 120
@@ -44,6 +54,9 @@ class RadionomyTask(BasePlayerTask):
 
     @classmethod
     def process(cls, regexp, message):
+        """
+        Run task
+        """
         cls.logger.debug('Message: %r matches %r, running %r', message, regexp, cls.__name__)
         station = re.match(regexp, message).groups()[0]
         rdc = RadionomyClient()

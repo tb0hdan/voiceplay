@@ -1,5 +1,5 @@
 #-*- coding: utf-8 -*-
-''' VoicePlay argument parser module '''
+""" VoicePlay argument parser module """
 
 import argparse
 import os
@@ -16,16 +16,16 @@ from voiceplay.player.hooks.basehook import BasePlayerHook
 from voiceplay.utils.helpers import purge_cache, ThreadGroup
 
 class MyArgumentParser(object):
-    '''
+    """
     Parse command line arguments
-    '''
+    """
     def __init__(self):
         self.parser = argparse.ArgumentParser(description=__title__, prog=__title__)
 
     def configure(self):
-        '''
+        """
         Configure argument parser
-        '''
+        """
         group = self.parser.add_mutually_exclusive_group()
         group.add_argument('-c', '--console', action='store_true', default=False,
                            dest='console',
@@ -59,9 +59,9 @@ class MyArgumentParser(object):
 
     @staticmethod
     def ipython_console():
-        '''
+        """
         Run ipython console
-        '''
+        """
         from traitlets.config import Config
         from IPython.terminal.embed import InteractiveShellEmbed
         config = Config()
@@ -73,9 +73,9 @@ class MyArgumentParser(object):
 
     @staticmethod
     def player_console(vicki):
-        '''
+        """
         Start VickiPlayer console
-        '''
+        """
         console = Console()
         console.add_handler('play', vicki.player.play_from_parser,
                             ['pause', 'shuffle', 'next', 'stop', 'resume'])
@@ -83,6 +83,9 @@ class MyArgumentParser(object):
         console.run_console()
 
     def vicki_loop(self, vicki, noblock=False):
+        """
+        Run Vicki loop
+        """
         vicki.player.start()
         vicki.tts.start()
         ThreadedRequestHandler.callback = vicki.wakeword_callback
@@ -95,13 +98,16 @@ class MyArgumentParser(object):
         vicki.run_forever_new(server, noblock=noblock)
 
     def wakeword_loop(self):
+        """
+        Run wakeword listener loop
+        """
         thread = threading.Thread(target=subprocess.call, args=(['python', '-m', 'voiceplay.recognition.wakeword.sender'],))
         thread.start()
 
     def parse(self, argv=None, noblock=False):
-        '''
+        """
         Parse command line arguments
-        '''
+        """
         argv = sys.argv if not argv else argv
         result = self.parser.parse_args(argv[1:])
         vicki = Vicki(debug=result.debug)

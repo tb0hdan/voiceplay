@@ -1,5 +1,5 @@
 #-*- coding: utf-8 -*-
-''' Configuration reader module '''
+""" Configuration reader module """
 
 import kaptan
 import os
@@ -9,9 +9,9 @@ from voiceplay.utils.helpers import Singleton
 
 
 class Config(with_metaclass(Singleton)):
-    '''
+    """
     VoicePlay configuration object
-    '''
+    """
     cache_dir = '~/.cache/voiceplay'
     persistent_dir = '~/.cache/voiceplay-persistent'
     config_search_order = ['config.yaml', os.path.expanduser('~/.config/voiceplay/config.yaml')]
@@ -28,9 +28,9 @@ class Config(with_metaclass(Singleton)):
 
     @classmethod
     def extend_local(cls, data):
-        '''
+        """
         TODO: extend config class with __getattr__
-        '''
+        """
         # cache_dir
         cache_dir = data.get('cache_dir', None)
         if not cache_dir:
@@ -49,9 +49,9 @@ class Config(with_metaclass(Singleton)):
 
     @classmethod
     def cfg_data(cls):
-        '''
+        """
         Return configuration data as dictionary
-        '''
+        """
         obj = cls()
         data = obj.extend_local(obj.config.configuration_data)
         return data

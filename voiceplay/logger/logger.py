@@ -1,4 +1,8 @@
 #-*- coding: utf-8 -*-
+"""
+Configure/Initialize custom logger
+TODO: use configuration file
+"""
 
 import logging
 import sys

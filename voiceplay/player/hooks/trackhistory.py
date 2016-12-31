@@ -1,4 +1,5 @@
 #-*- coding: utf-8 -*-
+""" Track history hook module """
 
 import os
 import requests
@@ -7,11 +8,14 @@ from voiceplay.logger import logger
 from .basehook import BasePlayerHook
 
 class TrackHistory(object):
-    '''
+    """
     Save track history
-    '''
+    """
     @classmethod
     def notify(cls, *args, **kwargs):
+        """
+        Notification dispatcher
+        """
         argparser = kwargs.get('argparser', '')
         track = kwargs.get('track', '')
         if not (track and argparser):
@@ -23,13 +27,16 @@ class TrackHistory(object):
 
 
 class TrackHistoryHook(BasePlayerHook):
-    '''
+    """
     Track history hook
-    '''
+    """
     __priority__ = 40
 
     @classmethod
     def configure_argparser(cls, parser):
+        """
+        Configure argument parser for this hook
+        """
         parser.add_argument('-n', '--no-track-save', action='store_true',
                                  default=False,
                                  dest='no_track_save',
@@ -37,4 +44,7 @@ class TrackHistoryHook(BasePlayerHook):
 
     @classmethod
     def on_playback_start(cls, *args, **kwargs):
+        """
+        watch for on_playback_start events only
+        """
         TrackHistory.notify(*args, argparser=cls.argparser, **kwargs)

@@ -1,4 +1,5 @@
 #-*- coding: utf-8 -*-
+""" Youtube track source module """
 
 from apiclient.discovery import build  # pylint:disable=import-error
 from apiclient.errors import HttpError  # pylint:disable=import-error
@@ -11,9 +12,9 @@ class YoutubeSource(TrackSource):
 
     @classmethod
     def search(cls, query, max_results=25):
-        '''
+        """
         Run youtube search
-        '''
+        """
         youtube = build('youtube', 'v3', developerKey=cls.cfg_data['google']['key'])
         search_response = youtube.search().list(q=query,
                                                 part="id,snippet",

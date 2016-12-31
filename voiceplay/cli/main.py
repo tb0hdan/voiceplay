@@ -1,5 +1,5 @@
 #-*- coding: utf-8 -*-
-''' VoicePlay CLI module '''
+""" VoicePlay CLI module """
 
 from .argparser.argparser import MyArgumentParser
 

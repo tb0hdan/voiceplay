@@ -1,5 +1,5 @@
 #-*- coding: utf-8 -*-
-
+""" Wakeword receiver module """
 import SocketServer as socketserver
 import threading
 

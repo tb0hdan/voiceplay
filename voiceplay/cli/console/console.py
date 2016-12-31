@@ -1,5 +1,5 @@
 #-*- coding: utf-8 -*-
-''' Console module container '''
+""" Console module container """
 
 from __future__ import print_function
 
@@ -22,26 +22,26 @@ class Console(object):
         self.commands = {}
 
     def add_handler(self, keyword, method, aliases=None):
-        '''
+        """
         Adds command handler to console
-        '''
+        """
         aliases = aliases if aliases else []
         self.commands[keyword] = {'method': method, 'aliases': aliases}
 
     @property
     def format_prompt(self):
-        '''
+        """
         Format command line prompt
-        '''
+        """
         result = self.default_prompt % (time.strftime('%H:%M:%S'),
                                         colorama.Fore.GREEN + colorama.Style.BRIGHT + self.name + colorama.Style.RESET_ALL,
                                         colorama.Fore.CYAN + colorama.Style.BRIGHT + '>' + colorama.Style.RESET_ALL)
         return result
 
     def parse_command(self, command):
-        '''
+        """
         Parse entered command
-        '''
+        """
         result = None
         should_be_printed = True
         command = command.strip().lower()
@@ -55,9 +55,9 @@ class Console(object):
         return result, should_be_printed
 
     def quit_command(self, _):
-        '''
+        """
         Handle quit / exit / logout command
-        '''
+        """
         self.exit = True
         result = None
         should_be_printed = False
@@ -65,9 +65,9 @@ class Console(object):
 
     @staticmethod
     def clear_command(_):
-        '''
+        """
         Handle clear command
-        '''
+        """
         sys.stderr.flush()
         sys.stderr.write("\x1b[2J\x1b[H")
         result = None
@@ -75,9 +75,9 @@ class Console(object):
         return result, should_be_printed
 
     def complete(self, _, state):
-        '''
+        """
         Provide autocompletion support (buggy)
-        '''
+        """
         text = rl.readline.get_line_buffer()  # pylint:disable=no-member
         if not text:
             return [c + ' ' for c in self.commands][state]
@@ -86,12 +86,15 @@ class Console(object):
 
     @staticmethod
     def run_exit():
-        '''
+        """
         Finalize exit (invoked after self.quit_command)
-        '''
+        """
         print ('Goodbye!')
 
     def run_console(self):
+        """
+        Actual console runner
+        """
         inp = None
         colorama.init()
         # FSCK! Details here: http://stackoverflow.com/questions/7116038/python-tab-completion-mac-osx-10-7-lion

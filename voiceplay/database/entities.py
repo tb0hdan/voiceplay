@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-''' VoicePlay database entities container '''
+""" VoicePlay database entities container """
 
 from datetime import datetime
 from pony.orm import Database, PrimaryKey, Required
@@ -10,9 +10,9 @@ db = Database()
 
 
 class Artist(db.Entity):
-    '''
+    """
     Artist database entity container
-    '''
+    """
     name = PrimaryKey(str)
     created_at = Required(datetime)
     updated_at = Required(datetime)
@@ -20,9 +20,9 @@ class Artist(db.Entity):
 
 
 class PlayedTracks(db.Entity):
-    '''
+    """
     Save played tracks for history and stats
-    '''
+    """
     track = PrimaryKey(str)
     created_at = Required(datetime)
     updated_at = Required(datetime)
@@ -30,9 +30,9 @@ class PlayedTracks(db.Entity):
 
 
 class LastFmCache(db.Entity):
-    '''
+    """
     Cache last.fm results
-    '''
+    """
     method_args = PrimaryKey(str)
     created_at = Required(datetime)
     updated_at = Required(datetime)

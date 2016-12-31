@@ -1,5 +1,5 @@
 #-*- coding: utf-8 -*-
-''' VoicePlay Text to Speech engine module '''
+""" VoicePlay Text to Speech engine module """
 
 import platform
 import sys
@@ -15,9 +15,9 @@ from voiceplay.logger import logger
 from voiceplay.utils.helpers import ThreadGroup
 
 class TextToSpeech(object):
-    '''
+    """
     MAC/Linux TTS
-    '''
+    """
     def __init__(self):
         self.thread = None
         self.shutdown = False
@@ -44,30 +44,30 @@ class TextToSpeech(object):
 
     @staticmethod
     def __say_linux(message):
-        '''
-        Read aloud message Linux
-        '''
+        """
+        Read message aloud (Linux)
+        """
         from festival import sayText  # pylint:disable=import-error
         sayText(message)
 
     def __say_mac(self, message):
-        '''
-        Read aloud message MAC
-        '''
+        """
+        Read message aloud (MAC)
+        """
         self.speech.startSpeakingString_(message)
         while self.speech.isSpeaking():
             time.sleep(0.1)
 
     def __say_dummy(self, message):
-        '''
-        Dummy TTS
-        '''
+        """
+        Dummy TTS, does nothing
+        """
         pass
 
     def poll_loop(self):
-        '''
+        """
         Poll speech queue
-        '''
+        """
         while not self.shutdown:
             if not self.queue.empty():
                 message = self.queue.get()
@@ -79,23 +79,23 @@ class TextToSpeech(object):
         logger.debug('TTS poll_loop exit')
 
     def start(self):
-        '''
+        """
         Start TTS as a separate thread
-        '''
+        """
         logger.debug('Starting TTS engine...')
         self.threads = ThreadGroup()
         self.threads.targets = [self.poll_loop]
         self.threads.start_all()
 
     def stop(self):
-        '''
+        """
         Set shutdown flag and wait for thread to exit
-        '''
+        """
         self.shutdown = True
         self.threads.stop_all()
 
     def say_put(self, message):
-        '''
+        """
         Add message to speech queue
-        '''
+        """
         self.queue.put(message)

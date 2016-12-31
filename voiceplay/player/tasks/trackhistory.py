@@ -1,4 +1,5 @@
 #-*- coding: utf-8 -*-
+""" Track history task module """
 
 import os
 import random
@@ -10,7 +11,10 @@ from .basetask import BasePlayerTask
 
 
 class LocalHistoryTask(BasePlayerTask):
-
+    """
+    All played track names are stored locally.
+    This tasks enables playback of that.
+    """
     __group__ = ['play', 'shuffle']
     __regexp__ = ['^play (.+)?my history$', '^shuffle (.+)?my history$']
     __priority__ = 160
@@ -18,6 +22,10 @@ class LocalHistoryTask(BasePlayerTask):
 
     @classmethod
     def play_track_history(cls, message):
+        """
+        Get list of all tracks from local history
+        TODO: Limit this
+        """
         tracks = voiceplaydb.get_played_tracks()
         random.shuffle(tracks)
         for track in tracks:
@@ -27,6 +35,9 @@ class LocalHistoryTask(BasePlayerTask):
 
     @classmethod
     def process(cls, regexp, message):
+        """
+        Run task
+        """
         cls.logger.debug('Message: %r matches %r, running %r', message, regexp, cls.__name__)
         msg = re.match(regexp, message).groups()[0]
         logger.warning(msg)

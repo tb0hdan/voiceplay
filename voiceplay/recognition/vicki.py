@@ -1,5 +1,5 @@
 #-*- coding: utf-8 -*-
-''' VoicePlay speech handler '''
+""" VoicePlay speech handler """
 
 import logging
 import speech_recognition as sr
@@ -11,10 +11,9 @@ from voiceplay.player.vickiplayer import VickiPlayer
 from voiceplay.utils.helpers import ThreadGroup
 
 class Vicki(object):
-    '''
+    """
     Vicki main class
-    '''
-
+    """
     def __init__(self, debug=False):
         self.debug = debug
         self.rec = sr.Recognizer()
@@ -28,10 +27,17 @@ class Vicki(object):
         self.listener = None
 
     def wakeword_callback(self, message):
+        """
+        Invoked on wakeword callback
+        """
         logger.debug(message)
         self.wake_up = True
 
     def background_listener(self):
+        """
+        Run loop and wait for commands
+        TODO: Localize this
+        """
         msg = 'Vicki is listening'
         self.tts.say_put(msg)
         # TODO: Fix this using callback or something so that 
@@ -85,9 +91,9 @@ class Vicki(object):
         logger.debug('Vicki.Listener exit')
 
     def stop(self):
-        '''
+        """
         Set shutdown flag and wait for the threads to exit
-        '''
+        """
         self.shutdown = True  # for threads
         self.tts.stop()
         self.player.shutdown()
@@ -95,9 +101,9 @@ class Vicki(object):
             self.wakeword_receiver.shutdown()
 
     def run_forever_new(self, wakeword_receiver, noblock=False):
-        '''
-        Main loop
-        '''
+        """
+        Recognition main loop
+        """
         self.wakeword_receiver = wakeword_receiver
         if noblock:
             threads = ThreadGroup()

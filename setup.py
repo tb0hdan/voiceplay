@@ -13,7 +13,7 @@ if os.path.exists('README.md'):
 else:
     readme = ''
 
-system_specific_packages = ['gntp', 'pyobjc'] if platform.system() == 'Darwin' else ['pyfestival']
+system_specific_packages = ['gntp', 'pyobjc'] if platform.system() == 'Darwin' else ['pyfestival', 'Skype4Py']
 setup(name='voiceplay',
       version=__version__,
       description=__description__,
@@ -29,7 +29,7 @@ setup(name='voiceplay',
       install_requires=['Babel', 'beautifulsoup4', 'colorama', 'dailymotion', 'filemagic', 'flake8',
                         'google-api-python-client', 'ipython', 'kaptan', 'monotonic',
                         'musicbrainzngs', 'mutagen', 'piprot', 'pocketsphinx', 'pony', 'PyAudio',
-                        'pylast', 'pylint', 'pytest', 'pytest-coverage', 'PyVimeo', 'rl', 'Skype4Py',
+                        'pylast', 'pylint', 'pytest', 'pytest-coverage', 'PyVimeo', 'rl',
                         'SpeechRecognition', 'youtube-dl'] + system_specific_packages,
       entry_points={'console_scripts': [
                         'voiceplay=voiceplay.cli:main']},

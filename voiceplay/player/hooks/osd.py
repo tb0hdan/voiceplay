@@ -1,4 +1,5 @@
 #-*- coding: utf-8 -*-
+""" OSD (on screen display) notification module """
 
 import os
 import platform
@@ -9,12 +10,17 @@ from voiceplay.datasources.albumart import AlbumArt
 from voiceplay.logger import logger
 from .basehook import BasePlayerHook
 
+
 class OSDNotification(object):
-    '''
-    OSD notification (osx + growl so far)
-    '''
+    """
+    OSD notification (osx + growl / Linux GI)
+    """
+
     @classmethod
     def notify(cls, *args, **kwargs):
+        """
+        Notification dispatcher that calls platform specific method
+        """
         argparser = kwargs.get('argparser', '')
         track = kwargs.get('track', '')
         if not (track and argparser and argparser.osd):
@@ -29,6 +35,9 @@ class OSDNotification(object):
 
     @classmethod
     def linux_notify(cls, message, icon):
+        """
+        Linux OSD using GI
+        """
         from gi.repository import Notify  # pylint:disable=import-error
         if not os.environ.get('DISPLAY'):
             # try default
@@ -48,6 +57,9 @@ class OSDNotification(object):
 
     @classmethod
     def darwin_notify(cls, message, icon):
+        """
+        OSX notification using Growl
+        """
         import gntp.notifier  # pylint:disable=import-error
 
         growl = gntp.notifier.GrowlNotifier(
@@ -67,13 +79,16 @@ class OSDNotification(object):
 
 
 class OSDPlayerHook(BasePlayerHook):
-    '''
-    Log only hook
-    '''
+    """
+    OSD hook
+    """
     __priority__ = 20
 
     @classmethod
     def configure_argparser(cls, parser):
+        """
+        Configure argument parser for this hook
+        """
         parser.add_argument('-o', '--osd', action='store_true',
                                  default=False,
                                  dest='osd',
@@ -81,4 +96,7 @@ class OSDPlayerHook(BasePlayerHook):
 
     @classmethod
     def on_playback_start(cls, *args, **kwargs):
+        """
+        watch for on_playback_start events only
+        """
         OSDNotification.notify(*args, argparser=cls.argparser, **kwargs)

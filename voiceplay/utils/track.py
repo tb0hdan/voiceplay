@@ -1,12 +1,20 @@
+#-*- coding: utf-8 -*-
+""" VoicePlay track handling module """
+
 import re
+
 
 class TrackNormalizer(object):
     """
+    Normalize tracks, check their status, etc
     """
-    keywords = ['remix', 'karaoke']
+    keywords = ['karaoke', 'djfm toronto ids', 'djfm ids']
 
     @classmethod
     def track_ok(cls, track):
+        """
+        Track name doesn't have blacklisted keywords
+        """
         status = True
         for keyword in cls.keywords:
             if keyword in track.lower():
@@ -16,6 +24,10 @@ class TrackNormalizer(object):
 
     @classmethod
     def normalize(cls, trackname):
+        """
+        Normalize track names, mostly required for online radio
+        TODO: move this out to json
+        """
         # djfm.ca
         match = re.match('^Title:(.+)Artist:(.+)$', trackname)
         if match:
@@ -29,10 +41,25 @@ class TrackNormalizer(object):
         return trackname
 
     def filter_tracks(cls, tracks):
+        """
+        Track filter, accepts list of tracks, returns those that are ok
+        """
         return filter(cls.track_ok, tracks)
 
 def normalize(trackname):
+    """
+    Normalize wrapper
+    """
     return TrackNormalizer.normalize(trackname)
 
+def track_ok(trackname):
+    """
+    Track_ok wrapper
+    """
+    return TrackNormalizer.track_ok(trackname)
+
 def filter_tracks(tracks):
+    """
+    Track filter wrapper
+    """
     return TrackNormalizer.filter_tracks(tracks)

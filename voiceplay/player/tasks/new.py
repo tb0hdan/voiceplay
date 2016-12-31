@@ -1,4 +1,5 @@
 #-*- coding: utf-8 -*-
+""" New tracks module """
 
 import datetime
 import random
@@ -12,7 +13,9 @@ from .basetask import BasePlayerTask
 
 
 class NewTask(BasePlayerTask):
-
+    """
+    Find and play recent/new tracks by provided artist
+    """
     __group__ = ['play']
     __regexp__ = ['^play (?:fresh|new) (?:tracks|songs) (?:from|by) (.+)$']
     __priority__ = 150
@@ -20,9 +23,9 @@ class NewTask(BasePlayerTask):
 
     @classmethod
     def play_new_tracks(cls, artist):
-        '''
-        Play top tracks for station
-        '''
+        """
+        Play new tracks by provided artist
+        """
         mbapi = MBAPI()
         artist = cls.lfm.get_corrected_artist(artist)
         artist_mbid = mbapi.get_artist_mbid(artist)
@@ -63,6 +66,9 @@ class NewTask(BasePlayerTask):
 
     @classmethod
     def process(cls, regexp, message):
+        """
+        Run task
+        """
         cls.logger.debug('Message: %r matches %r, running %r', message, regexp, cls.__name__)
         artist = re.match(regexp, message).groups()[0]
         cls.say('Playing new tracks by %s' % artist)

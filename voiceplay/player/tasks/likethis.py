@@ -1,4 +1,5 @@
 #-*- coding: utf-8 -*-
+""" Something like this module """
 
 import random
 random.seed()
@@ -6,7 +7,9 @@ from .basetask import BasePlayerTask
 
 
 class SomethingLikeThisTask(BasePlayerTask):
-
+    """
+    Starts a station with tracks similar to what's being currently playing
+    """
     __group__ = ['play']
     __regexp__ = ['^play (?:songs|tracks|something) like this(.+)?$']
     __priority__ = 170
@@ -14,9 +17,10 @@ class SomethingLikeThisTask(BasePlayerTask):
 
     @classmethod
     def play_similar_tracks(cls, track):
-        '''
+        """
         Shuffle artist tracks
-        '''
+        TODO: Fix this in https://github.com/tb0hdan/voiceplay/issues/22
+        """
         tracks = []
         # original
         artist = track.split(' - ')[0]
@@ -38,6 +42,9 @@ class SomethingLikeThisTask(BasePlayerTask):
 
     @classmethod
     def process(cls, regexp, message):
+        """
+        Run task
+        """
         cls.logger.debug('Message: %r matches %r, running %r', message, regexp, cls.__name__)
         track = cls.get_current_track()
         cls.say('Playing music similar to %s' % track)

@@ -1,16 +1,22 @@
 #-*- coding: utf-8 -*-
+""" Last.FM scrobbling module """
 
 import os
 from voiceplay.datasources.lastfm import VoicePlayLastFm
 from voiceplay.logger import logger
 from .basehook import BasePlayerHook
 
+
 class TrackScrobble(object):
-    '''
-    Save track history
-    '''
+    """
+    Save track history for Last.FM (and compatibles)
+    """
+
     @classmethod
     def notify(cls, *args, **kwargs):
+        """
+        Notification dispatcher
+        """
         argparser = kwargs.get('argparser', '')
         track = kwargs.get('track', '')
         if not (track and argparser):
@@ -25,13 +31,16 @@ class TrackScrobble(object):
 
 
 class ScrobbleHook(BasePlayerHook):
-    '''
+    """
     Scrobble hook
-    '''
+    """
     __priority__ = 50
 
     @classmethod
     def configure_argparser(cls, parser):
+        """
+        Configure argument parser for this hook
+        """
         parser.add_argument('-ns', '--no-scrobble', action='store_true',
                                  default=False,
                                  dest='no_track_scrobble',
@@ -39,4 +48,7 @@ class ScrobbleHook(BasePlayerHook):
 
     @classmethod
     def on_playback_start(cls, *args, **kwargs):
+        """
+        watch for on_playback_start events only
+        """
         TrackScrobble.notify(*args, argparser=cls.argparser, **kwargs)

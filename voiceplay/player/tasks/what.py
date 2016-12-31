@@ -1,4 +1,6 @@
 #-*- coding: utf-8 -*-
+""" Interaction task module """
+
 
 import re
 import time
@@ -7,7 +9,9 @@ from .basetask import BasePlayerTask
 
 
 class WhatTask(BasePlayerTask):
-
+    """
+    This task doesn't play anything, just provides info
+    """
     __group__ = ['what']
     __regexp__ = ['^what are top albums (?:by|for) (.+)$',
                   '^what are top (?:songs|tracks) (?:by|for) (.+)$',
@@ -18,6 +22,9 @@ class WhatTask(BasePlayerTask):
 
     @classmethod
     def process(cls, regexp, message):
+        """
+        Run task
+        """
         cls.logger.debug('Message: %r matches %r, running %r', message, regexp, cls.__name__)
         artist = re.match(regexp, message).groups()[0]
         if 'albums' in regexp:

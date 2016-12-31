@@ -1,5 +1,5 @@
 #-*- coding: utf-8 -*-
-''' Helper functions / methods / classes '''
+""" Helper functions / methods / classes """
 
 import hashlib
 import os
@@ -12,22 +12,28 @@ from glob import glob
 from voiceplay.logger import logger
 
 class Singleton(type):
-    '''
+    """
     Singleton base class
-    '''
+    """
     cls_instances = {}
     def __call__(cls, *args, **kwargs):
-        '''
+        """
         Handle instantiation
-        '''
+        """
         if cls not in cls.cls_instances:
             cls.cls_instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
         return cls.cls_instances[cls]
 
 def track_to_hash(track):
+    """
+    Hash track name using SHA1
+    """
     return hashlib.sha1(track.encode('utf-8')).hexdigest()
 
 def purge_cache():
+    """
+    Purge file storage cache
+    """
     from voiceplay.config import Config
     from voiceplay.logger import logger
     logger.debug('Purging cache...')
@@ -41,6 +47,9 @@ def purge_cache():
                 logger.debug('Removal of %r failed, please check permissions')
 
 def restart_on_crash(method, *args, **kwargs):
+    """
+    Restart method on crash helper
+    """
     while True:
         result = None
         try:
@@ -60,6 +69,7 @@ def restart_on_crash(method, *args, **kwargs):
 
 class ThreadGroup(object):
     """
+    Thread group wrapper
     """
     def __init__(self, daemon=True, timeout=1.0, restart=True):
         self.daemon = daemon
@@ -70,13 +80,22 @@ class ThreadGroup(object):
 
     @property
     def targets(self):
+        """
+        Managed attribute, return list of thread targets
+        """
         return self._targets
 
     @targets.setter
     def targets(self, th):
+        """
+        Managed attribute, set list of thread targets
+        """
         self._targets = th
 
     def start_all(self):
+        """
+        Start all thread targets using restart_on_crash helper
+        """
         for target in self._targets:
             args = ()
             name = repr(target)
@@ -89,5 +108,8 @@ class ThreadGroup(object):
             self.threads.append(thread)
 
     def stop_all(self):
+        """
+        Stop all thread targets
+        """
         for thread in self.threads:
             thread.join(timeout=self.timeout)

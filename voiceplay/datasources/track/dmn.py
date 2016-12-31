@@ -1,5 +1,5 @@
 #-*- coding: utf-8 -*-
-
+""" DailyMotion track source module """
 from __future__ import division
 
 from dailymotion import Dailymotion
@@ -13,9 +13,9 @@ class DailyMotionSource(TrackSource):
 
     @classmethod
     def search(cls, query, max_results=25):
-        '''
+        """
         Run dailymotion search
-        '''
+        """
         maxresults = 100
         client = Dailymotion()
         results = []

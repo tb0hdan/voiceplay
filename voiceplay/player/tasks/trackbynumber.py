@@ -1,4 +1,6 @@
 #-*- coding: utf-8 -*-
+""" Track by number task module """
+
 
 import re
 from voiceplay.logger import logger
@@ -25,9 +27,9 @@ class TrackByNumberTask(BasePlayerTask):
 
     @classmethod
     def run_play_cmd(cls, phrase):
-        '''
+        """
         Run play command
-        '''
+        """
         # play number
         phrase = phrase.strip().lower()
         if not phrase:
@@ -55,20 +57,22 @@ class TrackByNumberTask(BasePlayerTask):
                 cls.store_tracks(tracks)
             else:
                 cls.play_full_track(phrase)
+
     @staticmethod
     def store_tracks(tracks):
-        '''
+        """
         Store top tracks
-        '''
+        TODO: Use DB instead
+        """
         with open('state.txt', 'wb') as file_handle:
             for track in tracks:
                 file_handle.write(track + '\n')
 
     @classmethod
     def play_track_by_number(cls, number):
-        '''
+        """
         Play track by number
-        '''
+        """
         tid = 0
         track = ''
         for idx, num in enumerate(sorted(cls.numbers)):
@@ -87,9 +91,9 @@ class TrackByNumberTask(BasePlayerTask):
 
     @classmethod
     def get_track_by_number(cls, number):
-        '''
+        """
         Get Artist - Track by number
-        '''
+        """
         tid = 0
         track = ''
         for idx, num in enumerate(sorted(cls.numbers)):
@@ -114,6 +118,9 @@ class TrackByNumberTask(BasePlayerTask):
 
     @classmethod
     def process(cls, regexp, message):
+        """
+        Run task
+        """
         cls.logger.debug('Message: %r matches %r, running %r', message, regexp, cls.__name__)
         artist = re.match(regexp, message).groups()[0]
         cls.run_play_cmd(artist)
