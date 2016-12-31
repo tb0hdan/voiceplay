@@ -8,8 +8,8 @@ import platform
 from setuptools import setup, find_packages
 from voiceplay import __title__, __version__, __description__, __author__, __author_email__, __copyright__
 
-if os.path.exists('README.md'):
-    readme = io.open('README.md', mode='r', encoding='utf8').read()
+if os.path.exists('README.rst'):
+    readme = io.open('README.rst', mode='r', encoding='utf8').read()
 else:
     readme = ''
 
