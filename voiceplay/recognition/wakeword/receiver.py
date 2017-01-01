@@ -17,8 +17,9 @@ class ThreadedRequestHandler(socketserver.BaseRequestHandler):
         if self.callback and callable(self.callback):
             self.callback(data)  # pylint:disable=not-callable
         cur_thread = threading.currentThread()
-        response = b'%s: %s' % (cur_thread.getName(),
-                                data)
+        response = b'Ok'
+        #'%s: %s' % (cur_thread.getName(),
+        #                        data)
         self.request.send(response)
         return
 

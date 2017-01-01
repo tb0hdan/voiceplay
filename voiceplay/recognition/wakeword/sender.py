@@ -79,7 +79,7 @@ class WakeWordListener(object):
         Wakeword callback. Puts "wakeup" command in queue
         """
         logger.warning('wakey!')
-        self.queue.put('wakeup')
+        self.queue.put(b'wakeup')
 
 if __name__ == '__main__':
     listener = WakeWordListener()
