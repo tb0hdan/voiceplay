@@ -29,7 +29,7 @@ class SnowboyDownloader(object):
             self.version = 'osx-x86_64-1.1.0'
         else:
             # Linux distributions
-            distro, version = platform.linux_distribution()
+            distro, version = platform.linux_distribution()[0], platform.linux_distribution()[1]
             if distro == 'debian' and LooseVersion(version) >= LooseVersion('8.0'):
                 self.version = 'ubuntu1404-x86_64-1.1.0'
             elif distro == 'debian' and LooseVersion(version) < LooseVersion('7.0'):
