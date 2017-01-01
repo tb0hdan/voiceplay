@@ -21,6 +21,5 @@ pytest==3.0.5
 pytest-coverage==0.0
 PyVimeo==0.3.4
 rl==2.4
-Skype4Py==1.0.35
 SpeechRecognition==3.5.0
 youtube-dl

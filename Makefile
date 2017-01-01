@@ -1,6 +1,12 @@
 .PHONY: docs snowboy vlcpython
 
-VERSION = $(shell cat voiceplay/__init__.py|grep '__version__'|sed -E "s/((.+)=|'|\ )//g")
+ifeq ($(shell uname),Darwin)
+    SED = sed -E
+else
+    SED = sed -r
+endif
+
+VERSION = $(shell cat voiceplay/__init__.py|grep '__version__'|$(SED) "s/((.+)=|'|\ )//g")
 
 submodules:
 	@git submodule init
@@ -12,6 +18,7 @@ snowboy:	submodules
 	@cp -v snowboy/swig/Python/*.py voiceplay/extlib/snowboydetect/
 	@cp -v snowboy/examples/Python/*.py voiceplay/extlib/snowboydetect/
 	@cp -R snowboy/resources voiceplay/extlib/snowboydetect
+	@$(SED) -i '/import snowboydetect/s/import snowboydetect/import voiceplay.extlib.snowboydetect.snowboydetect as snowboydetect/g' voiceplay/extlib/snowboydetect/snowboydecoder.py
 
 vlcpython:	submodules
 	@cp -v vlcpython/generated/vlc.py voiceplay/extlib/vlcpython
