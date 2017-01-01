@@ -2,8 +2,10 @@
 
 ifeq ($(shell uname),Darwin)
     SED = sed -E
+    SEDINPLACE = $(SED) -i '' -e
 else
     SED = sed -r
+    SEDINPLACE = $(SED) -i -e
 endif
 
 VERSION = $(shell cat voiceplay/__init__.py|grep '__version__'|$(SED) "s/((.+)=|'|\ )//g")
@@ -18,7 +20,7 @@ snowboy:	submodules
 	@cp -v snowboy/swig/Python/*.py voiceplay/extlib/snowboydetect/
 	@cp -v snowboy/examples/Python/*.py voiceplay/extlib/snowboydetect/
 	@cp -R snowboy/resources voiceplay/extlib/snowboydetect
-	@$(SED) -i '/import snowboydetect/s/import snowboydetect/import voiceplay.extlib.snowboydetect.snowboydetect as snowboydetect/g' voiceplay/extlib/snowboydetect/snowboydecoder.py
+	@$(SEDINPACE) '/import snowboydetect/s/import snowboydetect/import voiceplay.extlib.snowboydetect.snowboydetect as snowboydetect/g' voiceplay/extlib/snowboydetect/snowboydecoder.py
 
 vlcpython:	submodules
 	@cp -v vlcpython/generated/vlc.py voiceplay/extlib/vlcpython
