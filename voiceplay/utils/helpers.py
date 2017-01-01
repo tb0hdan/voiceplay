@@ -59,7 +59,7 @@ def restart_on_crash(method, *args, **kwargs):
         except Exception as exc:
             exc_type, exc_value, exc_trace = sys.exc_info()
             trace = ''.join(traceback.format_exception(exc_type, exc_value, exc_trace))
-            logger.debug('Method %r crashed with %r:%s, restarting...', method, exc.message, trace)
+            logger.debug('Method %r crashed (see message below), restarting...\n%s\n', method, trace)
             # allow interrupt
             time.sleep(1)
         else:

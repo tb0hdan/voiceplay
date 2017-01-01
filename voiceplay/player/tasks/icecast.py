@@ -6,10 +6,15 @@ import random
 random.seed()
 import re
 import requests
-import time
 
+import sys
+if sys.version_info.major == 2:
+    from urllib import quote  # pylint:disable=no-name-in-module,import-error
+elif sys.version_info.major == 3:
+    from urllib.parse import quote  # pylint:disable=no-name-in-module,import-error
+
+import time
 from bs4 import BeautifulSoup
-from urllib import quote
 
 from voiceplay.logger import logger
 from .basetask import BasePlayerTask
