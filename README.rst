@@ -13,6 +13,7 @@ Usage
 
 Prerequisites:
 
+- libatlas3 (or libatlas3-base on Debian)
 - Python 2.7+
 - VLC
 
