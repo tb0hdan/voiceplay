@@ -3,8 +3,10 @@
 
 import io
 import os
-import re
 import platform
+import re
+import sys
+import subprocess
 from setuptools import setup, find_packages
 from voiceplay import __title__, __version__, __description__, __author__, __author_email__, __copyright__
 
@@ -14,6 +16,16 @@ else:
     readme = ''
 
 system_specific_packages = ['gntp', 'pyobjc'] if platform.system() == 'Darwin' else ['pyfestival', 'Skype4Py']
+
+# hook to pip install for broken pyaudio package
+if sys.argv[1] in ['bdist_wheel', 'install']:
+    if platform.system() == 'Darwin':
+        subprocess.call(['pip', 'install', '--global-option=build_ext',
+                                           '--global-option=-I/usr/local/include',
+                                           '--global-option=-L/usr/local/lib', 'pyaudio'])
+    else:
+        subprocess.call(['pip', 'install', 'pyaudio'])
+
 setup(name='voiceplay',
       version=__version__,
       description=__description__,
@@ -29,7 +41,7 @@ setup(name='voiceplay',
       install_requires=['Babel', 'beautifulsoup4', 'colorama', 'dailymotion', 'filemagic', 'flake8',
                         'oauth2client>=1.5.2,<4.0.0',
                         'google-api-python-client', 'ipython', 'kaptan', 'monotonic',
-                        'musicbrainzngs', 'mutagen', 'piprot', 'pocketsphinx', 'pony', 'PyAudio',
+                        'musicbrainzngs', 'mutagen', 'piprot', 'pocketsphinx', 'pony',
                         'pylast', 'pylint', 'pytest', 'pytest-coverage', 'PyVimeo', 'rl',
                         'SpeechRecognition', 'youtube-dl'] + system_specific_packages,
       entry_points={'console_scripts': [
