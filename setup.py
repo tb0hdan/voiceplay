@@ -7,8 +7,15 @@ import platform
 import re
 import sys
 import subprocess
+from distutils.sysconfig import get_python_lib
 from setuptools import setup, find_packages
-from voiceplay import __title__, __version__, __description__, __author__, __author_email__, __copyright__
+from voiceplay import (__title__,
+                       __version__,
+                       __description__,
+                       __author__,
+                       __author_email__,
+                       __copyright__,
+                       __file__ as vpfile)
 
 if os.path.exists('README.rst'):
     readme = io.open('README.rst', mode='r', encoding='utf8').read()
@@ -17,14 +24,21 @@ else:
 
 system_specific_packages = ['gntp', 'pyobjc'] if platform.system() == 'Darwin' else ['pyfestival', 'Skype4Py']
 
-# hook to pip install for broken pyaudio package
+# hook to pip install for package sideloading
+# broken pyaudio package
+# snowboy extention
 if sys.argv[1] in ['bdist_wheel', 'install']:
+    # pyaudio
     if platform.system() == 'Darwin':
         subprocess.call(['pip', 'install', '--global-option=build_ext',
                                            '--global-option=-I/usr/local/include',
                                            '--global-option=-L/usr/local/lib', 'pyaudio'])
     else:
         subprocess.call(['pip', 'install', 'pyaudio'])
+    # snowboy
+    from voiceplay.utils.snowboydownloader import SnowboyDownloader
+    sd = SnowboyDownloader()
+    sd.download_and_unpack(os.path.join(get_python_lib(), 'voiceplay', 'extlib', 'snowboydetect'))
 
 setup(name='voiceplay',
       version=__version__,
@@ -33,13 +47,13 @@ setup(name='voiceplay',
       author_email=__author_email__,
       url='https://github.com/tb0hdan/voiceplay',
       packages=find_packages(exclude=['snowboy', 'vlcpython', 'docs', 'tests*']),
-      package_data={'': ['resources/*.pmdl', 'resources/*.res']},
+      package_data={'': ['snowboydetect/resources/*.pmdl', 'snowboydetect/resources/*.res', 'snowboydetect/*.py']},
       zip_safe=False,
       license=__copyright__,
       keywords='voiceplay music playlists vlc player',
       long_description=readme,
       install_requires=['Babel', 'beautifulsoup4', 'colorama', 'dailymotion', 'filemagic', 'flake8',
-                        'oauth2client>=1.5.2,<4.0.0',
+                        'oauth2client>=1.5.2,<4.0.0', 'requests',
                         'google-api-python-client', 'ipython', 'kaptan', 'monotonic',
                         'musicbrainzngs', 'mutagen', 'piprot', 'pocketsphinx', 'pony',
                         'pylast', 'pylint', 'pytest', 'pytest-coverage', 'PyVimeo', 'rl',

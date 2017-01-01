@@ -1,5 +1,5 @@
 #-*- coding: utf-8 -*-
-""" VoicePlay pluging loader module """
+""" VoicePlay plugin loader module """
 
 import inspect
 import os

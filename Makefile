@@ -20,6 +20,7 @@ snowboy:	submodules
 	@cp -v snowboy/swig/Python/*.py voiceplay/extlib/snowboydetect/
 	@cp -v snowboy/examples/Python/*.py voiceplay/extlib/snowboydetect/
 	@cp -R snowboy/resources voiceplay/extlib/snowboydetect
+	@touch voiceplay/extlib/snowboydetect/__init__.py
 	@$(SEDINPLACE) '/import snowboydetect/s/import snowboydetect/import voiceplay.extlib.snowboydetect.snowboydetect as snowboydetect/g' voiceplay/extlib/snowboydetect/snowboydecoder.py
 
 vlcpython:	submodules
