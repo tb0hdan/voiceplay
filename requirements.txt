@@ -22,4 +22,5 @@ pytest-coverage==0.0
 PyVimeo==0.3.4
 rl==2.4
 SpeechRecognition==3.5.0
+Sphinx==1.5.1
 youtube-dl
