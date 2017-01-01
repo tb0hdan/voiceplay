@@ -55,7 +55,7 @@ coverage:
 	@py.test -c ./tests/etc/pytest.ini --cov=./voiceplay --cov-config=./tests/etc/coveragerc tests/
 
 clean:
-	@rm -rf build/ dist/
+	@rm -rf build/ dist/ voiceplay.egg-info/ voiceplay/extlib; git checkout voiceplay/extlib
 	@rm -f ./*.dmg
 	@rm -rf ./vlcpython/ ./snowboy/; mkdir ./vlcpython ./snowboy
 	@cd docs; make clean; cd ../
