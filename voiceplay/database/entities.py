@@ -3,7 +3,7 @@
 
 from datetime import datetime
 from pony.orm import Database, PrimaryKey, Required
-from pony.orm.ormtypes import types
+from pony.orm.ormtypes import buffer
 
 # pylint:disable=invalid-name
 db = Database()
@@ -16,7 +16,7 @@ class Artist(db.Entity):
     name = PrimaryKey(str)
     created_at = Required(datetime)
     updated_at = Required(datetime)
-    image = Required(types.BufferType)
+    image = Required(buffer)
 
 
 class PlayedTracks(db.Entity):

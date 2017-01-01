@@ -6,6 +6,7 @@ import os
 import subprocess
 import sys
 import threading
+from functools import cmp_to_key
 from voiceplay import __version__, __title__
 from voiceplay.recognition.vicki import Vicki
 from voiceplay.recognition.wakeword.receiver import ThreadedRequestHandler, WakeWordReceiver
@@ -13,7 +14,7 @@ from voiceplay.cli.console.console import Console
 from voiceplay.utils.loader import PluginLoader
 from voiceplay.player.tasks.basetask import BasePlayerTask
 from voiceplay.player.hooks.basehook import BasePlayerHook
-from voiceplay.utils.helpers import purge_cache, ThreadGroup
+from voiceplay.utils.helpers import purge_cache, ThreadGroup, cmp
 
 class MyArgumentParser(object):
     """
@@ -44,9 +45,9 @@ class MyArgumentParser(object):
                                  help='Enable debug mode')
         # configure args for plugins
         plugins = sorted(PluginLoader().find_classes('voiceplay.player.tasks', BasePlayerTask),
-                         cmp=lambda x, y: cmp(x.__priority__, y.__priority__))
+                         key=cmp_to_key(lambda x, y: cmp(x.__priority__, y.__priority__)))
         plugins += sorted(PluginLoader().find_classes('voiceplay.player.hooks', BasePlayerHook),
-                         cmp=lambda x, y: cmp(x.__priority__, y.__priority__))
+                         key=cmp_to_key(lambda x, y: cmp(x.__priority__, y.__priority__)))
         for plugin in plugins:
             try:
                 attr = getattr(plugin, 'configure_argparser')

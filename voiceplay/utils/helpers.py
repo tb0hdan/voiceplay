@@ -113,3 +113,6 @@ class ThreadGroup(object):
         """
         for thread in self.threads:
             thread.join(timeout=self.timeout)
+
+def cmp(x, y):
+    return (x > y) - (x < y)

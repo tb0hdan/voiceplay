@@ -9,11 +9,11 @@ elif sys.version_info.major == 3:
     from queue import Queue  # pylint:disable=import-error
 
 import time
-
+from functools import cmp_to_key
 from voiceplay.config import Config
 from voiceplay.logger import logger
 from voiceplay.utils.loader import PluginLoader
-from voiceplay.utils.helpers import ThreadGroup
+from voiceplay.utils.helpers import ThreadGroup, cmp
 from .backend.vlc import VLCPlayer
 from .tasks.basetask import BasePlayerTask
 
@@ -33,7 +33,7 @@ class VickiPlayer(object):
         self.exit_task = False
         self._argparser = None
         self.player_tasks = sorted(PluginLoader().find_classes('voiceplay.player.tasks', BasePlayerTask),
-                         cmp=lambda x, y: cmp(x.__priority__, y.__priority__))
+                         key=cmp_to_key(lambda x, y: cmp(x.__priority__, y.__priority__)))
         self.known_actions = self.get_actions(self.player_tasks)
 
     @property

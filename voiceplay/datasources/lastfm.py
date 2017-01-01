@@ -18,12 +18,12 @@ def lfm_retry(retry_count=1):
             rargs = list(args)
             rargs.pop(0)
             rargs = str(rargs) + str(kwargs)
-            func_name = str(func.func_name)
+            func_name = str(func.__name__)
             result = voiceplaydb.get_lastfm_method(func_name, rargs)
             result = json.loads(result) if result else None
             if result:
                 return result
-            for retry in xrange(1, retry_count + 1):
+            for retry in range(1, retry_count + 1):
                 try:
                     result = func(*args, **kwargs)
                     if result:

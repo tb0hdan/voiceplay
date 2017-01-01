@@ -3,13 +3,13 @@
 
 import os
 import re
-
+from functools import cmp_to_key
 from voiceplay.config import Config
 from voiceplay.datasources.lastfm import VoicePlayLastFm
 from voiceplay.datasources.track.basesource import TrackSource
 from voiceplay.logger import logger
 from voiceplay.utils.loader import PluginLoader
-from voiceplay.utils.helpers import track_to_hash
+from voiceplay.utils.helpers import track_to_hash, cmp
 
 
 class BasePlayerTask(object):
@@ -71,10 +71,10 @@ class BasePlayerTask(object):
         prefetch = cls.cfg_data['prefetch_count']
         cnt = 1
         total = len(tracklist)
-        for idx in xrange(0, total):
+        for idx in range(0, total):
             prefs = []
             if cnt + prefetch <= total - 1:
-                for i in xrange(cnt, cnt + prefetch):
+                for i in range(cnt, cnt + prefetch):
                     prefs.append(tracklist[i])
                 cnt += prefetch
             elif cnt <= idx + 1 <= total - 1:
@@ -102,7 +102,7 @@ class BasePlayerTask(object):
         vid = None
         baseurl = None
         sources = sorted(PluginLoader().find_classes('voiceplay.datasources.track', TrackSource),
-                         cmp=lambda x, y: cmp(x.__priority__, y.__priority__))
+                         key=cmp_to_key(lambda x, y: cmp(x.__priority__, y.__priority__)))
 
         filename = None
         for source in sources:

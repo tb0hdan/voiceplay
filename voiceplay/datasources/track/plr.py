@@ -7,7 +7,9 @@ import requests
 import sys
 if sys.version_info.major == 2:
     from urllib import quote  # pylint:disable=no-name-in-module,import-error
+    CHECK = unicode
 elif sys.version_info.major == 3:
+    CHECK = str
     from urllib.parse import quote  # pylint:disable=no-name-in-module,import-error
 
 from bs4 import BeautifulSoup
@@ -30,7 +32,7 @@ class PleerSource(TrackSource):
         """
         Run track source
         """
-        if isinstance(query, unicode):
+        if isinstance(query, CHECK):
             query = query.encode('utf-8')
         term = quote(query)
         url = 'http://pleer.net/search?page=1&q=%s&sort_mode=0&sort_by=0&quality=all&onlydata=true' % quote(query)
@@ -58,8 +60,6 @@ class PleerSource(TrackSource):
         Download track
         """
         filename = os.path.join(cls.cfg_data.get('cache_dir'), track_to_hash(track_name)) + '.mp3'
-        if isinstance(filename, str):
-            filename = filename.decode('utf-8')
         track_id = track_url.replace('http://pleer.net/en/download/page/', '')
         url = 'http://pleer.net/site_api/files/get_url'
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0',

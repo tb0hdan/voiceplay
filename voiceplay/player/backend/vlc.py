@@ -5,13 +5,14 @@ import re
 import sys
 import time
 import traceback
+from functools import cmp_to_key
 from voiceplay import __title__
 from voiceplay.extlib.vlcpython.vlc import Instance, Meta
 from voiceplay.logger import logger
 from voiceplay.player.hooks.basehook import BasePlayerHook
 from voiceplay.utils.loader import PluginLoader
 from voiceplay.utils.track import normalize, track_ok
-
+from voiceplay.utils.helpers import cmp
 
 class VLCProfileModel(object):
     """
@@ -77,7 +78,7 @@ class VLCPlayer(object):
         self.player = None
         self.paused = False
         self.player_hooks = sorted(PluginLoader().find_classes('voiceplay.player.hooks', BasePlayerHook),
-                         cmp=lambda x, y: cmp(x.__priority__, y.__priority__))
+                         key=cmp_to_key(lambda x, y: cmp(x.__priority__, y.__priority__)))
         self.instance = self.reinit_instance(debug=debug, profile=profile)
         self._current_track = None
 

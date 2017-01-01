@@ -1,6 +1,11 @@
 #-*- coding: utf-8 -*-
 """ Wakeword receiver module """
-import SocketServer as socketserver
+import sys
+if sys.version_info.major == 2:
+    import SocketServer as socketserver  # pylint:disable=no-name-in-module,import-error
+elif sys.version_info.major == 3:
+    import socketserver  # pylint:disable=no-name-in-module,import-error
+
 import threading
 
 

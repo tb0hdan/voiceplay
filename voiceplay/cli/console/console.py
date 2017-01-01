@@ -8,6 +8,10 @@ import rl
 import sys
 import time
 
+import sys
+if sys.version_info.major == 3:
+    from builtins import input as raw_input  # pylint:disable=no-name-in-module,import-error
+
 from voiceplay import __title__
 
 class Console(object):
