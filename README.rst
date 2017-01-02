@@ -6,6 +6,7 @@ Installing
 
 Using pip::
 
+    $ sudo pip install requests
     $ sudo pip install -U voiceplay
 
 Usage
@@ -20,4 +21,3 @@ Prerequisites:
 Start::
 
     $ voiceplay -w
-
