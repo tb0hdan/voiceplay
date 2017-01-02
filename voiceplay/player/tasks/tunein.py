@@ -105,6 +105,9 @@ class TuneInClient(object):
         info_url = self.get_station_info(station_url)
         stream_url = self.extract_streamurl(info_url)
         real_stream = self.extract_stream(stream_url)
+        # [] -> None
+        if not real_stream:
+            real_stream = None
         return real_stream, station_description
 
 
@@ -126,5 +129,10 @@ class TuneInTask(BasePlayerTask):
         station = re.match(regexp, message).groups()[0]
         tic = TuneInClient()
         url, description = tic.search_and_extract(station)
-        cls.say('Playing station from TuneIn' + description)
-        cls.play_url(url, description)
+        if url:
+            cls.say('Playing station from TuneIn' + description)
+            cls.play_url(url, description)
+        else:
+            message = 'The station {0!s} could not be found'.format(station)
+            cls.logger.warning(message)
+            cls.say(message)
