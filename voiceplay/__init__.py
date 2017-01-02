@@ -3,7 +3,7 @@
 
 __title__ = 'VoicePlay'
 __description__  = 'Client-side first music centered voice controlled player'
-__version__ = '0.2.2.14'
+__version__ = '0.2.3.0'
 __author__ = 'Bohdan Turkynewych'
 __author_email__ = 'tb0hdan@gmail.com'
 __license__ = 'UNLICENSE'
