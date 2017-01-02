@@ -19,4 +19,5 @@ Prerequisites:
 
 Start::
 
-    $ voiceplay
+    $ voiceplay -w
+
