@@ -4,7 +4,7 @@
 import logging
 import os
 import re
-
+import sys
 from youtube_dl import YoutubeDL
 
 from voiceplay.config import Config
@@ -39,7 +39,7 @@ class TrackSource(object):
         Run track download, use cache to store data
         """
         template = os.path.join(cls.cfg_data.get('cache_dir'), track_to_hash(trackname)) + '.%(ext)s'
-        if isinstance(template, str):
+        if isinstance(template, str) and sys.version_info.major == 2:
             template = template.decode('utf-8')
         verbose = logger.level == logging.DEBUG
         ydl_opts = {'keepvideo': False, 'verbose': verbose, 'format': 'bestaudio/best',
