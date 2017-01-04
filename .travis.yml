@@ -1,12 +1,18 @@
+before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get install -y libav-tools festival festival-dev portaudio19-dev vlc
+  - sudo apt-get install -y pocketsphinx swig libmagic1 libpulse-dev libreadline-dev
+  - sudo apt-get install -y libblas-dev liblapack-dev libatlas-dev libatlas-base-dev python-gobject
 language: python
 python:
-  - "2.6"
   - "2.7"
   - "3.2"
   - "3.3"
   - "3.4"
   - "3.5"
 # command to install dependencies
-install: "pip install -r requirements.txt"
+install:
+  - pip install pyfestival
+  - pip install -r requirements.txt
 # command to run tests
 script: pytest
