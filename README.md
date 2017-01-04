@@ -3,6 +3,10 @@ voiceplay - Client-side first music centered voice controlled player (OSX/Linux)
 
 [![Build Status](https://api.travis-ci.org/tb0hdan/voiceplay.svg?branch=master)](https://travis-ci.org/tb0hdan/voiceplay)
 [![PyPI version](https://img.shields.io/pypi/v/voiceplay.svg)](https://pypi.python.org/pypi/voiceplay)
+[![PyPI Python versions](https://img.shields.io/pypi/pyversions/voiceplay.svg)](https://pypi.python.org/pypi/voiceplay)
+[![PyPI license](https://img.shields.io/pypi/l/voiceplay.svg)](https://pypi.python.org/pypi/voiceplay)
+[![PyPI downloads per month]( https://img.shields.io/pypi/dm/voiceplay.svg)](https://pypi.python.org/pypi/voiceplay)
+
 
 - [DESCRIPTION](#description)
 - [INSTALLATION](#installation)
