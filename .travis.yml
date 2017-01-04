@@ -1,7 +1,8 @@
 before_install:
   - sudo apt-get -qq update
+  - sudo apt-get install -y build-essential
   - sudo apt-get install -y libav-tools festival festival-dev portaudio19-dev vlc
-  - sudo apt-get install -y pocketsphinx swig libmagic1 libpulse-dev libreadline-dev
+  - sudo apt-get install -y pocketsphinx-utils swig libmagic1 libpulse-dev libreadline-dev
   - sudo apt-get install -y libblas-dev liblapack-dev libatlas-dev libatlas-base-dev python-gobject
 language: python
 python:
