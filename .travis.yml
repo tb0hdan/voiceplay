@@ -15,4 +15,4 @@ install:
   - pip install pyfestival
   - pip install -r requirements.txt
 # command to run tests
-script: pytest
+script: make coverage
