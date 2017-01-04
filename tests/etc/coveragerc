@@ -1,2 +1,6 @@
 [run]
-omit = tests/*
+omit =  # tests :-)
+        tests/*
+        # external libraries
+        voiceplay/extlib/*
+
