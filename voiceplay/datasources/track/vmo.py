@@ -22,7 +22,7 @@ class VimeoSource(TrackSource):
         """
         Run vimeo search
         """
-        if isinstance(query, CHECK):
+        if isinstance(query, CHECK) and sys.version_info.major == 2:
             query = query.encode('utf-8')
         client = vimeo.VimeoClient(token=cls.cfg_data['vimeo']['token'],
                                    key=cls.cfg_data['vimeo']['key'],

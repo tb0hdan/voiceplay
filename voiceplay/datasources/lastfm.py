@@ -144,6 +144,18 @@ class VoicePlayLastFm(object):
         return aobj.get_cover_image(image_size)
 
     @lfm_retry(retry_count=3)
+    def get_artist_tags(self, artist):
+        """
+        Get artist tags
+        """
+        tags = []
+        artist = self.get_corrected_artist(artist)
+        aobj = pylast.Artist(artist, self.network)
+        for tag in aobj.get_top_tags():
+            tags.append(tag.item.get_name().lower())
+        return tags
+
+    @lfm_retry(retry_count=3)
     def get_similar_artists(self, artist, limit=10):
         """
         Get similar artists

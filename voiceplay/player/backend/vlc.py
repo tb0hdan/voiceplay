@@ -119,7 +119,7 @@ class VLCPlayer(object):
                 except Exception as exc:
                     exc_type, exc_value, exc_trace = sys.exc_info()
                     trace = ''.join(traceback.format_exception(exc_type, exc_value, exc_trace))
-                    logger.debug('Method %r crashed with %r:%s, restarting...', method, exc.message, trace)
+                    logger.debug('Method %r crashed (see message below), restarting...\n%s\n', method, trace)
 
     @property
     def volume(self):

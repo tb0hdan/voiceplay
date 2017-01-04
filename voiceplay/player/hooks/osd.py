@@ -4,6 +4,7 @@
 import os
 import platform
 import requests
+import sys
 from tempfile import mkstemp
 from voiceplay import __title__
 from voiceplay.datasources.albumart import AlbumArt
@@ -28,6 +29,8 @@ class OSDNotification(object):
         artist = track.split(' - ')[0]
         album_art = AlbumArt()
         icon = album_art.get(artist)
+        if sys.version_info.major == 2:
+            track = track.encode('utf-8')
         if platform.system() == 'Darwin' and icon:
             cls.darwin_notify(track, icon)
         elif platform.system() == 'Linux' and icon:
@@ -70,7 +73,7 @@ class OSDNotification(object):
         growl.register()
         growl.notify(
                 noteType="Played tracks",
-                title=message.encode('utf-8'),
+                title=message,
                 description='',
                 icon=icon,
                 sticky=False,
