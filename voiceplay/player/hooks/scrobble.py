@@ -2,6 +2,8 @@
 """ Last.FM scrobbling module """
 
 import os
+import sys
+import traceback
 from voiceplay.datasources.lastfm import VoicePlayLastFm
 from voiceplay.logger import logger
 from .basehook import BasePlayerHook
@@ -51,4 +53,10 @@ class ScrobbleHook(BasePlayerHook):
         """
         watch for on_playback_start events only
         """
-        TrackScrobble.notify(*args, argparser=cls.argparser, **kwargs)
+        try:
+            TrackScrobble.notify(*args, argparser=cls.argparser, **kwargs)
+        except Exception as exc:
+            method = TrackScrobble.notify
+            exc_type, exc_value, exc_trace = sys.exc_info()
+            trace = ''.join(traceback.format_exception(exc_type, exc_value, exc_trace))
+            logger.debug('Method %r crashed (see message below), track was not scrobbled...\n%s\n', method, trace)
