@@ -228,12 +228,21 @@ play folk metal station from radionomy
 play etn.fm station from icecast
 ```
 
-### Direct URL
+### URL playback
+
+#### Direct
 
 ```
 play url http://66.207.196.218:8130/
 ```
 
+#### Media
+
+```
+play url https://www.youtube.com/watch?v=VrGScAzGtXs
+```
+
+P.S. Full list of supported media sources can be found at [youtube_dl extractors page](https://github.com/rg3/youtube-dl/tree/master/youtube_dl/extractor)
 
 ## Console mode
 
