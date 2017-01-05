@@ -42,9 +42,7 @@ class URLTask(BasePlayerTask):
         cls.say('Playing music from url')
         verbose = logger.level == logging.DEBUG
         ydl_opts = {'verbose': verbose, 'quiet': not verbose, 'forceurl': True, 'forcetitle': True,
-                    'logger': logger, 'simulate': True}
-
-
+                    'logger': logger, 'simulate': True, 'noplaylist': True}
         logger.debug('Using source url %s', url)
         YoutubeDL.to_stdout = cls.url_hook
         with YoutubeDL(ydl_opts) as ydl:
