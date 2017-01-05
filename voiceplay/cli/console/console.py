@@ -48,11 +48,12 @@ class Console(object):
         """
         result = None
         should_be_printed = True
-        command = command.strip().lower()
+        orig_command = command.strip()
+        command = orig_command.lower()
         for kwd in self.commands:
             if command.startswith(kwd) or [c for c in self.commands[kwd]['aliases'] if command.startswith(c)]:
                 try:
-                    result, should_be_printed = self.commands[kwd]['method'](command)
+                    result, should_be_printed = self.commands[kwd]['method'](orig_command)
                     break
                 except KeyboardInterrupt:
                     pass
