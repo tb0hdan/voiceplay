@@ -82,7 +82,7 @@ class VickiPlayer(object):
         start = False
         action_phrase = []
         for word in message.split(' '):
-            if word in self.known_actions:
+            if word.lower() in self.known_actions:
                 start = True
             if start and word:
                 action_phrase.append(word)
@@ -93,6 +93,8 @@ class VickiPlayer(object):
         """
         Handle message and call respective actions
         """
+        orig_message = message
+        message = message.lower()
         stop_set = ['stop', 'stock', 'top']
         next_set = ['next', 'max', 'maxed', 'text']
         pause_set = ['pause', 'boss']
@@ -117,7 +119,7 @@ class VickiPlayer(object):
             self.exit_task = True
             if message.startswith('play'):
                 self.player.stop()
-            self.p_queue.put(message)
+            self.p_queue.put(orig_message)
         return None, False
 
     def cmd_loop(self):
@@ -141,7 +143,7 @@ class VickiPlayer(object):
         ran = False
         for task in self.player_tasks:
             for regexp in task.__regexp__:
-                if re.match(regexp, message) is not None:
+                if re.match(regexp, message, re.I) is not None:
                     ran = True
                     task.prefetch_callback = self.add_to_prefetch_q
                     task.argparser = self._argparser

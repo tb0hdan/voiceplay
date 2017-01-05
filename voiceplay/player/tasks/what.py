@@ -26,7 +26,7 @@ class WhatTask(BasePlayerTask):
         Run task
         """
         cls.logger.debug('Message: %r matches %r, running %r', message, regexp, cls.__name__)
-        artist = re.match(regexp, message).groups()[0]
+        artist = re.match(regexp, message, re.I).groups()[0]
         if 'albums' in regexp:
             albums = cls.lfm.get_top_albums(artist)
             msg = cls.lfm.numerize(albums[:10])

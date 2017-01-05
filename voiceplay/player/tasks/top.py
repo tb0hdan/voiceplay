@@ -215,8 +215,8 @@ class TopTracksTask(BasePlayerTask):
         """
         cls.logger.debug('Message: %r matches %r, running %r', message, regexp, cls.__name__)
         param = None
-        if re.match(regexp, message).groups():
-            param = re.match(regexp, message).groups()[0]
+        if re.match(regexp, message, re.I).groups():
+            param = re.match(regexp, message, re.I).groups()[0]
             msg = 'Playing top track for country %s' % param
             method = cls.run_top_tracks_geo
         elif '100' in regexp:

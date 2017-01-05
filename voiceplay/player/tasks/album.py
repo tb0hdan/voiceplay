@@ -34,6 +34,6 @@ class AlbumTask(BasePlayerTask):
         Run task
         """
         cls.logger.debug('Message: %r matches %r, running %r', message, regexp, cls.__name__)
-        album, artist = re.match(regexp, message).groups()
+        album, artist = re.match(regexp, message, re.I).groups()
         cls.say('%s album by %s' % (album, artist))
         cls.play_artist_album(artist, album)

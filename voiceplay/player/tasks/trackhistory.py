@@ -39,7 +39,7 @@ class LocalHistoryTask(BasePlayerTask):
         Run task
         """
         cls.logger.debug('Message: %r matches %r, running %r', message, regexp, cls.__name__)
-        msg = re.match(regexp, message).groups()[0]
+        msg = re.match(regexp, message, re.I).groups()[0]
         logger.warning(msg)
         cls.say('Shuffling songs based on track history')
         cls.play_track_history(msg)

@@ -23,6 +23,6 @@ class ZZCatcherTask(BasePlayerTask):
         Run task (i.e. play item as is by employing rich search
         """
         cls.logger.debug('Message: %r matches %r, running %r', message, regexp, cls.__name__)
-        query = re.match(regexp, message).groups()[0]
+        query = re.match(regexp, message, re.I).groups()[0]
         cls.say('Playing %s' % (query))
         cls.play_full_track(query)

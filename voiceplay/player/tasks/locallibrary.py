@@ -4,7 +4,6 @@
 import os
 import random
 random.seed()
-import re
 from voiceplay.logger import logger
 from .basetask import BasePlayerTask
 
@@ -20,7 +19,7 @@ class LocalLibraryTask(BasePlayerTask):
     __actiontype__ = 'shuffle_local_library'
 
     @classmethod
-    def play_local_library(cls, message):
+    def play_local_library(cls):
         """
         Very basic local library shuffler
         """
@@ -42,7 +41,5 @@ class LocalLibraryTask(BasePlayerTask):
         Run task
         """
         cls.logger.debug('Message: %r matches %r, running %r', message, regexp, cls.__name__)
-        msg = re.match(regexp, message).groups()[0]
-        logger.warning(msg)
         cls.say('Shuffling songs in local library')
-        cls.play_local_library(msg)
+        cls.play_local_library()

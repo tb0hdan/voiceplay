@@ -38,7 +38,7 @@ class URLTask(BasePlayerTask):
         Run task
         """
         cls.logger.debug('Message: %r matches %r, running %r', message, regexp, cls.__name__)
-        url = re.match(regexp, message).groups()[0]
+        url = re.match(regexp, message, re.I).groups()[0]
         cls.say('Playing music from url')
         verbose = logger.level == logging.DEBUG
         ydl_opts = {'verbose': verbose, 'quiet': not verbose, 'forceurl': True, 'forcetitle': True,

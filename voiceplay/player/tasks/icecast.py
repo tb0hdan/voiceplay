@@ -69,7 +69,7 @@ class IcecastTask(BasePlayerTask):
         Run task
         """
         cls.logger.debug('Message: %r matches %r, running %r', message, regexp, cls.__name__)
-        station = re.match(regexp, message).groups()[0]
+        station = re.match(regexp, message, re.I).groups()[0]
         icc = IcecastClient()
         m3u_url, description = icc.search(station)[0]
         url = icc.extract_streams(m3u_url)[0]

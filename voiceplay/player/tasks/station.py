@@ -35,6 +35,6 @@ class StationTask(BasePlayerTask):
         Run task
         """
         cls.logger.debug('Message: %r matches %r, running %r', message, regexp, cls.__name__)
-        station = re.match(regexp, message).groups()[0]
+        station = re.match(regexp, message, re.I).groups()[0]
         cls.say('Playing %s station' % station)
         cls.play_station(station)
