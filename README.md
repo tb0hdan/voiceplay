@@ -1,4 +1,4 @@
-voiceplay - Client-side first music centered voice controlled player (OSX/Linux)
+voiceplay - Client-side first music centered voice controlled player
 ======
 
 [![Build Status](https://api.travis-ci.org/tb0hdan/voiceplay.svg?branch=master)](https://travis-ci.org/tb0hdan/voiceplay)
@@ -20,7 +20,7 @@ voiceplay - Client-side first music centered voice controlled player (OSX/Linux)
 activated by a wake word - **Vicki** (processing is done offline using [Kitt.ai snowboy](https://snowboy.kitt.ai/) and only
 after that records audio later transcribed by Google Voice Recognition (code can be modified to
 use any of engines supported by [SpeechRecognition](https://github.com/Uberi/speech_recognition) library). It requires the Python interpreter,
-versions 2.7.x, 3.5.x and is not platform specific. It should work on
+versions 2.7, 3.3, 3.4, 3.5 and is not platform specific. It should work on
 your Linux or on Mac OS X. It is released to the public domain, which means you can modify it,
 redistribute it or use it however you like.
 
