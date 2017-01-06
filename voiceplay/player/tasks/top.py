@@ -112,7 +112,7 @@ class BB100Requestor(WSRequestor):
                 if title.text:
                     title = title.text.strip()
                     break
-            for artist in element.find_all(lambda tag: tag.name == 'h3' and 'chart-row__artist' in tag.get('class', [])):
+            for artist in element.find_all(lambda tag: tag.name == 'a' and 'chart-row__artist' in tag.get('class', [])):
                 if artist.text:
                     artist = artist.text.strip()
                     break
