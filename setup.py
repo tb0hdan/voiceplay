@@ -39,12 +39,10 @@ if sys.argv[1] in ['bdist_wheel', 'install']:
     from voiceplay.utils.snowboydownloader import SnowboyDownloader
     sd = SnowboyDownloader()
     # get_python_lib returns different directory when installing packages system-wide
-    if os.path.exists(os.path.join(get_python_lib(), 'voiceplay')):
-        sd.download_and_unpack(os.path.join(get_python_lib(), 'voiceplay', 'extlib', 'snowboydetect'))
-    elif os.path.exists(os.path.join(get_python_lib().replace('/usr/lib', '/usr/local/lib'), 'voiceplay')):
-        sd.download_and_unpack(os.path.join(get_python_lib().replace('/usr/lib', '/usr/local/lib'), 'voiceplay', 'extlib', 'snowboydetect'))
-    else:
-        raise RuntimeError('Cannot find proper library path')
+    # TODO: FIX THIS!
+    sd.download_and_unpack(os.path.join(get_python_lib(), 'voiceplay', 'extlib', 'snowboydetect'))
+    sd.download_and_unpack(os.path.join(get_python_lib().replace('/usr/lib', '/usr/local/lib'), 'voiceplay', 'extlib', 'snowboydetect'))
+
 
 setup(name='voiceplay',
       version=__version__,
