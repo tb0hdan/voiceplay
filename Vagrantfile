@@ -47,6 +47,7 @@ Vagrant.configure("2") do |config|
   #   # Display the VirtualBox GUI when booting the machine
   #   vb.gui = true
   #
+     vb.customize ["modifyvm", :id, '--audio', 'coreaudio', '--audiocontroller', 'hda']
      # Customize the amount of memory on the VM:
      vb.memory = "1024"
   end
@@ -65,7 +66,9 @@ Vagrant.configure("2") do |config|
   # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
   # documentation for more information about their specific syntax and use.
   config.vm.provision "shell", inline: <<-SHELL
+     gpasswd -a vagrant audio
      apt-get update
+     apt-get install -y linux-firmware alsa-tools
      apt-get install -y python-all-dev python-setuptools build-essential
      apt-get install -y libav-tools festival festival-dev portaudio19-dev vlc
      apt-get install -y pocketsphinx-utils swig libmagic1 libpulse-dev libreadline-dev

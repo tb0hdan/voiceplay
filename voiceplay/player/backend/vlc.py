@@ -24,7 +24,7 @@ class VLCProfileModel(object):
     headers = {}
     opts = ['--file-caching=10000', '--disc-caching=10000',
             '--live-caching=10000', '--network-caching=10000',
-            '--metadata-network-access', '--audio-replay-gain-mode=track',
+            '--audio-replay-gain-mode=track',
             '--no-playlist-cork']
 
     @classmethod
