@@ -22,7 +22,7 @@ class StationTask(BasePlayerTask):
         Play top tracks for station
         TODO: Fix in https://github.com/tb0hdan/voiceplay/issues/22
         """
-        tracks = cls.lfm.get_station(station)
+        tracks = cls.lfm().get_station(station)
         random.shuffle(tracks)
         for track in cls.tracks_with_prefetch(tracks):
             if cls.get_exit():  # pylint:disable=no-member

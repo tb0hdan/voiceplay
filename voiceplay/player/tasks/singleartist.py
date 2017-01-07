@@ -21,8 +21,8 @@ class SingleArtistTask(BasePlayerTask):
         """
         Shuffle artist tracks
         """
-        if cls.lfm.get_query_type(artist) == 'artist':
-            tracks = cls.lfm.get_top_tracks(cls.lfm.get_corrected_artist(artist))
+        if cls.lfm().get_query_type(artist) == 'artist':
+            tracks = cls.lfm().get_top_tracks(cls.lfm().get_corrected_artist(artist))
             random.shuffle(tracks)
             for track in cls.tracks_with_prefetch(tracks):
                 if cls.get_exit():  # pylint:disable=no-member

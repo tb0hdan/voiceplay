@@ -28,13 +28,13 @@ class WhatTask(BasePlayerTask):
         cls.logger.debug('Message: %r matches %r, running %r', message, regexp, cls.__name__)
         artist = re.match(regexp, message, re.I).groups()[0]
         if 'albums' in regexp:
-            albums = cls.lfm.get_top_albums(artist)
-            msg = cls.lfm.numerize(albums[:10])
+            albums = cls.lfm().get_top_albums(artist)
+            msg = cls.lfm().numerize(albums[:10])
             logger.warning('Here are top albums by %s - %s', artist, msg)
             cls.say('Here are top albums by %s - %s' % (artist, msg))
         elif 'songs' in regexp or 'tracks' in regexp:
-            tracks = cls.lfm.get_top_tracks(artist)[:10]
-            numerized = ', '.join(cls.lfm.numerize(tracks))
+            tracks = cls.lfm().get_top_tracks(artist)[:10]
+            numerized = ', '.join(cls.lfm().numerize(tracks))
             reply = re.sub(r'^(.+)\.\s\d\:\s', '1: ', numerized)
             logger.warning('Here are some top tracks by %s: %s', artist, reply)
             cls.say('Here are some top tracks by %s: %s' % (artist, reply))

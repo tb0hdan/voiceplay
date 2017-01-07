@@ -4,20 +4,16 @@
 import os
 import re
 from functools import cmp_to_key
-from voiceplay.config import Config
-from voiceplay.datasources.lastfm import VoicePlayLastFm
 from voiceplay.datasources.track.basesource import TrackSource
 from voiceplay.logger import logger
 from voiceplay.utils.loader import PluginLoader
 from voiceplay.utils.helpers import track_to_hash, cmp
+from voiceplay.utils.models import BaseLfmModel
 
-
-class BasePlayerTask(object):
+class BasePlayerTask(BaseLfmModel):
     """
     base player task model
     """
-    lfm = VoicePlayLastFm()
-    cfg_data = Config.cfg_data()
     logger = logger
 
     @classmethod
@@ -68,7 +64,7 @@ class BasePlayerTask(object):
         """
         Add tracks to prefetch to queue (speeds up playback)
         """
-        prefetch = cls.cfg_data['prefetch_count']
+        prefetch = cls.cfg_data()['prefetch_count']
         cnt = 1
         total = len(tracklist)
         for idx in range(0, total):
@@ -81,7 +77,7 @@ class BasePlayerTask(object):
                 prefs.append(tracklist[idx + 1])
             if prefs:
                 for item in prefs:
-                    full_path = os.path.join(cls.cfg_data.get('cache_dir'), track_to_hash(item)) + '.mp3'
+                    full_path = os.path.join(cls.cfg_data().get('cache_dir'), track_to_hash(item)) + '.mp3'
                     if not os.path.exists(full_path) and cls.prefetch_callback and callable(cls.prefetch_callback):  # pylint:disable=no-member
                         cls.logger.debug('Adding %r to prefetch queue', item.encode('utf-8'))
                         cls.prefetch_callback(item)  # pylint:disable=no-member
@@ -135,7 +131,7 @@ class BasePlayerTask(object):
         """
         trackname = cls.track_normalizer(trackname)
         cls.logger.debug('PFT: ' + trackname)
-        full_path = os.path.join(cls.cfg_data.get('cache_dir'), track_to_hash(trackname)) + '.mp3'
+        full_path = os.path.join(cls.cfg_data().get('cache_dir'), track_to_hash(trackname)) + '.mp3'
         if not os.path.exists(full_path):
             cls.logger.debug('Track %r is not cached at %r', trackname, full_path)
             full_path = cls.download_full_track(trackname)

@@ -27,7 +27,7 @@ class NewTask(BasePlayerTask):
         Play new tracks by provided artist
         """
         mbapi = MBAPI()
-        artist = cls.lfm.get_corrected_artist(artist)
+        artist = cls.lfm().get_corrected_artist(artist)
         artist_mbid = mbapi.get_artist_mbid(artist)
         releases = mbapi.get_releases(artist_mbid, rtypes=['album'])
         # get this year's albums

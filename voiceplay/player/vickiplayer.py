@@ -10,7 +10,6 @@ elif sys.version_info.major == 3:
 
 import time
 from functools import cmp_to_key
-from voiceplay.config import Config
 from voiceplay.logger import logger
 from voiceplay.utils.loader import PluginLoader
 from voiceplay.utils.helpers import ThreadGroup, cmp
@@ -21,13 +20,12 @@ class VickiPlayer(object):
     """
     Vicki player class
     """
-    def __init__(self, tts=None, cfg_file='config.yaml', debug=False):
+    def __init__(self, tts=None, debug=False):
         self.debug = debug
         self.tts = tts
         self.queue = Queue()
         self.p_queue = Queue()
         self.prefetch_q = Queue()
-        self.cfg_data = Config.cfg_data()
         self.player = VLCPlayer(debug=self.debug)
         self.shutdown_flag = False
         self.exit_task = False

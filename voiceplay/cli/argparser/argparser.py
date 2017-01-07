@@ -1,12 +1,16 @@
 #-*- coding: utf-8 -*-
 """ VoicePlay argument parser module """
 
+from __future__ import print_function
+
 import argparse
 import os
 import subprocess
 import sys
 import threading
+
 from functools import cmp_to_key
+
 from voiceplay import __version__, __title__
 from voiceplay.recognition.vicki import Vicki
 from voiceplay.recognition.wakeword.receiver import ThreadedRequestHandler, WakeWordReceiver
@@ -15,6 +19,7 @@ from voiceplay.utils.loader import PluginLoader
 from voiceplay.player.tasks.basetask import BasePlayerTask
 from voiceplay.player.hooks.basehook import BasePlayerHook
 from voiceplay.utils.helpers import purge_cache, ThreadGroup, cmp
+from voiceplay.utils.models import BaseCfgModel
 
 class MyArgumentParser(object):
     """
@@ -55,8 +60,6 @@ class MyArgumentParser(object):
                 attr = None
             if attr:
                 plugin.configure_argparser(self.parser)
-
-
 
     @staticmethod
     def ipython_console():
@@ -111,6 +114,14 @@ class MyArgumentParser(object):
         """
         argv = sys.argv if not argv else argv
         result = self.parser.parse_args(argv[1:])
+        # Check config here
+        try:
+            cfg_data = BaseCfgModel.cfg_data()
+        except Exception as _:
+            print('Please write configuration file using sample from: https://raw.githubusercontent.com/tb0hdan/voiceplay/master/config.yaml.sample')
+            print('And save it as ~/.config/voiceplay/config.yaml')
+            return
+        #
         vicki = Vicki(debug=result.debug)
         vicki.player.argparser = result
         if result.console:

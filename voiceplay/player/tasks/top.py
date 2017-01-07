@@ -15,7 +15,7 @@ from voiceplay.config import Config
 from voiceplay.logger import logger
 from .basetask import BasePlayerTask
 
-class WSRequestor(object):
+class WSRequestor(BaseCfgModel):
     """
     Web service requestor.
     TODO: move this to utils/helpers.py
@@ -160,9 +160,9 @@ class TopTracksTask(BasePlayerTask):
         Shuffle top tracks global or for specific country
         """
         if country:
-            tracks = cls.lfm.get_top_tracks_geo(country)
+            tracks = cls.lfm().get_top_tracks_geo(country)
         else:
-            tracks = cls.lfm.get_top_tracks_global()
+            tracks = cls.lfm().get_top_tracks_global()
         random.shuffle(tracks)
         for track in cls.tracks_with_prefetch(tracks):
             if cls.get_exit():  # pylint:disable=no-member

@@ -24,16 +24,16 @@ class SomethingLikeThisTask(BasePlayerTask):
         tracks = []
         # original
         artist = track.split(' - ')[0]
-        artists = cls.lfm.get_similar_artists(artist)
+        artists = cls.lfm().get_similar_artists(artist)
         # feat
         if not artists:
             tmp = artist.lower().split(' feat ')[0]
             if tmp == artist.lower():
                 tmp = artist.lower().split(' ft ')[0]
-            artists = cls.lfm.get_similar_artists(tmp)
+            artists = cls.lfm().get_similar_artists(tmp)
 
         for artist in artists:
-            tracks += cls.lfm.get_top_tracks(artist)
+            tracks += cls.lfm().get_top_tracks(artist)
         random.shuffle(tracks)
         for track in cls.tracks_with_prefetch(tracks):
             if cls.get_exit():  # pylint:disable=no-member

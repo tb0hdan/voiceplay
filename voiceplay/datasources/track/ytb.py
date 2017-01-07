@@ -15,7 +15,7 @@ class YoutubeSource(TrackSource):
         """
         Run youtube search
         """
-        youtube = build('youtube', 'v3', developerKey=cls.cfg_data['google']['key'])
+        youtube = build('youtube', 'v3', developerKey=cls.cfg_data()['google']['key'])
         search_response = youtube.search().list(q=query,
                                                 part="id,snippet",
                                                 maxResults=max_results).execute()

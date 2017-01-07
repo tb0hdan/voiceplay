@@ -59,7 +59,7 @@ class PleerSource(TrackSource):
         """
         Download track
         """
-        filename = os.path.join(cls.cfg_data.get('cache_dir'), track_to_hash(track_name)) + '.mp3'
+        filename = os.path.join(cls.cfg_data().get('cache_dir'), track_to_hash(track_name)) + '.mp3'
         track_id = track_url.replace('http://pleer.net/en/download/page/', '')
         url = 'http://pleer.net/site_api/files/get_url'
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0',

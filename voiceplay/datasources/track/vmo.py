@@ -24,9 +24,9 @@ class VimeoSource(TrackSource):
         """
         if isinstance(query, CHECK) and sys.version_info.major == 2:
             query = query.encode('utf-8')
-        client = vimeo.VimeoClient(token=cls.cfg_data['vimeo']['token'],
-                                   key=cls.cfg_data['vimeo']['key'],
-                                   secret=cls.cfg_data['vimeo']['secret'])
+        client = vimeo.VimeoClient(token=cls.cfg_data()['vimeo']['token'],
+                                   key=cls.cfg_data()['vimeo']['key'],
+                                   secret=cls.cfg_data()['vimeo']['secret'])
         response = client.get('/videos?query=%s' % quote(query))
         result = json.loads(response.text).get('data', [])
         videos = []

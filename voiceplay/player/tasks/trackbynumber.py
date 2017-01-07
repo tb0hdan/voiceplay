@@ -47,9 +47,9 @@ class TrackByNumberTask(BasePlayerTask):
             # play track with track number
             cls.play_track_by_number(key)
         else:
-            if cls.lfm.get_query_type(phrase) == 'artist':
-                tracks = cls.lfm.get_top_tracks(cls.lfm.get_corrected_artist(phrase))[:10]
-                numerized = ', '.join(cls.lfm.numerize(tracks))
+            if cls.lfm().get_query_type(phrase) == 'artist':
+                tracks = cls.lfm().get_top_tracks(cls.lfm().get_corrected_artist(phrase))[:10]
+                numerized = ', '.join(cls.lfm().numerize(tracks))
                 reply = re.sub(r'^(.+)\.\s\d\:\s', '1: ', numerized)
                 cls.say('Here are some top tracks by %s: %s' % (phrase,
                                                                      reply))
