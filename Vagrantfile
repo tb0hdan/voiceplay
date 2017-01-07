@@ -66,7 +66,6 @@ Vagrant.configure("2") do |config|
   # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
   # documentation for more information about their specific syntax and use.
   config.vm.provision "shell", inline: <<-SHELL
-     gpasswd -a vagrant audio
      apt-get update
      apt-get install -y linux-firmware alsa-tools
      apt-get install -y python-all-dev python-setuptools build-essential
@@ -76,5 +75,9 @@ Vagrant.configure("2") do |config|
      easy_install pip
      pip install pyfestival requests
      pip install -U voiceplay
+     # Fix audio ( https://wiki.ubuntu.com/Audio/UpgradingAlsa/DKMS )
+     wget https://code.launchpad.net/~ubuntu-audio-dev/+archive/ubuntu/alsa-daily/+files/oem-audio-hda-daily-dkms_0.201701060731~ubuntu14.04.1_all.deb
+     dpkg -i oem-audio-hda-daily-dkms_0.201701060731~ubuntu14.04.1_all.deb
+     gpasswd -a vagrant audio
   SHELL
 end
