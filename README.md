@@ -28,6 +28,16 @@ redistribute it or use it however you like.
 
 ## Installation
 
+### Vagrant universal (major platforms, recommended)
+
+1. Download and install [Virtualbox](https://www.virtualbox.org/wiki/Downloads)
+2. Download and install [Vagrant](https://www.vagrantup.com/downloads.html)
+3. Run `vagrant up` to create VM instance
+3a. (Required only once during setup) `vagrant halt`
+3b. (Required only once during setup) `vagrant up`
+4. `vagrant ssh`
+
+
 ### MAC
 
 WARNING: Some systems require System Integrity Check (SIC!) disabled prior to installing system-wide python modules.
