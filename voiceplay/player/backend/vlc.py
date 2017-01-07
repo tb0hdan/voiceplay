@@ -5,9 +5,12 @@ import re
 import sys
 import time
 import traceback
+
+from distutils.version import LooseVersion
 from functools import cmp_to_key
+
 from voiceplay import __title__
-from voiceplay.extlib.vlcpython.vlc import Instance, Meta
+from voiceplay.extlib.vlcpython.vlc import Instance, Meta, libvlc_get_version
 from voiceplay.logger import logger
 from voiceplay.player.hooks.basehook import BasePlayerHook
 from voiceplay.utils.loader import PluginLoader
@@ -23,12 +26,20 @@ class VLCProfileModel(object):
             '--live-caching=10000', '--network-caching=10000',
             '--metadata-network-access', '--audio-replay-gain-mode=track',
             '--no-playlist-cork']
+
     @classmethod
     def get_options(cls):
         """
         Get libvlc options
         """
-        return cls.opts
+        version = libvlc_get_version()
+        if sys.version_info.major == 3:
+            version = version.decode()
+        version = version.split(' ')[0]
+        opts = cls.opts
+        if LooseVersion(version) >= LooseVersion('2.2.4'):
+            opts.append('--metadata-network-access')
+        return opts
 
     @classmethod
     def get_headers(cls):

@@ -9,6 +9,7 @@ from voiceplay.logger import logger
 from voiceplay.config import Config
 from .entities import db, Artist, PlayedTracks, LastFmCache
 
+
 class VoicePlayDB(object):
     """
     VoicePlay Database
@@ -19,6 +20,10 @@ class VoicePlayDB(object):
         if filename:
             self.filename = filename
         else:
+            try:
+                os.makedirs(os.path.expanduser(Config.persistent_dir))
+            except Exception as exc:
+                pass
             self.filename = os.path.expanduser(os.path.join(Config.persistent_dir, 'sqlite.db'))
 
     @staticmethod
