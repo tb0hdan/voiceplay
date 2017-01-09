@@ -73,7 +73,8 @@ Vagrant.configure("2") do |config|
      apt-get install -y python-all-dev python-setuptools build-essential
      apt-get install -y libav-tools festival festival-dev portaudio19-dev vlc
      apt-get install -y pocketsphinx-utils swig libmagic1 libpulse-dev libreadline-dev
-     apt-get install -y libblas-dev liblapack-dev libatlas-dev libatlas-base-dev python-gobject
+     apt-get install -y libblas-dev liblapack-dev libatlas-dev libatlas-base-dev
+     apt-get install -y python-gobject libnotify-bin libnotify-dev
      # for SpeechRecognition module/flac encoder
      apt-get install -y libc6:i386 libncurses5:i386 libstdc++6:i386
      easy_install pip
