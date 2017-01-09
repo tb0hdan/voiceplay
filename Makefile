@@ -49,6 +49,12 @@ tag:
 	@git tag -a v$(VERSION) -m 'v$(VERSION)'
 	@git push origin v$(VERSION)
 
+# Reboot step is required for audio drivers to catch up after installation
+vagrant_rebuild:
+	@vagrant destroy -f
+	@vagrant up
+	@vagrant ssh -c 'sudo reboot'
+
 test:
 	@py.test -c ./tests/etc/pytest.ini -v tests/
 

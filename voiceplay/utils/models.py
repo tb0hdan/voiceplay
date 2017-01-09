@@ -1,3 +1,6 @@
+#-*- coding: utf-8 -*-
+""" VoicePlay models module (for plugins, etc) """
+
 from voiceplay.config import Config
 from voiceplay.datasources.lastfm import VoicePlayLastFm
 

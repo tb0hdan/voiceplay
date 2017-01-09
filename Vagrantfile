@@ -66,12 +66,16 @@ Vagrant.configure("2") do |config|
   # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
   # documentation for more information about their specific syntax and use.
   config.vm.provision "shell", inline: <<-SHELL
+     # for SpeechRecognition module/flac encoder
+     dpkg --add-architecture i386
      apt-get update
      apt-get install -y linux-firmware alsa-tools mc
      apt-get install -y python-all-dev python-setuptools build-essential
      apt-get install -y libav-tools festival festival-dev portaudio19-dev vlc
      apt-get install -y pocketsphinx-utils swig libmagic1 libpulse-dev libreadline-dev
      apt-get install -y libblas-dev liblapack-dev libatlas-dev libatlas-base-dev python-gobject
+     # for SpeechRecognition module/flac encoder
+     apt-get install -y libc6:i386 libncurses5:i386 libstdc++6:i386
      easy_install pip
      pip install pyfestival requests
      pip install -U voiceplay
@@ -79,6 +83,9 @@ Vagrant.configure("2") do |config|
      wget -q https://code.launchpad.net/~ubuntu-audio-dev/+archive/ubuntu/alsa-daily/+files/oem-audio-hda-daily-dkms_0.201701060731~ubuntu14.04.1_all.deb
      dpkg -i ./oem-audio-hda-daily-dkms_0.201701060731~ubuntu14.04.1_all.deb
      gpasswd -a vagrant audio
+     sed -i -e 's/pcm.rear cards.pcm.rear/#pcm.rear cards.pcm.rear/g' /usr/share/alsa/alsa.conf
+     sed -i -e 's/pcm.center_lfe cards.pcm.center_lfe/#pcm.center_lfe cards.pcm.center_lfe/g' /usr/share/alsa/alsa.conf
+     sed -i -e 's/pcm.side cards.pcm.side/#pcm.side cards.pcm.side/g' /usr/share/alsa/alsa.conf
      # Fix festival voice
      wget -q http://www.speech.cs.cmu.edu/cmu_arctic/packed/cmu_us_clb_arctic-0.95-release.tar.bz2
      tar -xjpf ./cmu_us_clb_arctic-0.95-release.tar.bz2 -C /usr/share/festival/voices/english

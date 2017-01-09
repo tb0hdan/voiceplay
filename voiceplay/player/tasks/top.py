@@ -13,6 +13,7 @@ from bs4 import BeautifulSoup
 
 from voiceplay.config import Config
 from voiceplay.logger import logger
+from voiceplay.utils.models import BaseCfgModel
 from .basetask import BasePlayerTask
 
 class WSRequestor(BaseCfgModel):
