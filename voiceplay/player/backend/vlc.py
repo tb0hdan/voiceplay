@@ -78,50 +78,26 @@ class VLCDIFMProfile(VLCProfileModel):
         return headers
 
 
-class VLCPlayer(object):
+class VLCInstance(object):
     """
     VLC player backend using libvlc python bindings
     """
-    def __init__(self, debug=False, profile='default'):
+    def __init__(self, argparser=None, debug=False, profile='default'):
         self.debug = debug
-        self.argparser = None
+        self.argparser = argparser
         self.exit = False
-        self.player = None
         self.paused = False
         self.player_hooks = sorted(PluginLoader().find_classes('voiceplay.player.hooks', BasePlayerHook),
                          key=cmp_to_key(lambda x, y: cmp(x.__priority__, y.__priority__)))
-        self.instance = self.reinit_instance(debug=debug, profile=profile)
         self._current_track = None
-
-    @staticmethod
-    def reinit_instance(debug=False, profile='default'):
-        """
-        Reinitialize libvlc instance using new options
-        TODO: fix this
-        """
-        if profile == 'difm':
-            profile = VLCDIFMProfile
-        # store other profiles somewhere here
-        # fallback to default
-        else:
-            profile = VLCDefaultProfile
-        opts = profile.get_options()
-        headers = profile.get_headers()
-        if debug:
-            opts.append('--verbose=2')
-        else:
-            opts.append('--quiet')
-        instance = Instance(tuple(opts))
-        if headers.get('user-agent', ''):
-            logger.debug('Setting user agent to: %s', headers.get('user-agent'))
-            instance.set_user_agent(__title__, headers.get('user-agent'))
-        return instance
+        self.player, self.instance = self.create_instance(debug=debug, profile=profile)
 
     def run_hooks(self, evt, *args, **kwargs):
         """
         Run player hooks
         """
         for hook in self.player_hooks:
+            logger.debug('Running player hook: %r', hook)
             hook.argparser = self.argparser
             method = getattr(hook, evt)
             if method:
@@ -186,10 +162,6 @@ class VLCPlayer(object):
         """
         Play track using libvlc player
         """
-        # do some magic here
-        if path and re.match('^http://(.+)\.di\.fm\:?(?:[0-9]+)?/(.+)$', path):
-            logger.debug('Reinitializing player...')
-            self.instance = self.reinit_instance(debug=self.debug, profile='difm')
         try:
             media = self.instance.media_new(path)
             self.player.set_media(media)
@@ -242,3 +214,91 @@ class VLCPlayer(object):
         """
         self.player.stop()
         self.run_hooks('on_playback_stop')
+
+    @staticmethod
+    def create_instance(debug=False, profile='default'):
+        if profile == 'difm':
+            profile = VLCDIFMProfile
+        # store other profiles somewhere here
+        # fallback to default
+        else:
+            profile = VLCDefaultProfile
+        opts = profile.get_options()
+        headers = profile.get_headers()
+        if debug:
+            opts.append('--verbose=2')
+        else:
+            opts.append('--quiet')
+        instance = Instance(tuple(opts))
+        agent = headers.get('user-agent', '')
+        if agent:
+            logger.debug('Setting user agent to: %s', agent)
+            instance.set_user_agent(__title__, agent)
+        player = instance.media_player_new()
+        return player, instance
+
+
+class VLCPlayer(object):
+    """
+    """
+    argparser = None
+    debug = False
+    player = None
+
+    def __init__(self):
+        pass
+
+    @classmethod
+    def play(cls, path, track, block=True):
+        logger.debug('VLCPlayer.play.argparser: %r', cls.argparser)
+        restore = False
+        if path and re.match('^http://(.+)\.di\.fm\:?(?:[0-9]+)?/(.+)$', path):
+            logger.debug('Reinitializing player...')
+            cls.player.stop()
+            cls.player.instance.release()
+            cls.player = None
+            cls.player = VLCInstance(argparser=cls.argparser, debug=cls.debug, profile='difm')
+            restore = True
+        cls.player.play(path, track, block=block)
+        if restore and cls.player:
+            cls.player.stop()
+            cls.player.instance.release()
+            cls.player = None
+            cls.player = VLCInstance(argparser=cls.argparser, debug=cls.debug)
+
+    @classmethod
+    def pause(cls):
+        cls.player.pause()
+
+    @classmethod
+    def stop(cls):
+        if cls.player:
+            cls.player.stop()
+
+    @classmethod
+    def start(cls, debug=False):
+        logger.debug('VLCPlayer.start.argparser: %r', cls.argparser)
+        cls.debug = debug
+        if not cls.player:
+            cls.player = VLCInstance(argparser=cls.argparser, debug=debug)
+
+    @classmethod
+    def shutdown(cls):
+        cls.player.shutdown()
+        cls.player = None
+
+    @classmethod
+    def get_volume(cls):
+        return cls.player.volume
+
+    @classmethod
+    def set_volume(cls, volume):
+        cls.player.volume = volume
+
+    @classmethod
+    def current_track(cls):
+        return cls.player.current_track
+
+    @classmethod
+    def set_argparser(cls, argparser):
+        cls.argparser = argparser

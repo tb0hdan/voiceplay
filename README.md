@@ -255,6 +255,15 @@ play url https://www.youtube.com/watch?v=VrGScAzGtXs
 
 P.S. Full list of supported media sources can be found at [youtube_dl extractors page](https://github.com/rg3/youtube-dl/tree/master/youtube_dl/extractor)
 
+
+### DI.FM
+User agent / Referer hack from https://github.com/Bitcrusher/Digitally-Imported-XBMC-plugin
+
+
+```
+play vocal trance station from di
+```
+
 ## Console mode
 
 Note: Add `-v` for increased verbosity level.

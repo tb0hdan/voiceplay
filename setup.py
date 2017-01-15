@@ -57,7 +57,7 @@ setup(name='voiceplay',
       keywords='voiceplay music playlists vlc player',
       long_description=readme,
       install_requires=['Babel', 'beautifulsoup4', 'colorama', 'dailymotion', 'filemagic', 'flake8',
-                        'oauth2client>=1.5.2,<4.0.0', 'requests',
+                        'oauth2client>=1.5.2,<4.0.0', 'requests', 'lxml'
                         'google-api-python-client', 'ipython', 'kaptan', 'monotonic',
                         'musicbrainzngs', 'mutagen', 'piprot', 'pocketsphinx', 'pony',
                         'pylast', 'pylint', 'pytest', 'pytest-coverage', 'PyVimeo', 'rl',

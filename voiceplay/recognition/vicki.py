@@ -55,8 +55,8 @@ class Vicki(object):
                 time.sleep(0.01)
                 continue
 
-            volume = self.player.player.volume
-            self.player.player.volume = 30
+            volume = self.player.player.get_volume()
+            self.player.player.set_volume(0)
             logger.debug('recog start')
             # command goes next
             try:
@@ -64,7 +64,7 @@ class Vicki(object):
                     self.rec.adjust_for_ambient_noise(source)
                     audio = self.rec.listen(source, timeout=5)
             except sr.WaitTimeoutError:
-                self.player.player.player.audio_set_volume(volume)
+                self.player.player.set_volume(volume)
                 continue
             try:
                 result = self.rec.recognize_google(audio)
@@ -79,7 +79,7 @@ class Vicki(object):
                 logger.warning('{0}; {1}'.format(msg, e))
                 result = None
             logger.debug('recog end')
-            self.player.player.volume = volume
+            self.player.player.set_volume(volume)
             if result:
                 result = result.lower()  # pylint:disable=no-member
                 logger.debug('Putting %r into processing queue', repr(result))

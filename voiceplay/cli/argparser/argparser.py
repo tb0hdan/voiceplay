@@ -123,7 +123,7 @@ class MyArgumentParser(object):
             return
         #
         vicki = Vicki(debug=result.debug)
-        vicki.player.argparser = result
+        vicki.player.player.set_argparser(result)
         if result.console:
             vicki.player.start()
             self.player_console(vicki)

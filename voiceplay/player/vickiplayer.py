@@ -26,7 +26,7 @@ class VickiPlayer(object):
         self.queue = Queue()
         self.p_queue = Queue()
         self.prefetch_q = Queue()
-        self.player = VLCPlayer(debug=self.debug)
+        self.player = VLCPlayer()
         self.shutdown_flag = False
         self.exit_task = False
         self._argparser = None
@@ -47,7 +47,7 @@ class VickiPlayer(object):
         Managed property, sets argument parser
         """
         self._argparser = argobj
-        self.player.argparser = argobj
+        self.player.set_argparser(argobj)
 
     @staticmethod
     def get_actions(tasks):
@@ -203,7 +203,7 @@ class VickiPlayer(object):
         Start VickiPlayer and auxiliary loops using thread group
         """
         # non-blocking start
-        self.player.start()
+        self.player.start(debug=self.debug)
         self.thread_group = ThreadGroup()
         self.thread_group.targets = [self.task_loop, self.cmd_loop, self.prefetch_loop]
         self.thread_group.start_all()

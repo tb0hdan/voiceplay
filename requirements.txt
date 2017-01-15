@@ -9,6 +9,7 @@ oauth2client==1.5.2
 google-api-python-client==1.5.5
 ipython==5.1.0
 kaptan==0.5.8
+lxml==3.7.2
 monotonic==1.2
 musicbrainzngs==0.6
 mutagen==1.35.1
