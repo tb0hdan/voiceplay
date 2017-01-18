@@ -26,10 +26,13 @@ class TrackScrobble(object):
         if argparser.no_track_scrobble:
             logger.debug('TrackScrobble disabled for this session...')
             return
-        artist = track.split(' - ')[0]
-        title = track.split(' - ')[1]
-        lfm = VoicePlayLastFm()
-        lfm.scrobble(artist, title)
+        if len(track.split(' - ')) < 2:
+            logger.debug('Cannot scrobble without complete track: %r', track)
+        else:
+            artist = track.split(' - ')[0]
+            title = track.split(' - ')[1]
+            lfm = VoicePlayLastFm()
+            lfm.scrobble(artist, title)
 
 
 class ScrobbleHook(BasePlayerHook):
