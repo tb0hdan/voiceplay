@@ -12,6 +12,7 @@ import threading
 from functools import cmp_to_key
 
 from voiceplay import __version__, __title__
+from voiceplay.logger import logger
 from voiceplay.recognition.vicki import Vicki
 from voiceplay.recognition.wakeword.receiver import ThreadedRequestHandler, WakeWordReceiver
 from voiceplay.cli.console.console import Console
@@ -20,6 +21,28 @@ from voiceplay.player.tasks.basetask import BasePlayerTask
 from voiceplay.player.hooks.basehook import BasePlayerHook
 from voiceplay.utils.helpers import purge_cache, ThreadGroup, cmp
 from voiceplay.utils.models import BaseCfgModel
+
+class Help(object):
+    help_aliases = ['?', 'h', 'help']
+    def __init__(self):
+        pass
+
+    def run_help(self, *args, **kwargs):
+        if args[0].strip() in self.help_aliases:
+            return self.main_page(), True
+        return None, False
+
+    def main_page(self):
+        message = """{0} {1}\nTo get help about {2} commands type:
+\t"<tab>" to get a list of possible help topics
+\t"clear" to clear screen
+\t"quit" or press CTRL+D to exit\n
+Set your preferences in ~/.config/voiceplay/config.yaml\n""".format(__title__, __version__, __title__)
+        return message
+
+    def register(self, console_obj):
+        console_obj.add_handler('help', self.run_help, self.help_aliases)
+
 
 class MyArgumentParser(object):
     """
@@ -80,10 +103,12 @@ class MyArgumentParser(object):
         """
         Start VickiPlayer console
         """
+        helper = Help()
         console = Console()
         console.add_handler('play', vicki.player.play_from_parser,
                             ['pause', 'shuffle', 'next', 'stop', 'resume'])
         console.add_handler('what', vicki.player.play_from_parser)
+        helper.register(console)
         console.run_console()
 
     def vicki_loop(self, vicki, noblock=False):

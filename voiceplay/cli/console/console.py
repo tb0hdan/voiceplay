@@ -127,6 +127,8 @@ class Console(object):
                 inp = None
             if inp:
                 result, should_be_printed = self.parse_command(inp)
+                if should_be_printed:
+                    print (result)
             if self.exit:
                 self.run_exit()
                 break
