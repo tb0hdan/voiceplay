@@ -54,6 +54,8 @@ vagrant_rebuild:
 	@vagrant destroy -f
 	@vagrant up
 	@vagrant ssh -c 'sudo reboot'
+	@sleep 30; vagrant ssh -c 'amixer set Master 100%'
+	@vagrant ssh -c 'sudo alsactl store'
 
 test:
 	@py.test -c ./tests/etc/pytest.ini -v tests/
