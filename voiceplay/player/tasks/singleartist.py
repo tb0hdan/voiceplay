@@ -36,5 +36,6 @@ class SingleArtistTask(BasePlayerTask):
         """
         cls.logger.debug('Message: %r matches %r, running %r', message, regexp, cls.__name__)
         artist = re.match(regexp, message, re.I).groups()[0]
+        artist = cls.lfm().get_corrected_artist(artist)
         cls.say('Shuffling songs by %s' % artist)
         cls.run_shuffle_artist(artist)

@@ -71,5 +71,6 @@ class NewTask(BasePlayerTask):
         """
         cls.logger.debug('Message: %r matches %r, running %r', message, regexp, cls.__name__)
         artist = re.match(regexp, message, re.I).groups()[0]
+        artist = cls.lfm().get_corrected_artist(artist)
         cls.say('Playing new tracks by %s' % artist)
         cls.play_new_tracks(artist)

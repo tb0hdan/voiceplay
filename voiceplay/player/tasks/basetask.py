@@ -21,6 +21,7 @@ class BasePlayerTask(BaseLfmModel):
         """
         Use TTS to read message aloud. Does nothing in console mode
         """
+        logger.debug('TTS: %r', msg)
         cls.tts.say_put(msg)  # pylint:disable=no-member
 
     @classmethod

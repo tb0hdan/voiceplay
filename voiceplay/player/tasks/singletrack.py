@@ -23,5 +23,6 @@ class SingleTrackArtistTask(BasePlayerTask):
         cls.logger.debug('Message: %r matches %r, running %r', message, regexp, cls.__name__)
         track, artist = re.match(regexp, message, re.I).groups()
         # TODO add track correction here
+        artist = cls.lfm().get_corrected_artist(artist)
         cls.say('%s by %s' % (track, artist))
         cls.play_full_track('%s - %s' % (artist, track))
