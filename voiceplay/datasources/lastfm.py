@@ -42,10 +42,17 @@ class VoicePlayLastFm(object):
     """
     def __init__(self):
         cfg_data = Config.cfg_data()
-        self.network = pylast.LastFMNetwork(api_key=cfg_data['lastfm']['key'],
+        try:
+            self.network = pylast.LastFMNetwork(api_key=cfg_data['lastfm']['key'],
                                             api_secret=cfg_data['lastfm']['secret'],
                                             username=cfg_data['lastfm']['username'],
                                             password_hash=pylast.md5(cfg_data['lastfm']['password']))
+            self.scrobble_enabled = True
+        except Exception as exc:
+            # last.fm network registration failed, possibly due to scrobbling/API issue, try data only
+            self.scrobble_enabled = False
+            self.network = pylast.LastFMNetwork(api_key=cfg_data['lastfm']['key'],
+                                            api_secret=cfg_data['lastfm']['secret'])
 
     @lfm_retry(retry_count=3)
     def get_top_tracks_geo(self, country_code):
@@ -171,7 +178,7 @@ class VoicePlayLastFm(object):
         """
         Scrobble track
         """
-        if self.scrobble:
+        if self.scrobble_enabled:
             logger.debug('Scrobbling track: %s - %s', artist, track)
             timestamp = int(time.mktime(datetime.datetime.now().timetuple()))
             self.network.scrobble(artist=artist, title=track, timestamp=timestamp)
