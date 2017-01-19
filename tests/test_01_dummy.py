@@ -1,4 +1,5 @@
 import unittest
+from common import testrunner
 
 class DummyTestCase(unittest.TestCase):
     '''
@@ -15,6 +16,5 @@ class DummyTestCase(unittest.TestCase):
 
 if __name__ == '__main__':
     classes = [DummyTestCase]
-    alltests = unittest.TestSuite([unittest.TestLoader().loadTestsFromTestCase(s) for s in classes])
-    unittest.TextTestRunner(verbosity=2).run(alltests)
+    testrunner(classes)
 

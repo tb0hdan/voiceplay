@@ -81,30 +81,17 @@ make deps
 ```
 
 ## Configuration
-
-Sample is provided for convenience.
-
+Please follow the instructions of the following command:
 ```
-cp config.yaml.sample config.yaml
+voiceplay --configure
 ```
-
-
-Register at [http://www.last.fm/api](http://www.last.fm/api) and then
-paste Last.fm API key, secret, username and password into config.yaml
-
-Register at [https://developer.vimeo.com](https://developer.vimeo.com) and then
-paste client id(key), token and secret into config.yaml
-
-Register at [https://console.developers.google.com](https://console.developers.google.com) and then
-paste Google API key (for Server) into config.yaml and enable Youtube data api.
-
 
 ## Usage
 
 Start application:
 
 ```
-voiceplay.py -w
+voiceplay -w
 ```
 
 or just (if installed via pip):

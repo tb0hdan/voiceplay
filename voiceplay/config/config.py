@@ -12,13 +12,14 @@ class Config(with_metaclass(Singleton)):
     """
     VoicePlay configuration object
     """
+    external_services = ['google', 'lastfm', 'vimeo']
     cache_dir = '~/.cache/voiceplay'
     persistent_dir = '~/.cache/voiceplay-persistent'
     config_search_order = ['config.yaml', os.path.expanduser('~/.config/voiceplay/config.yaml')]
     prefetch_count = 3
 
     def __init__(self, cfg_file=None):
-        self.config = kaptan.Kaptan()
+        self.config = kaptan.Kaptan(handler="yaml")
         if not cfg_file:
             for fname in self.config_search_order:
                 if os.path.exists(fname):

@@ -1,0 +1,17 @@
+google:
+   account_url: https://console.developers.google.com/
+   description: Youtube Data API account
+   key: mno
+vimeo:
+   account_url: https://developer.vimeo.com/
+   description: Vimeo video service account
+   key: pqr
+   secret: stu
+   token: vwx
+lastfm:
+   account_url: http://www.last.fm/api
+   description: Last.FM API account
+   key: yz0
+   secret: yz1
+   username: abc
+   password: def

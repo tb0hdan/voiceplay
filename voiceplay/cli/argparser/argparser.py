@@ -21,6 +21,7 @@ from voiceplay.player.tasks.basetask import BasePlayerTask
 from voiceplay.player.hooks.basehook import BasePlayerHook
 from voiceplay.utils.helpers import purge_cache, ThreadGroup, cmp
 from voiceplay.utils.models import BaseCfgModel
+from voiceplay.config.configurator import ConfigDialog
 
 class Help(object):
     help_aliases = ['?', 'h', 'help']
@@ -56,6 +57,9 @@ class MyArgumentParser(object):
         Configure argument parser
         """
         group = self.parser.add_mutually_exclusive_group()
+        group.add_argument('-C', '--configure', action='store_true', default=False,
+                           dest='configure',
+                           help='Run configuration utility')
         group.add_argument('-c', '--console', action='store_true', default=False,
                            dest='console',
                            help='Start console')
@@ -139,12 +143,16 @@ class MyArgumentParser(object):
         """
         argv = sys.argv if not argv else argv
         result = self.parser.parse_args(argv[1:])
+        # allow --configure
+        if result.configure:
+            cd = ConfigDialog()
+            cd.run('~/.config/voiceplay/config.yaml')
+            return
         # Check config here
         try:
             cfg_data = BaseCfgModel.cfg_data()
         except Exception as _:
-            print('Please write configuration file using sample from: https://raw.githubusercontent.com/tb0hdan/voiceplay/master/config.yaml.sample')
-            print('And save it as ~/.config/voiceplay/config.yaml')
+            print('Configuration not found, please run {0!s} --configure'.format(__title__.lower()))
             return
         #
         vicki = Vicki(debug=result.debug)
