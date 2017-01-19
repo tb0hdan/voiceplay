@@ -18,6 +18,8 @@ Prerequisites:
 - Python 2.7+
 - VLC
 
-Start::
+Configure::
+    $ voiceplay --configure
 
+Start::
     $ voiceplay -w
