@@ -1,5 +1,5 @@
 import unittest
-from common import testrunner
+from tests import mytestrunner
 
 class DummyTestCase(unittest.TestCase):
     '''
@@ -16,5 +16,4 @@ class DummyTestCase(unittest.TestCase):
 
 if __name__ == '__main__':
     classes = [DummyTestCase]
-    testrunner(classes)
-
+    mytestrunner(classes)
