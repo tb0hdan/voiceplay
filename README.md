@@ -32,13 +32,19 @@ redistribute it or use it however you like.
 
 1. Download and install [Virtualbox](https://www.virtualbox.org/wiki/Downloads)
 2. Download and install [Vagrant](https://www.vagrantup.com/downloads.html)
-3. Run `vagrant up` to create VM instance
-3a. (Required only once during setup) `vagrant halt`
-3b. (Required only once during setup) `vagrant up`
-4. `vagrant ssh`
+3. Clone repository
+
+`git clone https://github.com/tb0hdan/voiceplay`
+
+4. Rebuild vagrant image (first time)
+
+`cd voiceplay; make vagrant_rebuild`
+
+5. Use vagrant image (rest of the time)
+`cd voiceplay; vagrant up`
 
 
-### MAC
+### MAC (advanced users & developers)
 
 WARNING: Some systems require System Integrity Check (SIC!) disabled prior to installing system-wide python modules.
 If this is the case either use `csrutil` to disable or `virtualenv/virtualenvwrapper` (recommended) to install packages locally.
@@ -58,7 +64,7 @@ sudo easy_install-2.7 pip
 sudo pip install pyobjc
 ```
 
-### Linux (Debian/Ubuntu)
+### Linux (Debian/Ubuntu) (advanced users & developers)
 
 ```
 sudo apt-get install python-all-dev python-setuptools
