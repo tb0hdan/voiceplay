@@ -1,9 +1,10 @@
 #-*- coding: utf-8 -*-
 """ Youtube track source module """
 
+import os
 from apiclient.discovery import build  # pylint:disable=import-error
 from apiclient.errors import HttpError  # pylint:disable=import-error
-
+from oauth2client.client import GoogleCredentials
 from voiceplay.utils.score import VideoScoreCalculator
 
 from .basesource import TrackSource
@@ -13,11 +14,16 @@ class YoutubeSource(TrackSource):
     __priority__ = 40
 
     @classmethod
+    def youtube(cls):
+        credentials = GoogleCredentials.from_stream(os.path.expanduser('~/.config/voiceplay/credentials.json'))
+        return build('youtube', 'v3', credentials=credentials)
+
+    @classmethod
     def process_list(cls, vlist, limit=24):
         """
         Process youtube video list
         """
-        youtube = build('youtube', 'v3', developerKey=cls.cfg_data()['google']['key'])
+        youtube = cls.youtube()
         def run_chunk(videos, vids):
             part = 'snippet, contentDetails, status, statistics'
             video_response = youtube.videos().list(id=videos, part=part).execute()
@@ -36,7 +42,7 @@ class YoutubeSource(TrackSource):
         """
         Run youtube search
         """
-        youtube = build('youtube', 'v3', developerKey=cls.cfg_data()['google']['key'])
+        youtube = cls.youtube()
         search_response = youtube.search().list(q=query,
                                                 part="id,snippet",
                                                 maxResults=max_results).execute()
