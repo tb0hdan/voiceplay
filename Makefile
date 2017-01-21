@@ -52,6 +52,7 @@ tag:
 # Reboot step is required for audio drivers to catch up after installation
 vagrant_rebuild:
 	@vagrant destroy -f
+	@vagrant box update
 	@vagrant up
 	@vagrant ssh -c 'sudo reboot'
 	@sleep 30; vagrant ssh -c 'amixer set Master 100%'

@@ -75,6 +75,7 @@ Vagrant.configure("2") do |config|
      apt-get install -y pocketsphinx-utils swig libmagic1 libpulse-dev libreadline-dev
      apt-get install -y libblas-dev liblapack-dev libatlas-dev libatlas-base-dev
      apt-get install -y python-gobject libnotify-bin libnotify-dev
+     apt-get install -y pulseaudio
      # for SpeechRecognition module/flac encoder
      apt-get install -y libc6:i386 libncurses5:i386 libstdc++6:i386
      easy_install pip
@@ -84,6 +85,7 @@ Vagrant.configure("2") do |config|
      wget -q https://code.launchpad.net/~ubuntu-audio-dev/+archive/ubuntu/alsa-daily/+files/oem-audio-hda-daily-dkms_0.201701060731~ubuntu14.04.1_all.deb
      dpkg -i ./oem-audio-hda-daily-dkms_0.201701060731~ubuntu14.04.1_all.deb
      gpasswd -a vagrant audio
+     echo 'pulseaudio --start' >> /home/vagrant/.bashrc
      sed -i -e 's/pcm.rear cards.pcm.rear/#pcm.rear cards.pcm.rear/g' /usr/share/alsa/alsa.conf
      sed -i -e 's/pcm.center_lfe cards.pcm.center_lfe/#pcm.center_lfe cards.pcm.center_lfe/g' /usr/share/alsa/alsa.conf
      sed -i -e 's/pcm.side cards.pcm.side/#pcm.side cards.pcm.side/g' /usr/share/alsa/alsa.conf
