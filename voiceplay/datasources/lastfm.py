@@ -82,13 +82,18 @@ class VoicePlayLastFm(object):
         return self.trackarize(tracks)
 
     @lfm_retry(retry_count=3)
-    def get_station(self, station):
+    def get_station(self, query):
         """
-        Get station based on tag
+        Get station based on artist/tag
         """
-        aobj = pylast.Tag(station, self.network)
-        tracks = aobj.get_top_tracks()
-        return self.trackarize(tracks)
+        if self.get_query_type(query) != 'artist':
+            aobj = pylast.Tag(query, self.network)
+            tracks = self.trackarize(aobj.get_top_tracks())
+        else:
+            tracks = []
+            for artist in self.get_similar_artists(query):
+                tracks += self.get_top_tracks(artist)
+        return tracks
 
     @lfm_retry(retry_count=3)
     def get_top_albums(self, artist):
