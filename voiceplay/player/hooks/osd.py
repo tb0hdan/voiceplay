@@ -3,7 +3,6 @@
 
 import os
 import platform
-import requests
 import sys
 from tempfile import mkstemp
 from voiceplay import __title__
@@ -47,7 +46,6 @@ class OSDNotification(object):
             os.environ['DISPLAY'] = ':0.0'
         Notify.init(__title__)
         icon_file = mkstemp()[1]
-        r = requests.get(icon_url, stream=True)
         with open(icon_file, 'wb') as fh:
             fh.write(icon)
         n = Notify.Notification.new(message, '', icon_file)
