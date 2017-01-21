@@ -35,6 +35,7 @@ redistribute it or use it however you like.
 3. Clone repository `git clone https://github.com/tb0hdan/voiceplay`
 4. Rebuild vagrant image (first time) `cd voiceplay; make vagrant_rebuild`
 5. Use vagrant image (rest of the time) `cd voiceplay; vagrant up`
+6. Use voiceplay `vagrant ssh` then `voiceplay`
 
 
 ### MAC (advanced users & developers)
