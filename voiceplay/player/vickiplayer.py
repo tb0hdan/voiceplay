@@ -142,6 +142,7 @@ class VickiPlayer(object):
         for task in self.player_tasks:
             for regexp in task.__regexp__:
                 if re.match(regexp, message, re.I) is not None:
+                    start = time.time()
                     ran = True
                     task.prefetch_callback = self.add_to_prefetch_q
                     task.argparser = self._argparser
@@ -149,6 +150,7 @@ class VickiPlayer(object):
                     task.player = self.player
                     task.tts = self.tts
                     task.process(regexp, message)
+                    logger.debug('Task %r completed in %ss', task, '{0:.2f}'.format(int(time.time()) - start))
                     break
             if ran:
                 break

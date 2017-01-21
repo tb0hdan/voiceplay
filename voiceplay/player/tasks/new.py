@@ -22,9 +22,9 @@ class NewTask(BasePlayerTask):
     __actiontype__ = 'new_tracks_task'
 
     @classmethod
-    def play_new_tracks(cls, artist):
+    def get_new_tracks(cls, artist, starting_year):
         """
-        Play new tracks by provided artist
+        Get new tracks
         """
         mbapi = MBAPI()
         artist = cls.lfm().get_corrected_artist(artist)
@@ -35,10 +35,10 @@ class NewTask(BasePlayerTask):
         albums = []
         tracks = []
         for release in releases:
-            if not release.get('date', 0):
+            date = release.get('date', 0)
+            if not re.match('^[0-9]+$', date):
                 continue
-            date = int(release.get('date', 0))
-            if year >= date >= year - 1:
+            if year >= int(date) >= starting_year:
                 album_mbid = release.get('mbid', '')
                 if album_mbid:
                     albums.append(album_mbid)
@@ -51,13 +51,29 @@ class NewTask(BasePlayerTask):
 
         releases = mbapi.get_releases(artist_mbid, rtypes=['single'])
         for release in releases:
-            date = int(release.get('date', 0))
-            if year >= date >= year - 1:
+            date = release.get('date', 0)
+            if not re.match('^[0-9]+$', date):
+                continue
+            if year >= int(date) >= starting_year:
                 title = release.get('title', '')
                 # TODO: move this out to track blacklists
                 if title and TrackNormalizer.track_ok(title):
                     tracks.append(u'{0!s} - {1!s}'.format(artist, title))
+        return tracks
 
+
+    @classmethod
+    def play_new_tracks(cls, artist):
+        """
+        Play new tracks by provided artist
+        """
+        year = datetime.date.today().year
+        year_max = year - 1960 # well, there's possibly a better way to define this :)
+        for diff in range(1, year_max + 1):
+            starting_year = year - diff
+            tracks = cls.get_new_tracks(artist, starting_year)
+            if tracks:
+                break
         random.shuffle(tracks)
         for track in cls.tracks_with_prefetch(tracks):
             if cls.get_exit():  # pylint:disable=no-member
