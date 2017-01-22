@@ -47,6 +47,11 @@ class URLTask(BasePlayerTask):
         """
         Run task
         """
+        # reset vars
+        cls.new_url = None
+        cls.title = None
+        cls.tracklist = []
+        #
         cls.logger.debug('Message: %r matches %r, running %r', message, regexp, cls.__name__)
         url = re.match(regexp, message, re.I).groups()[0]
         cls.say('Playing music from url')
