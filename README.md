@@ -234,7 +234,7 @@ play etn.fm station from icecast
 play url http://66.207.196.218:8130/
 ```
 
-#### Media
+#### Media (including youtube playlists)
 
 ```
 play url https://www.youtube.com/watch?v=VrGScAzGtXs
