@@ -20,17 +20,27 @@ class URLTask(BasePlayerTask):
     __actiontype__ = 'url_task'
 
     new_url = None
-    new_description = None
+    title = None
+    tracklist = []
+
+    @classmethod
+    def add_to_list(cls):
+        if cls.title and cls.new_url:
+            cls.tracklist.append([cls.new_url, cls.title])
+            cls.title = None
+            cls.new_url = None
 
     @classmethod
     def url_hook(cls, *args, **kwargs):
         message = args[0]
-        if message.startswith('http'):
+        if not message.startswith('http') and not message.startswith('['):
+            cls.add_to_list()
+            cls.title = message
+        elif message.startswith('http'):
+            cls.add_to_list()
             cls.new_url = message
-        elif message.startswith('['):
-            logger.debug(message)
         else:
-            cls.new_description = message
+            logger.debug(message)
 
     @classmethod
     def process(cls, regexp, message):
@@ -42,13 +52,12 @@ class URLTask(BasePlayerTask):
         cls.say('Playing music from url')
         verbose = logger.level == logging.DEBUG
         ydl_opts = {'verbose': verbose, 'quiet': not verbose, 'forceurl': True, 'forcetitle': True,
-                    'logger': logger, 'simulate': True, 'noplaylist': True}
+                    'logger': logger, 'simulate': True, 'noplaylist': False, 'ignoreerrors': True}
         logger.debug('Using source url %s', url)
         YoutubeDL.to_stdout = cls.url_hook
         with YoutubeDL(ydl_opts) as ydl:
             ydl.download([url])
-        description = url
-        if cls.new_url and cls.new_url != url:
-            url = cls.new_url
-            description = cls.new_description if cls.new_description else url
-        cls.play_url(url, description)
+        if not cls.tracklist:
+            cls.tracklist.append([url, url])
+        for url, description in cls.tracklist:
+            cls.play_url(url, description)
