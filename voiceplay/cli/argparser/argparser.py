@@ -5,6 +5,7 @@ from __future__ import print_function
 
 import argparse
 import os
+import multiprocessing
 import subprocess
 import sys
 import threading
@@ -69,6 +70,8 @@ class MyArgumentParser(object):
         group.add_argument('-w', '--wakeword', action='store_true',
                            default=False, dest='wakeword',
                            help='Start wakeword listener')
+        self.parser.add_argument('-W', '--webapp', action='store_true',
+                                 default=False, dest='webapp', help='Start web application')
         self.parser.add_argument('-V', '--version', action='version',
                                  version='%(prog)s ' +  __version__)
         self.parser.add_argument('-v', '--verbose', action='store_true',
@@ -103,7 +106,7 @@ class MyArgumentParser(object):
         embed.mainloop()
 
     @staticmethod
-    def player_console(vicki):
+    def player_console(vicki, queue=None):
         """
         Start VickiPlayer console
         """
@@ -113,6 +116,10 @@ class MyArgumentParser(object):
                             ['pause', 'shuffle', 'next', 'stop', 'resume'])
         console.add_handler('what', vicki.player.play_from_parser)
         helper.register(console)
+        console.set_queue(queue)
+        th = ThreadGroup()
+        th.targets = [console.run_bg_queue]
+        th.start_all()
         console.run_console()
 
     def vicki_loop(self, vicki, noblock=False):
@@ -137,6 +144,17 @@ class MyArgumentParser(object):
         thread = threading.Thread(target=subprocess.call, args=(['python', '-m', 'voiceplay.recognition.wakeword.sender'],))
         thread.start()
 
+    def webapp_loop(self, debug=False, queue=None):
+        """
+        Run wakeword listener loop
+        """
+        from voiceplay.webapp import WrapperApplication
+        app = WrapperApplication(mode='local' if debug else 'prod')
+        p = multiprocessing.Process(target=app.run, args=(queue,))
+        p.start()
+        return p
+
+
     def parse(self, argv=None, noblock=False):
         """
         Parse command line arguments
@@ -157,9 +175,14 @@ class MyArgumentParser(object):
         #
         vicki = Vicki(debug=result.debug)
         vicki.player.player.set_argparser(result)
+        proc = None
+        queue = multiprocessing.Queue()
+        if result.webapp:
+            # non-blocking
+            proc = self.webapp_loop(debug=result.debug, queue=queue)
         if result.console:
             vicki.player.start()
-            self.player_console(vicki)
+            self.player_console(vicki, queue=queue)
             vicki.player.shutdown()
         elif result.wakeword:
             self.vicki_loop(vicki, noblock=True)
@@ -168,4 +191,6 @@ class MyArgumentParser(object):
             self.ipython_console()
         else:
             self.vicki_loop(vicki)
+        if proc:
+            proc.terminate()
         purge_cache()

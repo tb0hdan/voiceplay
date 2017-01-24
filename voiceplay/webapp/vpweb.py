@@ -3,7 +3,7 @@ import multiprocessing
 import gunicorn.app.base
 from gunicorn.six import iteritems
 
-from flask import Flask
+from flask import Flask, request
 from flask_classy import FlaskView
 from flask_restful import Resource, Api
 
@@ -13,17 +13,29 @@ class IndexView(FlaskView):
         return 'Hello'
 
 
-class HelloWorld(Resource):
-    def get(self):
-        return {'hello': 'world'}
+class Artist(Resource):
+    queue = None
+    def get(self, artist, query):
+        if self.queue and artist and query:
+            self.queue.put('play' + ' %s ' % query + ' by ' + artist)
+        return {'status': 'ok'}
+
+
+class Station(Resource):
+    queue = None
+    def get(self, station):
+        if self.queue and station:
+            self.queue.put('play' + ' %s ' % station + 'station')
+        return {'status': 'ok'}
 
 
 class WebApp(object):
-    def __init__(self, debug=False, port=8000):
-        self._debug = debug
+    def __init__(self, port=8000, queue=None):
+        self._debug = False
         self._app = Flask(__name__)
         self.api = Api(self._app)
         self.port = port
+        self.queue = queue
 
     @property
     def app(self):
@@ -38,7 +50,13 @@ class WebApp(object):
         self._debug = value
 
     def register(self):
-        self.api.add_resource(HelloWorld, '/api/v1')
+        # TODO: Move this to plugins
+        Artist.queue = self.queue
+        self.api.add_resource(Artist, '/api/v1/play/artist/<artist>/<query>')
+        #
+        Station.queue = self.queue
+        self.api.add_resource(Station, '/api/v1/play/station/<station>')
+        #
         IndexView.register(self._app, route_base='/')
 
     def run(self):
@@ -68,18 +86,17 @@ class WrapperApplication(object):
         self.mode = mode
         self.port = port
 
-    def run(self):
+    def run(self, queue=None):
+        webapp = WebApp(port=self.port, queue=queue)
+        webapp.register()
         if self.mode == 'local':
-            webapp = WebApp(debug=True, port=self.port)
-            webapp.register()
+            webapp.debug = True
             webapp.run()
         elif self.mode == 'prod':
             options = {
                 'bind': '%s:%s' % ('127.0.0.1', str(self.port)),
                 'workers': (multiprocessing.cpu_count() * 2) + 1,
             }
-            webapp = WebApp()
-            webapp.register()
             StandaloneApplication(webapp.app, options).run()
 
 

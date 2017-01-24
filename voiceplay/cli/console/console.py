@@ -24,6 +24,10 @@ class Console(object):
         self.exit = False
         self.banner = banner
         self.commands = {}
+        self.queue = None
+
+    def set_queue(self, queue=None):
+        self.queue = queue
 
     def add_handler(self, keyword, method, aliases=None):
         """
@@ -132,3 +136,18 @@ class Console(object):
             if self.exit:
                 self.run_exit()
                 break
+
+    def run_bg_queue(self):
+        if not self.queue:
+            return
+        while True:
+            if self.queue.empty():
+                time.sleep(0.1)
+                continue
+            message = self.queue.get()
+            # do last.fm style normalization, i.e. replace + with space
+            message = message.replace('+', ' ')
+            result, should_be_printed = self.parse_command(message)
+            if should_be_printed:
+                    print (result)
+            time.sleep(0.1)
