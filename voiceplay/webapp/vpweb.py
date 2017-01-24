@@ -20,6 +20,13 @@ class Artist(Resource):
             self.queue.put('play' + ' %s ' % query + ' by ' + artist)
         return {'status': 'ok'}
 
+class Album(Resource):
+    queue = None
+    def get(self, artist, album):
+        if self.queue and artist and album:
+            self.queue.put('play tracks from' + ' %s ' % album + ' by ' + artist)
+        return {'status': 'ok'}
+
 
 class Station(Resource):
     queue = None
@@ -53,6 +60,9 @@ class WebApp(object):
         # TODO: Move this to plugins
         Artist.queue = self.queue
         self.api.add_resource(Artist, '/api/v1/play/artist/<artist>/<query>')
+        #
+        Album.queue = self.queue
+        self.api.add_resource(Album, '/api/v1/play/artist/<artist>/album/<album>')
         #
         Station.queue = self.queue
         self.api.add_resource(Station, '/api/v1/play/station/<station>')
