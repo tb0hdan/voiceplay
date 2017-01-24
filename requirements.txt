@@ -4,6 +4,8 @@ colorama==0.3.7
 dailymotion==0.2.2
 filemagic==1.6
 flake8==3.2.1
+Flask-Classy==0.6.10
+Flask-RESTful==0.3.5
 gntp==1.0.3
 oauth2client==1.5.2
 google-api-python-client==1.6.1
