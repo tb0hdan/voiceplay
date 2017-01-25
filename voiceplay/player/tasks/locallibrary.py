@@ -5,7 +5,17 @@ import os
 import random
 random.seed()
 from voiceplay.logger import logger
+from voiceplay.webapp.baseresource import APIV1Resource
 from .basetask import BasePlayerTask
+
+
+class LocalLibrary(APIV1Resource):
+    route = '/api/v1/play/locallibrary'
+    queue = None
+    def post(self):
+        if self.queue:
+            self.queue.put('play my library')
+        return {'status': 'ok'}
 
 
 class LocalLibraryTask(BasePlayerTask):

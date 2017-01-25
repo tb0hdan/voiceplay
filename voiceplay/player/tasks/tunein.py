@@ -19,7 +19,17 @@ import time
 from bs4 import BeautifulSoup
 
 from voiceplay.logger import logger
+from voiceplay.webapp.baseresource import APIV1Resource
 from .basetask import BasePlayerTask
+
+
+class TuneInResource(APIV1Resource):
+    route = '/api/v1/play/tunein/<station>'
+    queue = None
+    def post(self, station):
+        if self.queue and station:
+            self.queue.put('play' + ' %s ' % station + 'from tunein')
+        return {'status': 'ok'}
 
 
 class TuneInClient(object):

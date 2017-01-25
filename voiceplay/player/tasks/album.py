@@ -4,7 +4,17 @@
 import random
 random.seed()
 import re
+from voiceplay.webapp.baseresource import APIV1Resource
 from .basetask import BasePlayerTask
+
+
+class Album(APIV1Resource):
+    route = '/api/v1/play/artist/<artist>/album/<album>'
+    queue = None
+    def post(self, artist, album):
+        if self.queue and artist and album:
+            self.queue.put('play tracks from' + ' %s ' % album + ' by ' + artist)
+        return {'status': 'ok'}
 
 
 class AlbumTask(BasePlayerTask):

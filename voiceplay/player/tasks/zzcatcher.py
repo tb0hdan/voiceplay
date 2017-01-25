@@ -3,7 +3,17 @@
 
 
 import re
+from voiceplay.webapp.baseresource import APIV1Resource
 from .basetask import BasePlayerTask
+
+
+class ZZCatcherResource(APIV1Resource):
+    route = '/api/v1/play/zzcatch/<query>'
+    queue = None
+    def post(self, query):
+        if self.queue and query:
+            self.queue.put('play' + ' %s ' % query)
+        return {'status': 'ok'}
 
 
 class ZZCatcherTask(BasePlayerTask):

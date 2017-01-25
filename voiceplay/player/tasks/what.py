@@ -5,6 +5,7 @@
 import re
 import time
 from voiceplay.logger import logger
+#from voiceplay.webapp.baseresource import APIV1Resource
 from .basetask import BasePlayerTask
 
 

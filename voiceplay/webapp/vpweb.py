@@ -7,33 +7,14 @@ from flask import Flask, request
 from flask_classy import FlaskView
 from flask_restful import Resource, Api
 
+from voiceplay.utils.loader import PluginLoader
+
+from .baseresource import APIV1Resource
+
 
 class IndexView(FlaskView):
     def index(self):
         return 'Hello'
-
-
-class Artist(Resource):
-    queue = None
-    def get(self, artist, query):
-        if self.queue and artist and query:
-            self.queue.put('play' + ' %s ' % query + ' by ' + artist)
-        return {'status': 'ok'}
-
-class Album(Resource):
-    queue = None
-    def get(self, artist, album):
-        if self.queue and artist and album:
-            self.queue.put('play tracks from' + ' %s ' % album + ' by ' + artist)
-        return {'status': 'ok'}
-
-
-class Station(Resource):
-    queue = None
-    def get(self, station):
-        if self.queue and station:
-            self.queue.put('play' + ' %s ' % station + 'station')
-        return {'status': 'ok'}
 
 
 class WebApp(object):
@@ -57,16 +38,10 @@ class WebApp(object):
         self._debug = value
 
     def register(self):
-        # TODO: Move this to plugins
-        Artist.queue = self.queue
-        self.api.add_resource(Artist, '/api/v1/play/artist/<artist>/<query>')
-        #
-        Album.queue = self.queue
-        self.api.add_resource(Album, '/api/v1/play/artist/<artist>/album/<album>')
-        #
-        Station.queue = self.queue
-        self.api.add_resource(Station, '/api/v1/play/station/<station>')
-        #
+        resources = sorted(PluginLoader().find_classes('voiceplay.player.tasks', APIV1Resource))
+        for resource in resources:
+            resource.queue = self.queue
+            self.api.add_resource(resource, resource.route)
         IndexView.register(self._app, route_base='/')
 
     def run(self):

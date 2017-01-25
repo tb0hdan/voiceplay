@@ -3,7 +3,18 @@
 
 import random
 random.seed()
+
+from voiceplay.webapp.baseresource import APIV1Resource
 from .basetask import BasePlayerTask
+
+
+class SomethingLikeThisResource(APIV1Resource):
+    route = '/api/v1/play/somethinglikethis'
+    queue = None
+    def post(self):
+        if self.queue:
+            self.queue.put('play something like this')
+        return {'status': 'ok'}
 
 
 class SomethingLikeThisTask(BasePlayerTask):

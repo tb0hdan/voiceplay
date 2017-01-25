@@ -4,7 +4,17 @@
 import random
 random.seed()
 import re
+
+from voiceplay.webapp.baseresource import APIV1Resource
 from .basetask import BasePlayerTask
+
+class Station(APIV1Resource):
+    route = '/api/v1/play/station/<station>'
+    queue = None
+    def get(self, station):
+        if self.queue and station:
+            self.queue.put('play' + ' %s ' % station + 'station')
+        return {'status': 'ok'}
 
 
 class StationTask(BasePlayerTask):

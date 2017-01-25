@@ -17,7 +17,17 @@ import time
 from bs4 import BeautifulSoup
 
 from voiceplay.logger import logger
+from voiceplay.webapp.baseresource import APIV1Resource
 from .basetask import BasePlayerTask
+
+
+class IceCastResource(APIV1Resource):
+    route = '/api/v1/play/icecast/<station>'
+    queue = None
+    def post(self, station):
+        if self.queue and station:
+            self.queue.put('play' + ' %s ' % query + 'station from icecast')
+        return {'status': 'ok'}
 
 
 class IcecastClient(object):

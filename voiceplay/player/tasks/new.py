@@ -8,8 +8,19 @@ import re
 
 from voiceplay.datasources.mbapi import MBAPI
 from voiceplay.utils.track import TrackNormalizer
+from voiceplay.webapp.baseresource import APIV1Resource
+
 
 from .basetask import BasePlayerTask
+
+
+class NewTracksResource(APIV1Resource):
+    route = '/api/v1/play/new_tracks/<artist>'
+    queue = None
+    def post(self, artist):
+        if self.queue and artist:
+            self.queue.put('play new tracks by' + ' %s ' % artist)
+        return {'status': 'ok'}
 
 
 class NewTask(BasePlayerTask):

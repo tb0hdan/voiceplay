@@ -4,10 +4,23 @@
 import logging
 import re
 
+from flask import request
 from youtube_dl import YoutubeDL
 
 from voiceplay.logger import logger
+from voiceplay.webapp.baseresource import APIV1Resource
 from .basetask import BasePlayerTask
+
+
+class URLPlaybackResource(APIV1Resource):
+    route = '/api/v1/play/url'
+    queue = None
+    def post(self):
+        if self.queue and request.form['data']:
+            url = request.form['data']
+            self.queue.put('play url' + ' %s ' % url)
+        return {'status': 'ok'}
+
 
 class URLTask(BasePlayerTask):
     """

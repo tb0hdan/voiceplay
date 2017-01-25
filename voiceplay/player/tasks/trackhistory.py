@@ -7,7 +7,17 @@ random.seed()
 import re
 from voiceplay.database import voiceplaydb
 from voiceplay.logger import logger
+from voiceplay.webapp.baseresource import APIV1Resource
 from .basetask import BasePlayerTask
+
+
+class LocalHistoryResource(APIV1Resource):
+    route = '/api/v1/play/localhistory'
+    queue = None
+    def post(self):
+        if self.queue:
+            self.queue.put('play my history')
+        return {'status': 'ok'}
 
 
 class LocalHistoryTask(BasePlayerTask):

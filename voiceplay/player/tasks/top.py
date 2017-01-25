@@ -14,7 +14,18 @@ from bs4 import BeautifulSoup
 from voiceplay.config import Config
 from voiceplay.logger import logger
 from voiceplay.utils.requestor import WSRequestor
+
+from voiceplay.webapp.baseresource import APIV1Resource
 from .basetask import BasePlayerTask
+
+
+class TopTracksResource(APIV1Resource):
+    route = '/api/v1/play/top/<query>'
+    queue = None
+    def post(self, query):
+        if self.queue and query:
+            self.queue.put('play top' + ' %s ' % query + 'tracks')
+        return {'status': 'ok'}
 
 
 class RS500Requestor(WSRequestor):

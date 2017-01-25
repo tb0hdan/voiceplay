@@ -18,7 +18,17 @@ import time
 from bs4 import BeautifulSoup
 
 from voiceplay.logger import logger
+from voiceplay.webapp.baseresource import APIV1Resource
 from .basetask import BasePlayerTask
+
+
+class RadionomyResource(APIV1Resource):
+    route = '/api/v1/play/radionomy/<station>'
+    queue = None
+    def post(self, station):
+        if self.queue and station:
+            self.queue.put('play' + ' %s ' % query + 'station from radionomy')
+        return {'status': 'ok'}
 
 
 class RadionomyClient(object):
