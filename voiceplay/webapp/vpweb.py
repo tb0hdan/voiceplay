@@ -12,11 +12,6 @@ from voiceplay.utils.loader import PluginLoader
 from .baseresource import APIV1Resource
 
 
-class IndexView(FlaskView):
-    def index(self):
-        return 'Hello'
-
-
 class WebApp(object):
     def __init__(self, port=8000, queue=None):
         self._debug = False
@@ -38,12 +33,17 @@ class WebApp(object):
         self._debug = value
 
     def register(self):
+        # Register resources
         resources = sorted(PluginLoader().find_classes('voiceplay.player.tasks', APIV1Resource))
         resources += sorted(PluginLoader().find_classes('voiceplay.player.controls', APIV1Resource))
         for resource in resources:
             resource.queue = self.queue
             self.api.add_resource(resource, resource.route)
-        IndexView.register(self._app, route_base='/')
+        # Register pages
+        pages = sorted(PluginLoader().find_classes('voiceplay.webapp.pages', FlaskView))
+        for page in pages:
+            # same as above for resources
+            page.register(self._app, route_base=page.route)
 
     def run(self):
         self._app.run(debug=self._debug, port=self.port)
