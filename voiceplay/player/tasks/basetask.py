@@ -153,4 +153,4 @@ class BasePlayerTask(BaseLfmModel):
         """
         Return currently playing track
         """
-        return cls.player.get_current_track()
+        return cls.player.current_track()
