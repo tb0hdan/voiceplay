@@ -30,7 +30,6 @@ class NewTask(BasePlayerTask):
     __group__ = ['play']
     __regexp__ = ['^play (?:fresh|new) (?:tracks|songs) (?:from|by) (.+)$']
     __priority__ = 150
-    __actiontype__ = 'new_tracks_task'
 
     @classmethod
     def get_new_tracks(cls, artist, starting_year):

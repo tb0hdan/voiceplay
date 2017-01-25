@@ -128,7 +128,6 @@ class TuneInTask(BasePlayerTask):
     __group__ = ['play']
     __regexp__ = ['^play (.+) station from tunein$']
     __priority__ = 110
-    __actiontype__ = 'tune_in_task'
 
     @classmethod
     def process(cls, regexp, message):

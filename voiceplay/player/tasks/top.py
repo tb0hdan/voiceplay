@@ -132,7 +132,6 @@ class TopTracksTask(BasePlayerTask):
     __regexp__ = ['^play top (?:songs|tracks)(?:\sin\s(.+))?$', '^(?:play\stop|top) 500 tracks?$',
                   '^(?:play\stop|top) 100 tracks?$', '^(?:play\stop|top) reddit tracks?$']
     __priority__ = 40
-    __actiontype__ = 'top_tracks_task'
 
     @classmethod
     def run_top_tracks_geo(cls, country):

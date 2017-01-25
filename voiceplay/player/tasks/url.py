@@ -30,7 +30,6 @@ class URLTask(BasePlayerTask):
     __group__ = ['play']
     __regexp__ = ['^play url (.+)$']
     __priority__ = 140
-    __actiontype__ = 'url_task'
 
     new_url = None
     title = None

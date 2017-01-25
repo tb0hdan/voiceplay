@@ -25,7 +25,6 @@ class SingleArtistTask(BasePlayerTask):
     __group__ = ['play']
     __regexp__ = ['^play some (?!fresh|new)\s?(?:music|tracks?|songs?) by (.+)$']
     __priority__ = 20
-    __actiontype__ = 'shuffle_artist'
 
     @classmethod
     def run_shuffle_artist(cls, artist):
@@ -59,7 +58,6 @@ class SingleTrackArtistTask(BasePlayerTask):
     __group__ = ['play']
     __regexp__ = ['^play (?!fresh|new)\s?(?!tracks|songs)(.+) bu?(?:t|y) (.+)$']
     __priority__ = 70
-    __actiontype__ = 'single_track_artist'
 
     @classmethod
     def process(cls, regexp, message):

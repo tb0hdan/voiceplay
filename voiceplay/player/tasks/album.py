@@ -24,7 +24,6 @@ class AlbumTask(BasePlayerTask):
     __group__ = ['play']
     __regexp__ = ['^play (?:songs|tracks) from (.+) by (.+)$']
     __priority__ = 60
-    __actiontype__ = 'artist_album'
 
     @classmethod
     def play_artist_album(cls, artist, album):

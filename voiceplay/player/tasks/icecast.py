@@ -71,7 +71,6 @@ class IcecastTask(BasePlayerTask):
     __group__ = ['play']
     __regexp__ = ['^play (.+) station from icecast$']
     __priority__ = 130
-    __actiontype__ = 'icecast_task'
 
     @classmethod
     def process(cls, regexp, message):

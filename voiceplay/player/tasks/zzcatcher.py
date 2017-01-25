@@ -25,7 +25,6 @@ class ZZCatcherTask(BasePlayerTask):
     __group__ = ['play']
     __regexp__ = ['^play (.+)$']
     __priority__ = 15000
-    __actiontype__ = 'zzcatcher_query_playback'
 
     @classmethod
     def process(cls, regexp, message):

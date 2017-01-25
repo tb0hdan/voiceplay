@@ -24,7 +24,6 @@ class SomethingLikeThisTask(BasePlayerTask):
     __group__ = ['play']
     __regexp__ = ['^play (?:songs|tracks|something) like this(.+)?$']
     __priority__ = 170
-    __actiontype__ = 'something_like_this'
 
     @classmethod
     def play_similar_tracks(cls, track):

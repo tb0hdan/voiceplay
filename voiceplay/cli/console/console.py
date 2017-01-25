@@ -140,7 +140,7 @@ class Console(object):
     def run_bg_queue(self):
         if not self.queue:
             return
-        while True:
+        while not self.exit:
             if self.queue.empty():
                 time.sleep(0.1)
                 continue

@@ -26,7 +26,6 @@ class LocalLibraryTask(BasePlayerTask):
     __group__ = ['play', 'shuffle']
     __regexp__ = ['^play (.+)?my library$', '^shuffle (.+)?my library$']
     __priority__ = 50
-    __actiontype__ = 'shuffle_local_library'
 
     @classmethod
     def play_local_library(cls):

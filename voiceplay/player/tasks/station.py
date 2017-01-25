@@ -24,7 +24,6 @@ class StationTask(BasePlayerTask):
     __group__ = ['play']
     __regexp__ = ['^play (.+) station$']
     __priority__ = 10
-    __actiontype__ = 'station_artist'
 
     @classmethod
     def play_station(cls, station):

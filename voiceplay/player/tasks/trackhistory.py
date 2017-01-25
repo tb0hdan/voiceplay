@@ -28,7 +28,6 @@ class LocalHistoryTask(BasePlayerTask):
     __group__ = ['play', 'shuffle']
     __regexp__ = ['^play (.+)?my history$', '^shuffle (.+)?my history$']
     __priority__ = 160
-    __actiontype__ = 'shuffle_local_history'
 
     @classmethod
     def play_track_history(cls, message):

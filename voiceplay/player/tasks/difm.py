@@ -78,7 +78,6 @@ class DIFMTask(BasePlayerTask):
     __group__ = ['play']
     __regexp__ = ['^play (.+) station from di(?:.+)?$']
     __priority__ = 180
-    __actiontype__ = 'di_fm_task'
 
     @classmethod
     def process(cls, regexp, message):

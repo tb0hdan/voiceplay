@@ -66,7 +66,6 @@ class RadionomyTask(BasePlayerTask):
     __group__ = ['play']
     __regexp__ = ['^play (.+) station from radionomy$']
     __priority__ = 120
-    __actiontype__ = 'radionomy_task'
 
     @classmethod
     def process(cls, regexp, message):

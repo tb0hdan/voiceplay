@@ -149,7 +149,8 @@ class MyArgumentParser(object):
         Run wakeword listener loop
         """
         from voiceplay.webapp import WrapperApplication
-        app = WrapperApplication(mode='local' if debug else 'prod')
+        app = WrapperApplication()
+        app.debug = debug
         p = multiprocessing.Process(target=app.run, args=(queue,))
         p.start()
         return p

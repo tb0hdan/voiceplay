@@ -39,6 +39,7 @@ class WebApp(object):
 
     def register(self):
         resources = sorted(PluginLoader().find_classes('voiceplay.player.tasks', APIV1Resource))
+        resources += sorted(PluginLoader().find_classes('voiceplay.player.controls', APIV1Resource))
         for resource in resources:
             resource.queue = self.queue
             self.api.add_resource(resource, resource.route)
@@ -67,20 +68,32 @@ class StandaloneApplication(gunicorn.app.base.BaseApplication):
 
 
 class WrapperApplication(object):
-    def __init__(self, mode='local', port=8000):
+    def __init__(self, mode='prod', port=8000):
         self.mode = mode
         self.port = port
+        self._debug = False
+
+    @property
+    def debug(self):
+        return self._debug
+
+    @debug.setter
+    def debug(self, value):
+        self._debug = value
 
     def run(self, queue=None):
         webapp = WebApp(port=self.port, queue=queue)
         webapp.register()
         if self.mode == 'local':
-            webapp.debug = True
+            # hardcore debugging only
+            webapp.debug = self.debug
             webapp.run()
         elif self.mode == 'prod':
             options = {
                 'bind': '%s:%s' % ('127.0.0.1', str(self.port)),
                 'workers': (multiprocessing.cpu_count() * 2) + 1,
+                'capture_output': True,
+                'loglevel': 'debug' if self.debug else 'info'
             }
             StandaloneApplication(webapp.app, options).run()
 

@@ -13,7 +13,6 @@ class TrackByNumberTask(BasePlayerTask):
     __group__ = ['play']
     __regexp__ = ['^play top (?:songs|tracks) by (.+)$']
     __priority__ = 30
-    __actiontype__ = 'top_tracks_artist'
 
     numbers = {'1': {'name': 'one', 'adjective': 'first'},
                '2': {'name': 'two', 'adjective': 'second'},

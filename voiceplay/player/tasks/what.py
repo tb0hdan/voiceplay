@@ -19,7 +19,6 @@ class WhatTask(BasePlayerTask):
                   '^what time(.+)$', '^what (?:date|day)(.+)$',
                   '^(?:date|day)(.+)$']
     __priority__ = 100
-    __actiontype__ = 'what'
 
     @classmethod
     def process(cls, regexp, message):
