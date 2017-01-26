@@ -6,9 +6,10 @@
         <title>VoicePlay WebApp</title>
         <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Oswald:300|Raleway:300">
         <link rel="stylesheet" href="/static/linea/styles.css">
-        <link rel="stylesheet" href="/static/styles.css">
+        <link rel="stylesheet" href="/static/styles.css?{{timestamp}}">
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script src="/static/webapp.js?{{timestamp}}"></script>
     </head>
-
     <body>
         <div id="header" role="banner">
             <a href="index.html">
@@ -23,7 +24,7 @@
             <form>
                 <button><span class="lettering-text">Play</span></button>
                 <button><span class="lettering-text">Pause</span></button>
-                <button><span class="lettering-text">Next</span></button>
+                <button class="button-next"><span class="lettering-text">Next</span></button>
             </form>
 
             <form class="volume-controls">
@@ -31,6 +32,10 @@
                 <button><span class="icon-music-volume-down"></span><span class="icon-music-mute" style="display: none;"></span></button>
             </form>
         </div> <!-- /main-container -->
-
+        <script>
+            $(function() {
+                webapp_register();
+            });
+        </script>
     </body>
 </html>
