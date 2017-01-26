@@ -1,0 +1,146 @@
+html {
+    box-sizing: border-box;
+    height: 100%;
+    font-size: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+*,
+*:before,
+*:after {
+    box-sizing: inherit;
+}
+
+body {
+    height: 100%;
+    font-size: 1rem; /* 16px */
+    margin: 0;
+    padding: 0;
+    background-color: #afc3c1;
+}
+
+a,
+a:hover,
+a:focus,
+a:active {
+    text-decoration: none;
+    outline: none;
+    cursor: pointer;
+}
+
+img {
+   max-width: 100%;
+}
+
+.lettering {
+    font-family: Oswald, Helvetica, Arial, sans-serif;
+    font-weight: 400;
+}
+
+.lettering-text {
+    font-family: Raleway, Helvetica, Arial, sans-serif;
+    font-weight: 400;
+}
+
+#header {
+    background-color: #fcf7e3; /*#faab81;*/
+    height: 42px;
+    margin: 0;
+}
+
+p {
+    margin: 0;
+    float: left;
+    font-size: 1.5rem;
+    margin: 0.16em 1em 0 1em;
+    color: #f25a43;
+}
+
+svg {
+    width: 2em;
+    height: 2em;
+    float: left;
+    stroke: #1a5076;
+    stroke-width: 0.5px;
+    fill-opacity: 0;
+    margin: 0.3em 1em 0 1em;
+    transition: 0.4s all;
+}
+
+svg:hover {
+    stroke: #ff9c68;
+}
+
+form {
+    margin: 0 auto;
+}
+
+button {
+    display: block;
+    width: 12em;
+    height: 4em;
+    margin: 1.5em auto;
+    background-color: #ff9c68;
+    border: 2px solid #f2f4f2;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: 0.4s background;
+    outline: none;
+}
+
+button:hover {
+    background-color: #afc3c1;
+    -moz-box-shadow: inset 0 0 10px 1px #f2f4f2;
+    -webkit-box-shadow: inset 0 0 10px 1px #f2f4f2;
+    box-shadow: inset 0 0 10px 1px #f2f4f2;
+}
+
+span {
+    font-size: 1.5rem;
+    color: #1a5076;
+    transition: 0.4s color;
+}
+
+button:hover span {
+    color: #fcf7e3;
+}
+
+.volume-controls {
+    text-align: center;
+}
+
+.volume-controls button {
+    width: 5em;
+    height: 4em;
+    display: inline-block;
+    background-color: #fcf7e3;
+    margin: 0 0.6em;
+}
+
+.volume-controls button:hover {
+    background-color: #ff9c68;
+}
+
+.volume-controls:hover span {
+    color: #1a5076;
+}
+
+.icon-music-volume-down:before,
+.icon-music-mute:before,
+.icon-music-volume-up:before {
+    vertical-align: sub;
+    font-size: 1.2em;
+}
+
+.icon-music-volume-up:before {
+    content: "D";
+}
+
+.icon-music-volume-down:before {
+    content: "C";
+}
+
+.icon-music-mute:before {
+    content: "n";
+}
