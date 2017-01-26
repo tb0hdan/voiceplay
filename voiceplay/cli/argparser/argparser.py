@@ -115,6 +115,7 @@ class MyArgumentParser(object):
         console.add_handler('play', vicki.player.play_from_parser,
                             ['pause', 'shuffle', 'next', 'stop', 'resume'])
         console.add_handler('what', vicki.player.play_from_parser)
+        console.add_handler('current_track', vicki.player.play_from_parser)
         helper.register(console)
         console.set_queue(queue)
         th = ThreadGroup()

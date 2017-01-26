@@ -24,7 +24,7 @@ class CurrentTrackTask(BasePlayerTask):
     Get current track
     """
     __group__ = ['current_track']
-    __regexp__ = ['^current_track(.+)?$']
+    __regexp__ = ['^current(.+)?$']
     __priority__ = 190
 
     @classmethod
