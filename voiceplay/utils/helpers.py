@@ -12,6 +12,7 @@ if sys.version_info.major == 3:
     from builtins import input as raw_input  # pylint:disable=no-name-in-module,import-error
 
 from glob import glob
+from uuid import uuid4
 
 
 from voiceplay.logger import logger
@@ -130,3 +131,50 @@ def unbreakable_input():
             continue
         break
     return data
+
+
+class SingleQueueDispatcher(object):
+    """
+    Bidirectional, single queue communication layer
+    """
+    TTL = 30
+    def __init__(self, queue=None):
+        self.queue = queue
+
+    def send_and_wait(self, message):
+        uuid = uuid4()
+        full_msg = {'expires': int(time.time()) + self.TTL,
+                    'uuid': uuid,
+                    'message': message}
+        self.queue.put(full_msg)
+        exit_stamp = int(time.time()) + self.TTL
+        while int(time.time()) <= exit_stamp:
+            if not self.queue.empty():
+                full_msg = self.queue.get()
+                # purge expired messages
+                if int(time.time()) >= int(full_msg.get('expires')):
+                    logger.debug('Message %s - %s expired, purging...', int(time.time()), full_msg)
+                    continue
+                # get/check message
+                if full_msg.get('uuid') != uuid:
+                    logger.debug('Message %s not for me %s, requeueing...', full_msg, uuid)
+                    self.queue.put(full_msg)
+                else:
+                    message = full_msg.get('message', '')
+                    break
+            time.sleep(0.01)
+        return message
+
+    def get_full_message(self):
+        while True:
+            if not self.queue.empty():
+                message = self.queue.get()
+                break
+            time.sleep(0.01)
+        return message
+
+    def put_message(self, uuid, message):
+        full_msg = {'expires': int(time.time()) + self.TTL,
+                    'uuid': uuid,
+                    'message': message}
+        self.queue.put(full_msg)

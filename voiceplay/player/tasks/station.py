@@ -6,15 +6,20 @@ random.seed()
 import re
 
 from voiceplay.webapp.baseresource import APIV1Resource
+from voiceplay.utils.helpers import SingleQueueDispatcher
 from .basetask import BasePlayerTask
+
 
 class Station(APIV1Resource):
     route = '/api/v1/play/station/<station>'
     queue = None
     def get(self, station):
+        result = {'status': 'timeout', 'message': ''}
         if self.queue and station:
-            self.queue.put('play' + ' %s ' % station + 'station')
-        return {'status': 'ok'}
+            dispatcher = SingleQueueDispatcher(queue=self.queue)
+            message = dispatcher.send_and_wait('play' + ' %s ' % station + 'station')
+            result = {'status': 'ok', 'message': message}
+        return result
 
 
 class StationTask(BasePlayerTask):

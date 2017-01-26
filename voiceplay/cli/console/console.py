@@ -13,6 +13,7 @@ if sys.version_info.major == 3:
     from builtins import input as raw_input  # pylint:disable=no-name-in-module,import-error
 
 from voiceplay import __title__
+from voiceplay.utils.helpers import SingleQueueDispatcher
 
 class Console(object):
     """
@@ -140,14 +141,16 @@ class Console(object):
     def run_bg_queue(self):
         if not self.queue:
             return
+        dispatcher = SingleQueueDispatcher(queue=self.queue)
         while not self.exit:
-            if self.queue.empty():
-                time.sleep(0.1)
-                continue
-            message = self.queue.get()
+            full_message = dispatcher.get_full_message()
+            message = full_message.get('message')
+            uuid = full_message.get('uuid')
             # do last.fm style normalization, i.e. replace + with space
             message = message.replace('+', ' ')
+            print (message)
             result, should_be_printed = self.parse_command(message)
+            dispatcher.put_message(uuid, result)
             if should_be_printed:
                     print (result)
             time.sleep(0.1)

@@ -18,6 +18,7 @@ from bs4 import BeautifulSoup
 
 from voiceplay.logger import logger
 from voiceplay.webapp.baseresource import APIV1Resource
+from voiceplay.utils.helpers import SingleQueueDispatcher
 from .basetask import BasePlayerTask
 
 
@@ -25,9 +26,12 @@ class IceCastResource(APIV1Resource):
     route = '/api/v1/play/icecast/<station>'
     queue = None
     def post(self, station):
+        result = {'status': 'timeout', 'message': ''}
         if self.queue and station:
-            self.queue.put('play' + ' %s ' % query + 'station from icecast')
-        return {'status': 'ok'}
+            dispatcher = SingleQueueDispatcher(queue=self.queue)
+            message = dispatcher.send_and_wait('play' + ' %s ' % query + 'station from icecast')
+            result = {'status': 'ok', 'message': message}
+        return result
 
 
 class IcecastClient(object):

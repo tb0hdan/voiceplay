@@ -9,6 +9,7 @@ from youtube_dl import YoutubeDL
 
 from voiceplay.logger import logger
 from voiceplay.webapp.baseresource import APIV1Resource
+from voiceplay.utils.helpers import SingleQueueDispatcher
 from .basetask import BasePlayerTask
 
 
@@ -16,10 +17,13 @@ class URLPlaybackResource(APIV1Resource):
     route = '/api/v1/play/url'
     queue = None
     def post(self):
+        result = {'status': 'timeout', 'message': ''}
         if self.queue and request.form['data']:
             url = request.form['data']
-            self.queue.put('play url' + ' %s ' % url)
-        return {'status': 'ok'}
+            dispatcher = SingleQueueDispatcher(queue=self.queue)
+            message = dispatcher.send_and_wait('play url' + ' %s ' % url)
+            result = {'status': 'ok', 'message': message}
+        return result
 
 
 class URLTask(BasePlayerTask):

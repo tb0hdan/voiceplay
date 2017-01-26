@@ -5,6 +5,7 @@ import random
 random.seed()
 
 from voiceplay.webapp.baseresource import APIV1Resource
+from voiceplay.utils.helpers import SingleQueueDispatcher
 from .basetask import BasePlayerTask
 
 
@@ -12,9 +13,12 @@ class SomethingLikeThisResource(APIV1Resource):
     route = '/api/v1/play/somethinglikethis'
     queue = None
     def post(self):
+        result = {'status': 'timeout', 'message': ''}
         if self.queue:
-            self.queue.put('play something like this')
-        return {'status': 'ok'}
+            dispatcher = SingleQueueDispatcher(queue=self.queue)
+            message = dispatcher.send_and_wait('play something like this')
+            result = {'status': 'ok', 'message': message}
+        return result
 
 
 class SomethingLikeThisTask(BasePlayerTask):

@@ -5,6 +5,7 @@ import random
 random.seed()
 import re
 from voiceplay.webapp.baseresource import APIV1Resource
+from voiceplay.utils.helpers import SingleQueueDispatcher
 from .basetask import BasePlayerTask
 
 
@@ -12,9 +13,12 @@ class Album(APIV1Resource):
     route = '/api/v1/play/artist/<artist>/album/<album>'
     queue = None
     def post(self, artist, album):
+        result = {'status': 'timeout', 'message': ''}
         if self.queue and artist and album:
-            self.queue.put('play tracks from' + ' %s ' % album + ' by ' + artist)
-        return {'status': 'ok'}
+            dispatcher = SingleQueueDispatcher(queue=self.queue)
+            message = dispatcher.send_and_wait('play tracks from' + ' %s ' % album + ' by ' + artist)
+            result = {'status': 'ok', 'message': message}
+        return result
 
 
 class AlbumTask(BasePlayerTask):

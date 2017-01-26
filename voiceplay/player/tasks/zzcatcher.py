@@ -4,6 +4,7 @@
 
 import re
 from voiceplay.webapp.baseresource import APIV1Resource
+from voiceplay.utils.helpers import SingleQueueDispatcher
 from .basetask import BasePlayerTask
 
 
@@ -11,9 +12,12 @@ class ZZCatcherResource(APIV1Resource):
     route = '/api/v1/play/zzcatch/<query>'
     queue = None
     def post(self, query):
+        result = {'status': 'timeout', 'message': ''}
         if self.queue and query:
-            self.queue.put('play' + ' %s ' % query)
-        return {'status': 'ok'}
+            dispatcher = SingleQueueDispatcher(queue=self.queue)
+            message = dispatcher.send_and_wait('play' + ' %s ' % query)
+            result = {'status': 'ok', 'message': message}
+        return result
 
 
 class ZZCatcherTask(BasePlayerTask):

@@ -8,6 +8,7 @@ import re
 from voiceplay.database import voiceplaydb
 from voiceplay.logger import logger
 from voiceplay.webapp.baseresource import APIV1Resource
+from voiceplay.utils.helpers import SingleQueueDispatcher
 from .basetask import BasePlayerTask
 
 
@@ -15,9 +16,12 @@ class LocalHistoryResource(APIV1Resource):
     route = '/api/v1/play/localhistory'
     queue = None
     def post(self):
+        result = {'status': 'timeout', 'message': ''}
         if self.queue:
-            self.queue.put('play my history')
-        return {'status': 'ok'}
+            dispatcher = SingleQueueDispatcher(queue=self.queue)
+            message = dispatcher.send_and_wait('play my history')
+            result = {'status': 'ok', 'message': message}
+        return result
 
 
 class LocalHistoryTask(BasePlayerTask):
