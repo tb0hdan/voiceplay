@@ -166,6 +166,7 @@ class SingleQueueDispatcher(object):
         return message
 
     def get_full_message(self):
+        message = {}
         while True:
             if not self.queue.empty():
                 message = self.queue.get()

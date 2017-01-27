@@ -267,6 +267,10 @@ class VLCPlayer(object):
             cls.player = VLCInstance(argparser=cls.argparser, debug=cls.debug)
 
     @classmethod
+    def resume(cls):
+        cls.player.resume()
+
+    @classmethod
     def pause(cls):
         cls.player.pause()
 

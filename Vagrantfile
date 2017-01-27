@@ -22,7 +22,7 @@ Vagrant.configure("2") do |config|
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,
   # accessing "localhost:8080" will access port 80 on the guest machine.
-  # config.vm.network "forwarded_port", guest: 80, host: 8080
+  config.vm.network "forwarded_port", guest: 8000, host: 8765
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
@@ -37,7 +37,7 @@ Vagrant.configure("2") do |config|
   # the path on the host to the actual folder. The second argument is
   # the path on the guest to mount the folder. And the optional third
   # argument is a set of non-required options.
-  # config.vm.synced_folder "../data", "/vagrant_data"
+  # config.vm.synced_folder "~/.config", "/home/vagrant/.config"
 
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.
@@ -82,8 +82,8 @@ Vagrant.configure("2") do |config|
      pip install pyfestival requests
      pip install -U voiceplay
      # Fix audio ( https://wiki.ubuntu.com/Audio/UpgradingAlsa/DKMS )
-     wget -q https://code.launchpad.net/~ubuntu-audio-dev/+archive/ubuntu/alsa-daily/+files/oem-audio-hda-daily-dkms_0.201701060731~ubuntu14.04.1_all.deb
-     dpkg -i ./oem-audio-hda-daily-dkms_0.201701060731~ubuntu14.04.1_all.deb
+     wget -q https://code.launchpad.net/~ubuntu-audio-dev/+archive/ubuntu/alsa-daily/+files/oem-audio-hda-daily-dkms_0.201701270732~ubuntu14.04.1_all.deb
+     dpkg -i ./oem-audio-hda-daily-dkms*.deb
      gpasswd -a vagrant audio
      gpasswd -a vagrant pulse
      gpasswd -a vagrant pulse-access
