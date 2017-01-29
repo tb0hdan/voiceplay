@@ -7,7 +7,11 @@ import time
 from pony.orm import db_session, select, commit
 from voiceplay.logger import logger
 from voiceplay.config import Config
-from .entities import db, Artist, PlayedTracks, LastFmCache
+from .entities import (db,
+                      Artist,
+                      PlayedTracks,
+                      LastFmCache,
+                      ServiceCache)
 
 
 class VoicePlayDB(object):
@@ -114,6 +118,32 @@ class VoicePlayDB(object):
         with db_session:
             dt = self.get_dt()
             cache = LastFmCache(method_args=method + args, created_at=dt, updated_at=dt, content=content)
+            commit()
+
+    def get_cached_service(self, service_name, expires=1):
+        """
+        Get service response from database.
+        https://github.com/tb0hdan/voiceplay/issues/15
+        """
+        with db_session:
+            result = None
+            record = ServiceCache.get(service_name=service_name)
+            dt = self.get_dt()
+            if record and dt - record.updated_at <= datetime.timedelta(days=expires):
+                result = record.content
+            elif record:
+                ServiceCache[record.service_name].delete()
+            return result
+
+    def set_cached_service(self, service_name, content):
+        """
+        Store service response in database
+        Works with expiration date.
+        https://github.com/tb0hdan/voiceplay/issues/15
+        """
+        with db_session:
+            dt = self.get_dt()
+            cache = ServiceCache(service_name=service_name, created_at=dt, updated_at=dt, content=content)
             commit()
 
 

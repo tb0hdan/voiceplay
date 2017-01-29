@@ -26,7 +26,7 @@ system_specific_packages = ['gntp', 'pyobjc'] if platform.system() == 'Darwin' e
 
 # hook to pip install for package sideloading
 # broken pyaudio package
-# snowboy extention
+# snowboy extension
 if sys.argv[1] in ['bdist_wheel', 'install']:
     # pyaudio
     if platform.system() == 'Darwin':

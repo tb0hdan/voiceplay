@@ -6,6 +6,7 @@ import time
 
 from voiceplay.logger import logger
 from voiceplay.config import Config
+from voiceplay.database import voiceplaydb
 from .models import BaseCfgModel
 
 
@@ -23,19 +24,13 @@ class WSRequestor(BaseCfgModel):
         """
         Get results, use cache if needed.
         """
-        try:
-            os.makedirs(os.path.expanduser(Config.persistent_dir))
-        except Exception as exc:
-            logger.debug('Persistent directory exists, good...')
-        cache_file = os.path.expanduser(os.path.join(Config.persistent_dir, self.cache_file))  # pylint:disable=no-member
-        # 1w cache
-        if os.path.exists(cache_file) and time.time() - os.path.getmtime(cache_file) <= 3600 * 24 * 7:
+        result = voiceplaydb.get_cached_service(self.cache_file, expires=7)
+        if result:
             logger.debug('Using %s cached version...', self.cache_file)  # pylint:disable=no-member
-            result = json.loads(open(cache_file, 'r').read())
+            result = json.loads(result)
         else:
             logger.debug('Fetching and storing fresh %s version...', self.cache_file)  # pylint:disable=no-member
             result = self.get_all()  # pylint:disable=no-member
             if result:
-                with open(cache_file, 'w') as file_handle:
-                    file_handle.write(json.dumps(result))
+                voiceplaydb.set_cached_service(self.cache_file, json.dumps(result))
         return result

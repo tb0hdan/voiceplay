@@ -37,3 +37,13 @@ class LastFmCache(db.Entity):
     created_at = Required(datetime)
     updated_at = Required(datetime)
     content = Required(str)
+
+
+class ServiceCache(db.Entity):
+    """
+    Cache service results
+    """
+    service_name = PrimaryKey(str)
+    created_at = Required(datetime)
+    updated_at = Required(datetime)
+    content = Required(str)

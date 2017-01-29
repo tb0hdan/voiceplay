@@ -3,6 +3,7 @@
 
 from .argparser.argparser import MyArgumentParser
 
+
 def main(noblock=False):
     """
     CLI Main, called from shell script

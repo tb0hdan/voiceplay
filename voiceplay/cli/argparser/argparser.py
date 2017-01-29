@@ -24,8 +24,13 @@ from voiceplay.utils.helpers import purge_cache, ThreadGroup, cmp
 from voiceplay.utils.models import BaseCfgModel
 from voiceplay.config.configurator import ConfigDialog
 
+
 class Help(object):
+    """
+    Console help
+    """
     help_aliases = ['?', 'h', 'help']
+
     def __init__(self):
         pass
 
