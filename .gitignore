@@ -105,3 +105,4 @@ state.txt
 *.sublime-*
 *.dmg
 .vagrant/
+*.box

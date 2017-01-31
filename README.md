@@ -32,53 +32,10 @@ redistribute it or use it however you like.
 
 1. Download and install [Virtualbox](https://www.virtualbox.org/wiki/Downloads)
 2. Download and install [Vagrant](https://www.vagrantup.com/downloads.html)
-3. Clone repository `git clone https://github.com/tb0hdan/voiceplay`
-4. Rebuild vagrant image (first time) `cd voiceplay; make vagrant_rebuild`
-5. Use vagrant image (rest of the time) `cd voiceplay; vagrant up`
-6. Use voiceplay `vagrant ssh` then `voiceplay`
+3. Initialize vagrant image: `vagrant init tb0hdan/voiceplay`
+4. Start vagrant VM: `vagrant up`
+5. Use voiceplay `vagrant ssh` then `voiceplay`
 
-
-### MAC (advanced users & developers)
-
-WARNING: Some systems require System Integrity Check (SIC!) disabled prior to installing system-wide python modules.
-If this is the case either use `csrutil` to disable or `virtualenv/virtualenvwrapper` (recommended) to install packages locally.
-
-Please make sure you have following dependencies resolved prior to proceeding with other steps:
-
-1. Xcode (https://itunes.apple.com/us/app/xcode/id497799835)
-2. Growl (http://growl.info/) installed and running
-3. VLC (http://videolan.org) installed and up to date
-
-
-then continue to:
-
-```
-brew install ffmpeg portaudio cmu-pocketsphinx swig libmagic
-sudo easy_install-2.7 pip
-sudo pip install pyobjc
-```
-
-### Linux (Debian/Ubuntu) (advanced users & developers)
-
-```
-sudo apt-get install python-all-dev python-setuptools
-sudo apt-get install libav-tools festival festival-dev portaudio19-dev vlc
-sudo apt-get install pocketsphinx swig libmagic1 libpulse-dev libreadline-dev
-sudo apt-get install libblas-dev liblapack-dev libatlas-dev libatlas-base-dev
-sudo apt-get install python-gobject libnotify-bin libnotify-dev
-sudo easy_install pip
-sudo pip install pyfestival
-```
-
-### Application and dependencies
-
-```
-git clone https://github.com/tb0hdan/voiceplay
-cd voiceplay
-sudo pip install --global-option='build_ext' --global-option='-I/usr/local/include' --global-option='-L/usr/local/lib' pyaudio
-./voiceplay.sh requirements
-make deps
-```
 
 ## Configuration
 Please follow the instructions of the following command:
@@ -89,12 +46,6 @@ voiceplay --configure
 ## Usage
 
 Start application:
-
-```
-voiceplay -w
-```
-
-or just (if installed via pip):
 
 ```
 voiceplay -w
@@ -249,6 +200,50 @@ User agent / Referer hack from https://github.com/Bitcrusher/Digitally-Imported-
 
 ```
 play vocal trance station from di
+```
+
+## Advanced users & developers
+
+### MAC
+
+WARNING: Some systems require System Integrity Check (SIC!) disabled prior to installing system-wide python modules.
+If this is the case either use `csrutil` to disable or `virtualenv/virtualenvwrapper` (recommended) to install packages locally.
+
+Please make sure you have following dependencies resolved prior to proceeding with other steps:
+
+1. Xcode (https://itunes.apple.com/us/app/xcode/id497799835)
+2. Growl (http://growl.info/) installed and running
+3. VLC (http://videolan.org) installed and up to date
+
+
+then continue to:
+
+```
+brew install ffmpeg portaudio cmu-pocketsphinx swig libmagic
+sudo easy_install-2.7 pip
+sudo pip install pyobjc
+```
+
+### Linux (Debian/Ubuntu) (advanced users & developers)
+
+```
+sudo apt-get install python-all-dev python-setuptools
+sudo apt-get install libav-tools festival festival-dev portaudio19-dev vlc
+sudo apt-get install pocketsphinx swig libmagic1 libpulse-dev libreadline-dev
+sudo apt-get install libblas-dev liblapack-dev libatlas-dev libatlas-base-dev
+sudo apt-get install python-gobject libnotify-bin libnotify-dev
+sudo easy_install pip
+sudo pip install pyfestival
+```
+
+### Application and dependencies
+
+```
+git clone https://github.com/tb0hdan/voiceplay
+cd voiceplay
+sudo pip install --global-option='build_ext' --global-option='-I/usr/local/include' --global-option='-L/usr/local/lib' pyaudio
+./voiceplay.sh requirements
+make deps
 ```
 
 ## Console mode
