@@ -15,7 +15,7 @@ from voiceplay.logger import logger
 from voiceplay.player.hooks.basehook import BasePlayerHook
 from voiceplay.utils.loader import PluginLoader
 from voiceplay.utils.track import normalize, track_ok
-from voiceplay.utils.helpers import cmp
+from voiceplay.utils.helpers import cmp, run_hooks
 
 class VLCProfileModel(object):
     """
@@ -92,22 +92,6 @@ class VLCInstance(object):
         self._current_track = None
         self.player, self.instance = self.create_instance(debug=debug, profile=profile)
 
-    def run_hooks(self, evt, *args, **kwargs):
-        """
-        Run player hooks
-        """
-        for hook in self.player_hooks:
-            logger.debug('Running player hook: %r', hook)
-            hook.argparser = self.argparser
-            method = getattr(hook, evt)
-            if method:
-                try:
-                    method(*args, **kwargs)
-                except Exception as exc:
-                    exc_type, exc_value, exc_trace = sys.exc_info()
-                    trace = ''.join(traceback.format_exception(exc_type, exc_value, exc_trace))
-                    logger.debug('Method %r crashed (see message below), restarting...\n%s\n', method, trace)
-
     @property
     def volume(self):
         """
@@ -167,7 +151,7 @@ class VLCInstance(object):
             self.player.set_media(media)
             self.player.play()
         except Exception as exc:
-            self.run_hooks('on_playback_error', exception=exc)
+            run_hooks(self.argparser, self.player_hooks, 'on_playback_error', exception=exc)
             return False
         track_name = None
         # allow playback to start
@@ -185,7 +169,7 @@ class VLCInstance(object):
                 track_name = self.meta_or_track(track)
                 self.current_track = track_name
                 if track_ok(track_name):
-                    self.run_hooks('on_playback_start', path=path, track=track_name)
+                    run_hooks(self.argparser, self.player_hooks, 'on_playback_start', path=path, track=track_name)
                 else:
                     logger.debug('Track %r matches blacklist %s, hooks not ran.', track_name, 'voiceplay.utils.track')
         return True
@@ -197,7 +181,7 @@ class VLCInstance(object):
         if self.player.is_playing():
             self.player.pause()
             self.paused = True
-            self.run_hooks('on_playback_pause')
+            run_hooks(self.argparser, self.player_hooks, 'on_playback_pause')
 
     def resume(self):
         """
@@ -206,14 +190,14 @@ class VLCInstance(object):
         if not self.player.is_playing() and self.paused:
             self.player.pause()
             self.paused = False
-            self.run_hooks('on_playback_resume')
+            run_hooks(self.argparser, self.player_hooks, 'on_playback_resume')
 
     def stop(self):
         """
         Stop libvlc player
         """
         self.player.stop()
-        self.run_hooks('on_playback_stop')
+        run_hooks(self.argparser, self.player_hooks, 'on_playback_stop')
 
     @staticmethod
     def create_instance(debug=False, profile='default'):

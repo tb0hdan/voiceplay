@@ -19,6 +19,28 @@ class LogOnlyPlayerHook(BasePlayerHook):
         name = inspect.stack()[1][3]
         logger.debug('{0}.{1}: args: {2!r} kwargs: {3!r}'.format(cls.__name__, name,
                                            args, kwargs))
+
+    @classmethod
+    def on_recognition_start(cls, *args, **kwargs):
+        """
+        Run log action on recognition start
+        """
+        cls.debugself(*args, **kwargs)
+
+    @classmethod
+    def on_recognition_progress(cls, *args, **kwargs):
+        """
+        Run log action on recognition progress
+        """
+        cls.debugself(*args, **kwargs)
+
+    @classmethod
+    def on_recognition_end(cls, *args, **kwargs):
+        """
+        Run log action on recognition end
+        """
+        cls.debugself(*args, **kwargs)
+
     @classmethod
     def on_playback_start(cls, *args, **kwargs):
         """

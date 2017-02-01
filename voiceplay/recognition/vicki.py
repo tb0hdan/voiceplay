@@ -5,10 +5,14 @@ import logging
 import speech_recognition as sr
 import time
 
+from functools import cmp_to_key
+
 from voiceplay.logger import logger
 from voiceplay.tts.tts import TextToSpeech
 from voiceplay.player.vickiplayer import VickiPlayer
-from voiceplay.utils.helpers import ThreadGroup
+from voiceplay.utils.helpers import ThreadGroup, run_hooks, cmp
+from voiceplay.utils.loader import PluginLoader
+from voiceplay.player.hooks.basehook import BasePlayerHook
 
 class Vicki(object):
     """
@@ -25,6 +29,9 @@ class Vicki(object):
         self.player = VickiPlayer(tts=self.tts, debug=self.debug)
         self.wakeword_receiver = None
         self.listener = None
+        self.recognition_hooks = sorted(PluginLoader().find_classes('voiceplay.player.hooks', BasePlayerHook),
+                         key=cmp_to_key(lambda x, y: cmp(x.__priority__, y.__priority__)))
+
 
     def wakeword_callback(self, message):
         """
@@ -49,6 +56,7 @@ class Vicki(object):
 
             if self.wake_up:
                 logger.warning('Wake word!')
+                run_hooks(None, self.recognition_hooks, 'on_recognition_start')
                 self.tts.say_put('Yes')
                 self.wake_up = False
             else:
@@ -58,6 +66,7 @@ class Vicki(object):
             volume = self.player.player.get_volume()
             self.player.player.set_volume(0)
             logger.debug('recog start')
+            run_hooks(None, self.recognition_hooks, 'on_recognition_progress')
             # command goes next
             try:
                 with sr.Microphone() as source:
@@ -79,6 +88,7 @@ class Vicki(object):
                 logger.warning('{0}; {1}'.format(msg, e))
                 result = None
             logger.debug('recog end')
+            run_hooks(None, self.recognition_hooks, 'on_recognition_end')
             self.player.player.set_volume(volume)
             if result:
                 result = result.lower()  # pylint:disable=no-member

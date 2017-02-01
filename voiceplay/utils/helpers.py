@@ -17,6 +17,7 @@ from uuid import uuid4
 
 from voiceplay.logger import logger
 
+
 class Singleton(type):
     """
     Singleton base class
@@ -30,11 +31,13 @@ class Singleton(type):
             cls.cls_instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
         return cls.cls_instances[cls]
 
+
 def track_to_hash(track):
     """
     Hash track name using SHA1
     """
     return hashlib.sha1(track.encode('utf-8')).hexdigest()
+
 
 def purge_cache():
     """
@@ -51,6 +54,7 @@ def purge_cache():
                 os.remove(fname)
             except Exception as exc:
                 logger.debug('Removal of %r failed, please check permissions')
+
 
 def restart_on_crash(method, *args, **kwargs):
     """
@@ -72,6 +76,24 @@ def restart_on_crash(method, *args, **kwargs):
             break
     logger.debug('Method %r completed without exception', method)
     return result
+
+
+def run_hooks(argparser, hooks, evt, *args, **kwargs):
+    """
+    Run hooks (player/recognition/etc)
+    """
+    for hook in hooks:
+        logger.debug('Running hook: %r', hook)
+        hook.argparser = argparser
+        method = getattr(hook, evt)
+        if method:
+            try:
+                method(*args, **kwargs)
+            except Exception as exc:
+                exc_type, exc_value, exc_trace = sys.exc_info()
+                trace = ''.join(traceback.format_exception(exc_type, exc_value, exc_trace))
+                logger.debug('Method %r crashed (see message below), restarting...\n%s\n', method, trace)
+
 
 class ThreadGroup(object):
     """
