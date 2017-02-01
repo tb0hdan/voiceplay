@@ -5,7 +5,6 @@ voiceplay - Client-side first music centered voice controlled player
 [![PyPI version](https://img.shields.io/pypi/v/voiceplay.svg)](https://pypi.python.org/pypi/voiceplay)
 [![PyPI Python versions](https://img.shields.io/pypi/pyversions/voiceplay.svg)](https://pypi.python.org/pypi/voiceplay)
 [![PyPI license](https://img.shields.io/pypi/l/voiceplay.svg)](https://pypi.python.org/pypi/voiceplay)
-[![PyPI downloads per month]( https://img.shields.io/pypi/dm/voiceplay.svg)](https://pypi.python.org/pypi/voiceplay)
 
 
 - [DESCRIPTION](#description)
@@ -51,9 +50,25 @@ Start application:
 voiceplay -w
 ```
 
+Then say 'Vicki', application should reply 'Yes', proceed with command from the list below.
 
-Then say 'Vicki', application should reply 'Yes', proceed with command from the list below:
+## Console mode
 
+Note: Add `-v` for increased verbosity level.
+Note: Add `-s` to set Skype status on track change (doesn't work from Vagrant)
+
+```
+./voiceplay.sh -c
+```
+
+then type any command from the list below.
+
+![console_play](https://raw.githubusercontent.com/tb0hdan/voiceplay/master/images/console_play.png)
+
+to quit, either type 'quit' or press CTRL+D
+
+
+## Command list
 
 ### Single track
 
@@ -246,20 +261,6 @@ sudo pip install --global-option='build_ext' --global-option='-I/usr/local/inclu
 make deps
 ```
 
-## Console mode
-
-Note: Add `-v` for increased verbosity level.
-Note: Add `-s` to set Skype status on track change.
-
-```
-./voiceplay.sh -c
-```
-
-then run any command from the list above
-
-![console_play](https://raw.githubusercontent.com/tb0hdan/voiceplay/master/images/console_play.png)
-
-to quit, either type 'quit' or press CTRL+D
 
 ## Console mode (development)
 
@@ -283,6 +284,8 @@ https://github.com/jasperproject/jasper-client
 https://github.com/MycroftAI/mycroft-core
 
 https://github.com/alexa-pi/AlexaPi
+
+https://github.com/tajddin/voiceplay
 
 
 # COPYRIGHT
