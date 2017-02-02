@@ -14,6 +14,7 @@ if sys.version_info.major == 3:
 
 from voiceplay import __title__
 from voiceplay.utils.helpers import SingleQueueDispatcher
+from voiceplay.utils.command import Command
 
 class Console(object):
     """
@@ -114,8 +115,8 @@ class Console(object):
             rl.readline.parse_and_bind("tab: complete")  # pylint:disable=no-member
         rl.readline.set_completer(self.complete)  # pylint:disable=no-member
         # Add handlers
-        self.add_handler('quit', self.quit_command, ['exit', 'logout'])
-        self.add_handler('clear', self.clear_command, ['cls', 'clr'])
+        self.add_handler(Command.SHUTDOWN, self.quit_command, Command.SHUTDOWN_ALIASES)
+        self.add_handler(Command.CLEAR, self.clear_command, Command.CLEAR_ALIASES)
         #
         if self.banner:
             print (self.banner)

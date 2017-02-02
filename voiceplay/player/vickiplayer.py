@@ -13,6 +13,7 @@ from functools import cmp_to_key
 from voiceplay.logger import logger
 from voiceplay.utils.loader import PluginLoader
 from voiceplay.utils.helpers import ThreadGroup, cmp
+from voiceplay.utils.command import Command
 from .backend.vlc import VLCPlayer
 from .tasks.basetask import BasePlayerTask
 
@@ -92,24 +93,18 @@ class VickiPlayer(object):
         Handle message and call respective actions
         """
         orig_message = message
-        message = message.lower()
-        stop_set = ['stop', 'stock', 'top']
-        next_set = ['next', 'max', 'maxed', 'text']
-        pause_set = ['pause', 'boss']
-        resume_set = ['resume']
-        quit_set = ['quit', 'shutdown']
-        all_set = stop_set + next_set + pause_set + resume_set + quit_set
-        if message in all_set:
-            if message in stop_set:
+        command = Command(message)
+        if command.IN_ALL_SET:
+            if message == command.STOP:
                 self.player.stop()
                 self.exit_task = True
-            elif message in next_set:
+            elif message == command.NEXT:
                 self.player.stop()
-            elif message in pause_set:
+            elif message == command.PAUSE:
                 self.player.pause()
-            elif message in resume_set:
+            elif message == command.RESUME:
                 self.player.resume()
-            elif message in quit_set:
+            elif message == command.SHUTDOWN:
                 self.player.shutdown()
                 self.shutdown_flag = True
                 self.exit_task = True

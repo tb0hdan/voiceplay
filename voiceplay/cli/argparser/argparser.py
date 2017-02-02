@@ -22,6 +22,7 @@ from voiceplay.player.tasks.basetask import BasePlayerTask
 from voiceplay.player.hooks.basehook import BasePlayerHook
 from voiceplay.utils.helpers import purge_cache, ThreadGroup, cmp
 from voiceplay.utils.models import BaseCfgModel
+from voiceplay.utils.command import Command
 from voiceplay.config.configurator import ConfigDialog
 
 
@@ -117,8 +118,7 @@ class MyArgumentParser(object):
         """
         helper = Help()
         console = Console()
-        console.add_handler('play', vicki.player.play_from_parser,
-                            ['pause', 'shuffle', 'next', 'stop', 'resume'])
+        console.add_handler(Command.PLAY, vicki.player.play_from_parser, Command().CONTROLS)
         console.add_handler('what', vicki.player.play_from_parser)
         console.add_handler('current_track', vicki.player.play_from_parser)
         helper.register(console)
@@ -160,7 +160,6 @@ class MyArgumentParser(object):
         p = multiprocessing.Process(target=app.run, args=(queue,))
         p.start()
         return p
-
 
     def parse(self, argv=None, noblock=False):
         """
