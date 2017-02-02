@@ -15,6 +15,7 @@ from voiceplay.utils.requestor import WSRequestor
 from voiceplay.utils.score import DateMan, VideoScoreCalculator
 from voiceplay.utils.snowboydownloader import SnowboyDownloader
 from voiceplay.utils.track import TrackNormalizer
+from voiceplay.utils.command import Command
 
 class DummyTestCase(unittest.TestCase):
     '''
