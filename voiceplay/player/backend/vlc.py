@@ -10,7 +10,6 @@ from distutils.version import LooseVersion
 from functools import cmp_to_key
 
 from voiceplay import __title__
-from voiceplay.extlib.vlcpython.vlc import Instance, Meta, libvlc_get_version
 from voiceplay.logger import logger
 from voiceplay.player.hooks.basehook import BasePlayerHook
 from voiceplay.utils.loader import PluginLoader
@@ -32,6 +31,7 @@ class VLCProfileModel(object):
         """
         Get libvlc options
         """
+        from voiceplay.extlib.vlcpython.vlc import ibvlc_get_version
         version = libvlc_get_version()
         if sys.version_info.major == 3:
             version = version.decode()
@@ -138,6 +138,7 @@ class VLCInstance(object):
         """
         Return metadata based on ICY/META. Fallback to provided value.
         """
+        from voiceplay.extlib.vlcpython.vlc import Meta
         meta = self.player.get_media().get_meta(Meta.NowPlaying)
         result = meta if meta else track
         return normalize(result)
@@ -201,6 +202,7 @@ class VLCInstance(object):
 
     @staticmethod
     def create_instance(debug=False, profile='default'):
+        from voiceplay.extlib.vlcpython.vlc import Instance
         if profile == 'difm':
             profile = VLCDIFMProfile
         # store other profiles somewhere here
