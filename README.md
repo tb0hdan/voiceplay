@@ -55,6 +55,7 @@ Then say 'Vicki', application should reply 'Yes', proceed with command from the 
 ## Console mode
 
 Note: Add `-v` for increased verbosity level.
+
 Note: Add `-s` to set Skype status on track change (doesn't work from Vagrant)
 
 ```
