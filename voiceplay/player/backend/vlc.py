@@ -31,7 +31,7 @@ class VLCProfileModel(object):
         """
         Get libvlc options
         """
-        from voiceplay.extlib.vlcpython.vlc import ibvlc_get_version
+        from voiceplay.extlib.vlcpython.vlc import libvlc_get_version
         version = libvlc_get_version()
         if sys.version_info.major == 3:
             version = version.decode()
