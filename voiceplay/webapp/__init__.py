@@ -1,1 +1,1 @@
-from vpweb import WrapperApplication
+from .vpweb import WrapperApplication
