@@ -33,7 +33,7 @@ redistribute it or use it however you like.
 2. Download and install [Vagrant](https://www.vagrantup.com/downloads.html)
 3. Initialize vagrant image: `vagrant init tb0hdan/voiceplay`
 4. Start vagrant VM: `vagrant up`
-5. Use voiceplay `vagrant ssh` then `voiceplay`
+5. Use voiceplay `vagrant ssh` then `voiceplay -w`
 
 
 ## Configuration
@@ -70,6 +70,15 @@ to quit, either type 'quit' or press CTRL+D
 
 
 ## Command list
+
+### Playback control
+
+`pause`
+
+`next`
+
+`stop`
+
 
 ### Single track
 
