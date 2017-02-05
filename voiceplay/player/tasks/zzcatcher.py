@@ -37,5 +37,10 @@ class ZZCatcherTask(BasePlayerTask):
         """
         cls.logger.debug('Message: %r matches %r, running %r', message, regexp, cls.__name__)
         query = re.match(regexp, message, re.I).groups()[0]
-        cls.say('Playing %s' % (query))
-        cls.play_full_track(query)
+        _, tracks = cls.search_full_track(query, download=False)
+        if tracks:
+            track = tracks[0][0]
+            cls.say('Playing %s' % track)
+            cls.play_full_track(track)
+        else:
+            cls.say('I could not find track with %s lyrics in it')

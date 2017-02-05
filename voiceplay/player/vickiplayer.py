@@ -185,7 +185,7 @@ class VickiPlayer(object):
                 continue
             logger.debug('prefetch_loop got from queue: %r', trackname.encode('utf-8'))
             start = time.time()
-            BasePlayerTask.download_full_track(trackname)
+            BasePlayerTask.search_full_track(trackname, download=True)
             elapsed = round(time.time() - start, 3)
             logger.debug('prefetch_loop finished downloading, took %ss', elapsed)
 

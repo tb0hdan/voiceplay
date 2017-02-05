@@ -92,9 +92,10 @@ class BasePlayerTask(BaseLfmModel):
         return cls.trackfilter(search_term, track_result_pair[0])
 
     @classmethod
-    def download_full_track(cls, trackname):
+    def search_full_track(cls, trackname, download=True):
         """
-        Play full track
+        Iterate through multiple sources and search for complete track
+        Download file by default
         """
         vid = None
         baseurl = None
@@ -111,7 +112,7 @@ class BasePlayerTask(BaseLfmModel):
                 message += 'Continuing using next source provider...'
                 cls.logger.debug(message)
             tracks = [track for track in results if cls.track_filter_fn(trackname, track)]
-            if tracks:
+            if tracks and download:
                 cls.logger.debug('Getting track using %r', source.__name__)
                 url = source.__baseurl__ + tracks[0][1]
                 try:
@@ -123,7 +124,7 @@ class BasePlayerTask(BaseLfmModel):
                     message = 'Processing of source url %s failed with %r\n' % (url, exc)
                     message += 'Continuing using next source url...'
                     cls.logger.debug(message)
-        return filename
+        return filename, tracks
 
     @classmethod
     def play_full_track(cls, trackname):
@@ -135,7 +136,7 @@ class BasePlayerTask(BaseLfmModel):
         full_path = os.path.join(cls.cfg_data().get('cache_dir'), track_to_hash(trackname)) + '.mp3'
         if not os.path.exists(full_path):
             cls.logger.debug('Track %r is not cached at %r', trackname, full_path)
-            full_path = cls.download_full_track(trackname)
+            full_path, _ = cls.search_full_track(trackname, download=True)
         else:
             cls.logger.debug('Using cache for %r at %r', trackname, full_path)
         cls.play(full_path, trackname)  # pylint:disable=no-member
