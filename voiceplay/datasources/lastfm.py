@@ -148,11 +148,14 @@ class VoicePlayLastFm(object):
     @lfm_retry(retry_count=3)
     def get_query_type(self, query):
         """
-        Detect whether query is just artist or artist - track
+        Detect whether query is just artist or artist - track or tag (dull smiley)
         """
         query = query.lower()
         text = query.capitalize()
-        if self.get_corrected_artist(text).lower() == text.lower():
+        # known issue, see http://www.last.fm/music/Vocal+Trance
+        if query == 'vocal trance':
+            reply = 'artist_track'
+        elif self.get_corrected_artist(text).lower() == text.lower():
             reply = 'artist'
         else:
             reply = 'artist_track'
