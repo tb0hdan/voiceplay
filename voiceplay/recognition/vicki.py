@@ -10,6 +10,7 @@ from functools import cmp_to_key
 from voiceplay.logger import logger
 from voiceplay.tts.tts import TextToSpeech
 from voiceplay.player.vickiplayer import VickiPlayer
+from voiceplay.utils.command import Command
 from voiceplay.utils.helpers import ThreadGroup, run_hooks, cmp
 from voiceplay.utils.loader import PluginLoader
 from voiceplay.player.hooks.basehook import BasePlayerHook
@@ -96,7 +97,8 @@ class Vicki(object):
                 # allow commands to be processed by player instance first
                 self.player.put(result)
                 # process local cmd
-                if result in ['shutdown']:
+                if Command(result).COMMAND == Command.SHUTDOWN:
+                    logger.debug('Vicki.Listener.stop() called...')
                     self.stop()
         logger.debug('Vicki.Listener exit')
 
