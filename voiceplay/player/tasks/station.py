@@ -4,7 +4,9 @@
 import random
 random.seed()
 import re
+import threading
 
+from voiceplay.datasources.lastfm import StationCrawl
 from voiceplay.webapp.baseresource import APIV1Resource
 from voiceplay.utils.helpers import SingleQueueDispatcher
 from .basetask import BasePlayerTask
@@ -36,12 +38,27 @@ class StationTask(BasePlayerTask):
         Play top tracks for station
         TODO: Fix in https://github.com/tb0hdan/voiceplay/issues/22
         """
-        tracks = cls.lfm().get_station(station)
-        random.shuffle(tracks)
-        for track in cls.tracks_with_prefetch(tracks):
-            if cls.get_exit():  # pylint:disable=no-member
+        sc = StationCrawl()
+        sc.put_genre(station)
+        t1 = threading.Thread(target=sc.genre_loop)
+        t1.daemon = True
+        t1.start()
+        t2 = threading.Thread(target=sc.playlist_loop)
+        t2.daemon = True
+        t2.start()
+
+        already_played = []
+        while True:
+            for track in cls.tracks_with_prefetch(sc.playlist):
+                if cls.get_exit():  # pylint:disable=no-member
+                    sc.set_exit(True)
+                    t1.join(timeout=1)
+                    t2.join(timeout=1)
+                    break
+                cls.play_full_track(track)
+                already_played.append(track)
+            if sorted(already_played) == sorted(sc.playlist) or cls.get_exit():
                 break
-            cls.play_full_track(track)
 
     @classmethod
     def process(cls, regexp, message):

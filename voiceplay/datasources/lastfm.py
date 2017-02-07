@@ -4,10 +4,23 @@
 import datetime
 import json
 import pylast
+import random
+random.seed()
+import sys
 import time
+
+from copy import deepcopy
+if sys.version_info.major == 2:
+    from Queue import Queue  # pylint:disable=import-error
+elif sys.version_info.major == 3:
+    from queue import Queue  # pylint:disable=import-error
+
+from tqdm import tqdm
+
 from voiceplay.config import Config
 from voiceplay.database import voiceplaydb
 from voiceplay.logger import logger
+
 
 def lfm_retry(retry_count=1):
     """
@@ -210,3 +223,96 @@ class VoicePlayLastFm(object):
         for idx, element in enumerate(array):
             reply.append('%s: %s' % (idx + 1, element))
         return reply
+
+
+class StationCrawl(object):
+    """
+    """
+    playlist_get_timeout = 60
+    artist_genre_blacklist = {'black metal': ['Justin Bieber', 'Selena Gomez', 'One Direction', 'Ariana Grande', 'Marilyn Manson', 'Jack Ü', 'Muse']}
+
+    def __init__(self):
+        self.lfm = VoicePlayLastFm()
+        self.exit = False
+        self.genre_queue = Queue()
+        self.playlist_queue = Queue()
+        self.session_playlist = []
+
+    def artist_blacklisted_for_genre(self, artist, genre):
+        blacklisted = False
+        blacklisted_artists = self.artist_genre_blacklist.get(genre.lower(), [])
+        if artist.encode('utf-8') in blacklisted_artists:
+            logger.debug('Artist %s is blacklisted for genre %s', artist, genre.lower())
+            blacklisted = True
+        return blacklisted
+
+    def similar_artists(self, artist, genre):
+        sm_artists = []
+        similar = self.lfm.get_similar_artists(artist)
+        for similar_artist in tqdm(similar):
+            if genre.lower() in self.lfm.get_artist_tags(similar_artist) and not similar_artist in sm_artists and not self.artist_blacklisted_for_genre(similar_artist, genre):
+                logger.debug('Genre match for %s', similar_artist)
+                sm_artists.append(similar_artist)
+        return sm_artists
+
+    def for_genre(self, genre):
+        sm_artists = []
+        # seed data
+        logger.debug(genre)
+        for track in self.lfm.get_station(genre):
+            artist = track.split(' - ')[0]
+            if self.artist_blacklisted_for_genre(artist, genre):
+                continue
+            self.playlist_queue.put(track)
+            for atmp in self.similar_artists(artist, genre):
+                if not atmp in sm_artists:
+                    # new one
+                    sm_artists.append(atmp)
+                    [self.playlist_queue.put(tr) for tr in self.lfm.get_top_tracks(atmp)[:3]]
+        # operate on dataset
+        result = sm_artists
+        for artist in sm_artists:
+            tmp = self.similar_artists(artist, genre)
+            for aname in tmp:
+                if not aname in sm_artists and not aname in result:
+                    # new one
+                    result.append(aname)
+                    [self.playlist_queue.put(tr) for tr in self.lfm.get_top_tracks(aname)[:3]]
+
+    def put_genre(self, genre):
+        self.genre_queue.put(genre)
+
+    def genre_loop(self):
+        while not self.exit:
+            if self.genre_queue.empty():
+                time.sleep(0.01)
+                continue
+            else:
+                item = self.genre_queue.get()
+                self.for_genre(item)
+
+    def playlist_loop(self):
+        while not self.exit:
+            if self.playlist_queue.empty():
+                time.sleep(0.01)
+                continue
+            else:
+                item = self.playlist_queue.get()
+                if not item in self.session_playlist:
+                    self.session_playlist.append(item)
+                    session_playlist = deepcopy(self.session_playlist)
+                    random.shuffle(session_playlist)
+                    self.session_playlist = session_playlist
+
+    def set_exit(self, status):
+        self.exit = status
+
+    @property
+    def playlist(self):
+        start = time.time()
+        while time.time() - start <= self.playlist_get_timeout:
+            if not self.session_playlist:
+                time.sleep(0.1)
+            else:
+                break
+        return self.session_playlist
