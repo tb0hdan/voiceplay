@@ -289,11 +289,15 @@ https://github.com/dbrgn/orochi
 
 ## Voice controlled applications
 
+https://github.com/alexa-pi/AlexaPi
+
+https://github.com/edouardpoitras/eva
+
+https://github.com/rcbyron/hey-athena-client
+
 https://github.com/jasperproject/jasper-client
 
 https://github.com/MycroftAI/mycroft-core
-
-https://github.com/alexa-pi/AlexaPi
 
 https://github.com/tajddin/voiceplay
 
