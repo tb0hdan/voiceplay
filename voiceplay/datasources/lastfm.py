@@ -172,16 +172,17 @@ class VoicePlayLastFm(object):
         return aobj.get_cover_image(image_size)
 
     @lfm_retry(retry_count=3)
-    def get_artist_tags(self, artist):
+    def get_artist_tags(self, artist, limit=10):
         """
         Get artist tags
         """
         tags = []
         artist = self.get_corrected_artist(artist)
         aobj = pylast.Artist(artist, self.network)
-        for tag in aobj.get_top_tags():
+        # make sure this is sorted
+        for tag in sorted(aobj.get_top_tags(), key=lambda item: int(item.weight), reverse=True):
             tags.append(tag.item.get_name().lower())
-        return tags
+        return tags[:limit]
 
     @lfm_retry(retry_count=3)
     def get_similar_artists(self, artist, limit=10):
@@ -232,7 +233,8 @@ class StationCrawl(object):
     """
     """
     playlist_get_timeout = 60
-    artist_genre_blacklist = {'black metal': ['Justin Bieber', 'Selena Gomez', 'One Direction', 'Ariana Grande', 'Marilyn Manson', 'Jack Ü', 'Muse']}
+    artist_genre_blacklist = {'black metal': ['Justin Bieber', 'Selena Gomez', 'One Direction', 'Ariana Grande', 'Marilyn Manson', 'Jack Ü', 'Muse'],
+                              'vocal trance': ['Groove Coverage']}
 
     def __init__(self):
         self.lfm = VoicePlayLastFm()
