@@ -233,8 +233,14 @@ class StationCrawl(object):
     """
     """
     playlist_get_timeout = 60
-    artist_genre_blacklist = {'black metal': ['Justin Bieber', 'Selena Gomez', 'One Direction', 'Ariana Grande', 'Marilyn Manson', 'Jack Ü', 'Muse'],
-                              'vocal trance': ['Groove Coverage']}
+    artist_genre_blacklist = {'black metal': ['Justin Bieber', 'Selena Gomez', 'One Direction',
+                                              'Ariana Grande', 'Marilyn Manson', 'Jack Ü', 'Muse'],
+                              'vocal trance': ['Groove Coverage', 'Paffendorf', 'Mario Lopez',
+                                               'BBE', 'Starsplash', 'Pulsedriver', 'DJ Quicksilver',
+                                               'Aquagen', 'Kate Ryan', 'Kosmonova', 'Sunbeam',
+                                               'Kai Tracid', 'Da Hool', 'Klubbingman', 'Brooklyn Bounce',
+                                               'Niels van Gogh', 'Lazard', 'RMB', 'Jan Wayne', 'Space Frog',
+                                               'Ziggy x', 'Mellow Trax']}
 
     def __init__(self):
         self.lfm = VoicePlayLastFm()
