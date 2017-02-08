@@ -10,7 +10,7 @@ function webapp_register() {
         button_cls = classes.filter(filter_controls)[0];
         switch (button_cls) {
             case 'button-play':
-                // redir?
+                $.post('/api/v1/control/resume');
                 break;
             case 'button-pause':
                 $.post('/api/v1/control/pause');
