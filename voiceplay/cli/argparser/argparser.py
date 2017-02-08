@@ -127,6 +127,7 @@ class MyArgumentParser(object):
         th.targets = [console.run_bg_queue]
         th.start_all()
         console.run_console()
+        th.stop_all()
 
     def vicki_loop(self, vicki, noblock=False):
         """
