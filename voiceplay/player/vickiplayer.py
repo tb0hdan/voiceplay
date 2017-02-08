@@ -9,6 +9,7 @@ elif sys.version_info.major == 3:
     from queue import Queue  # pylint:disable=import-error
 
 import time
+import threading
 from functools import cmp_to_key
 from voiceplay.logger import logger
 from voiceplay.utils.loader import PluginLoader
@@ -34,6 +35,7 @@ class VickiPlayer(object):
         self.player_tasks = sorted(PluginLoader().find_classes('voiceplay.player.tasks', BasePlayerTask),
                          key=cmp_to_key(lambda x, y: cmp(x.__priority__, y.__priority__)))
         self.known_actions = self.get_actions(self.player_tasks)
+        self.task_pool = []
 
     @property
     def argparser(self):
@@ -144,7 +146,10 @@ class VickiPlayer(object):
                     task.get_exit = self.get_exit
                     task.player = self.player
                     task.tts = self.tts
-                    task.process(regexp, message)
+                    th = threading.Thread(target=task.process, args=(regexp, message))
+                    th.daemon = True
+                    th.start()
+                    self.task_pool.append(th)
                     logger.debug('Task %r completed in %ss', task, '{0:.2f}'.format(int(time.time()) - start))
                     break
             if ran:
@@ -211,5 +216,7 @@ class VickiPlayer(object):
         """
         self.shutdown_flag = True
         self.exit_task = True
+        for th in self.task_pool:
+            th.join(timeout=1)
         self.player.shutdown()
         self.thread_group.stop_all()
