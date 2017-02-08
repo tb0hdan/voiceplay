@@ -14,7 +14,7 @@ from .basetask import BasePlayerTask
 
 
 class URLPlaybackResource(APIV1Resource):
-    route = '/api/v1/play/url'
+    route_base = '/api/v1/play/url'
     queue = None
     def post(self):
         result = {'status': 'timeout', 'message': ''}

@@ -13,7 +13,7 @@ from .basetask import BasePlayerTask
 
 
 class LocalHistoryResource(APIV1Resource):
-    route = '/api/v1/play/localhistory'
+    route_base = '/api/v1/play/localhistory'
     queue = None
     def post(self):
         result = {'status': 'timeout', 'message': ''}

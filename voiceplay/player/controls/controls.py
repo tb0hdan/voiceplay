@@ -6,7 +6,7 @@ from voiceplay.utils.helpers import SingleQueueDispatcher
 from voiceplay.utils.command import Command
 
 class PlayerControlResource(APIV1Resource):
-    route = '/api/v1/control/<command>'
+    route_base = '/api/v1/control/<command>'
     queue = None
     def post(self, command):
         result = {'status': 'timeout', 'message': ''}

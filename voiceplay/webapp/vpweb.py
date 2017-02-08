@@ -38,12 +38,12 @@ class WebApp(object):
         resources += sorted(PluginLoader().find_classes('voiceplay.player.controls', APIV1Resource))
         for resource in resources:
             resource.queue = self.queue
-            self.api.add_resource(resource, resource.route)
+            self.api.add_resource(resource, resource.route_base)
         # Register pages
         pages = sorted(PluginLoader().find_classes('voiceplay.webapp.pages', FlaskView))
         for page in pages:
             # same as above for resources
-            page.register(self._app, route_base=page.route)
+            page.register(self._app, route_base=page.route_base)
 
     def run(self):
         self._app.run(debug=self._debug, port=self.port)

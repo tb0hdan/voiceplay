@@ -24,7 +24,7 @@ from .basetask import BasePlayerTask
 
 
 class RadionomyResource(APIV1Resource):
-    route = '/api/v1/play/radionomy/<station>'
+    route_base = '/api/v1/play/radionomy/<station>'
     queue = None
     def post(self, station):
         result = {'status': 'timeout', 'message': ''}

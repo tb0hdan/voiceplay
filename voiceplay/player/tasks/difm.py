@@ -27,7 +27,7 @@ from .basetask import BasePlayerTask
 
 
 class DIFMResource(APIV1Resource):
-    route = '/api/v1/play/di/<station>'
+    route_base = '/api/v1/play/di/<station>'
     queue = None
     def post(self, station):
         result = {'status': 'timeout', 'message': ''}

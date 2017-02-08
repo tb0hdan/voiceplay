@@ -5,7 +5,8 @@ function webapp_register() {
         return cls.includes('button-')
     }
     $('body').on('click', 'button.controls', function(evt) {
-        classes = evt.target.parentElement.className.split(' ');
+        classes = evt.target.className.split(' ');
+        console.log(classes);
         button_cls = classes.filter(filter_controls)[0];
         switch (button_cls) {
             case 'button-play':

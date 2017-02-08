@@ -10,7 +10,7 @@ from .basetask import BasePlayerTask
 
 
 class Album(APIV1Resource):
-    route = '/api/v1/play/artist/<artist>/album/<album>'
+    route_base = '/api/v1/play/artist/<artist>/album/<album>'
     queue = None
     def post(self, artist, album):
         result = {'status': 'timeout', 'message': ''}

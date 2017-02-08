@@ -10,7 +10,7 @@ from .basetask import BasePlayerTask
 
 
 class SomethingLikeThisResource(APIV1Resource):
-    route = '/api/v1/play/somethinglikethis'
+    route_base = '/api/v1/play/somethinglikethis'
     queue = None
     def post(self):
         result = {'status': 'timeout', 'message': ''}

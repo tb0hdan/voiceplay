@@ -13,7 +13,7 @@ from .basetask import BasePlayerTask
 
 
 class Station(APIV1Resource):
-    route = '/api/v1/play/station/<station>'
+    route_base = '/api/v1/play/station/<station>'
     queue = None
     def get(self, station):
         result = {'status': 'timeout', 'message': ''}

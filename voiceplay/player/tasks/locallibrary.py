@@ -11,7 +11,7 @@ from .basetask import BasePlayerTask
 
 
 class LocalLibrary(APIV1Resource):
-    route = '/api/v1/play/locallibrary'
+    route_base = '/api/v1/play/locallibrary'
     queue = None
     def post(self):
         result = {'status': 'timeout', 'message': ''}

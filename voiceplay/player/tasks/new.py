@@ -15,7 +15,7 @@ from .basetask import BasePlayerTask
 
 
 class NewTracksResource(APIV1Resource):
-    route = '/api/v1/play/new_tracks/<artist>'
+    route_base = '/api/v1/play/new_tracks/<artist>'
     queue = None
     def post(self, artist):
         result = {'status': 'timeout', 'message': ''}

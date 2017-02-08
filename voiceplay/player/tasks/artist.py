@@ -11,7 +11,7 @@ from .basetask import BasePlayerTask
 
 
 class Artist(APIV1Resource):
-    route = '/api/v1/play/artist/<artist>/<query>'
+    route_base = '/api/v1/play/artist/<artist>/<query>'
     queue = None
     def post(self, artist, query):
         result = {'status': 'timeout', 'message': ''}

@@ -21,7 +21,7 @@ from .basetask import BasePlayerTask
 
 
 class TopTracksResource(APIV1Resource):
-    route = '/api/v1/play/top/<query>'
+    route_base = '/api/v1/play/top/<query>'
     queue = None
     def post(self, query):
         result = {'status': 'timeout', 'message': ''}

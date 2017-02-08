@@ -9,7 +9,7 @@ from .basetask import BasePlayerTask
 
 
 class ZZCatcherResource(APIV1Resource):
-    route = '/api/v1/play/zzcatch/<query>'
+    route_base = '/api/v1/play/zzcatch/<query>'
     queue = None
     def post(self, query):
         result = {'status': 'timeout', 'message': ''}

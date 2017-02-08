@@ -25,7 +25,7 @@ from .basetask import BasePlayerTask
 
 
 class TuneInResource(APIV1Resource):
-    route = '/api/v1/play/tunein/<station>'
+    route_base = '/api/v1/play/tunein/<station>'
     queue = None
     def post(self, station):
         result = {'status': 'timeout', 'message': ''}

@@ -8,7 +8,7 @@ from .basetask import BasePlayerTask
 
 
 class CurrentTrackResource(APIV1Resource):
-    route = '/api/v1/tracks/current'
+    route_base = '/api/v1/tracks/current'
     queue = None
     def get(self):
         result = {'status': 'timeout', 'message': ''}
@@ -30,7 +30,7 @@ class CurrentTrackTask(BasePlayerTask):
     @classmethod
     def process(cls, regexp, message):
         """
-        Run task (i.e. play item as is by employing rich search
+        Run task - get current track
         """
         cls.logger.debug('Message: %r matches %r, running %r', message, regexp, cls.__name__)
         current_track = cls.get_current_track()

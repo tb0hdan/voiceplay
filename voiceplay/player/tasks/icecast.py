@@ -23,7 +23,7 @@ from .basetask import BasePlayerTask
 
 
 class IceCastResource(APIV1Resource):
-    route = '/api/v1/play/icecast/<station>'
+    route_base = '/api/v1/play/icecast/<station>'
     queue = None
     def post(self, station):
         result = {'status': 'timeout', 'message': ''}
