@@ -3,6 +3,7 @@
 
 import datetime
 import json
+import logging
 import pylast
 import random
 random.seed()
@@ -236,7 +237,9 @@ class StationCrawl(object):
     artist_genre_blacklist = {'black metal': ['Justin Bieber', 'Selena Gomez', 'One Direction',
                                               'Ariana Grande', 'Marilyn Manson', 'Jack Ü', 'Muse'],
                               'vocal trance': ['Groove Coverage', 'Sylver', 'Fragma', 'Franky Tunes',
-                                               'Paffendorf', 'Mario Lopez', 'Niels van Gogh']}
+                                               'Paffendorf', 'Mario Lopez', 'Niels van Gogh',
+                                               'Дмитрий Филатов', 'Lasgo', 'Ian Van Dahl',
+                                               'Dj Sammy']}
 
     def __init__(self):
         self.lfm = VoicePlayLastFm()
@@ -256,7 +259,8 @@ class StationCrawl(object):
     def similar_artists(self, artist, genre):
         sm_artists = []
         similar = self.lfm.get_similar_artists(artist)
-        for similar_artist in tqdm(similar):
+        iterator = tqdm(similar) if logger.level == logging.DEBUG else similar
+        for similar_artist in iterator:
             if genre.lower() in self.lfm.get_artist_tags(similar_artist) and not similar_artist in sm_artists and not self.artist_blacklisted_for_genre(similar_artist, genre):
                 logger.debug('Genre match for %s', similar_artist)
                 sm_artists.append(similar_artist)
