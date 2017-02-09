@@ -239,7 +239,7 @@ class StationCrawl(object):
                               'vocal trance': ['Groove Coverage', 'Sylver', 'Fragma', 'Franky Tunes',
                                                'Paffendorf', 'Mario Lopez', 'Niels van Gogh',
                                                'Дмитрий Филатов', 'Lasgo', 'Ian Van Dahl',
-                                               'Dj Sammy']}
+                                               'Dj Sammy', 'Jan Wayne']}
 
     def __init__(self):
         self.lfm = VoicePlayLastFm()
