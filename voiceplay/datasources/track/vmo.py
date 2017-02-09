@@ -2,13 +2,13 @@
 """ Vimeo track source module """
 
 import json
+
+from future.standard_library import install_aliases
+install_aliases()
+
 import sys
-if sys.version_info.major == 2:
-    from urllib import quote  # pylint:disable=no-name-in-module,import-error
-    CHECK = unicode
-elif sys.version_info.major == 3:
-    from urllib.parse import quote  # pylint:disable=no-name-in-module,import-error
-    CHECK = str
+
+from urllib.parse import quote
 
 import vimeo
 from .basesource import TrackSource
@@ -22,6 +22,10 @@ class VimeoSource(TrackSource):
         """
         Run vimeo search
         """
+        if sys.version_info.major == 2:
+            CHECK = unicode
+        elif sys.version_info.major == 3:
+            CHECK = str
         if isinstance(query, CHECK) and sys.version_info.major == 2:
             query = query.encode('utf-8')
         client = vimeo.VimeoClient(token=cls.cfg_data()['vimeo']['token'],

@@ -8,9 +8,7 @@ import rl
 import sys
 import time
 
-import sys
-if sys.version_info.major == 3:
-    from builtins import input as raw_input  # pylint:disable=no-name-in-module,import-error
+from builtins import input
 
 from voiceplay import __title__
 from voiceplay.utils.helpers import SingleQueueDispatcher
@@ -123,7 +121,7 @@ class Console(object):
         while True:
             print (self.format_prompt, end='')
             try:
-                inp = raw_input()
+                inp = input()
                 if sys.version_info.major == 2:
                     inp = inp.decode('utf-8')
             except KeyboardInterrupt:

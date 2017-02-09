@@ -9,11 +9,10 @@ random.seed()
 import re
 import requests
 
-import sys
-if sys.version_info.major == 2:
-    from urllib import quote  # pylint:disable=no-name-in-module,import-error
-elif sys.version_info.major == 3:
-    from urllib.parse import quote  # pylint:disable=no-name-in-module,import-error
+from future.standard_library import install_aliases
+install_aliases()
+
+from urllib.parse import quote
 
 import tempfile
 import time

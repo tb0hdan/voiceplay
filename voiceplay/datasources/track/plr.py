@@ -5,12 +5,11 @@ import json
 import os
 import requests
 import sys
-if sys.version_info.major == 2:
-    from urllib import quote  # pylint:disable=no-name-in-module,import-error
-    CHECK = unicode
-elif sys.version_info.major == 3:
-    CHECK = str
-    from urllib.parse import quote  # pylint:disable=no-name-in-module,import-error
+
+from future.standard_library import install_aliases
+install_aliases()
+
+from urllib.parse import quote
 
 from bs4 import BeautifulSoup
 from magic import Magic
@@ -32,6 +31,10 @@ class PleerSource(TrackSource):
         """
         Run track source
         """
+        if sys.version_info.major == 2:
+            CHECK = unicode
+        elif sys.version_info.major == 3:
+            CHECK = str
         if isinstance(query, CHECK):
             query = query.encode('utf-8')
         term = quote(query)

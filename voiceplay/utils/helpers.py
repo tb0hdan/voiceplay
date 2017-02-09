@@ -3,13 +3,12 @@
 
 import hashlib
 import os
+import sys
 import threading
 import time
 import traceback
 
-import sys
-if sys.version_info.major == 3:
-    from builtins import input as raw_input  # pylint:disable=no-name-in-module,import-error
+from builtins import input
 
 from glob import glob
 from uuid import uuid4
@@ -148,7 +147,7 @@ def cmp(x, y):
 def unbreakable_input():
     while True:
         try:
-            data = raw_input()
+            data = input()
         except KeyboardInterrupt:
             continue
         break
