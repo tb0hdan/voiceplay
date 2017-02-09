@@ -9,7 +9,7 @@ Flask-RESTful
 future
 gntp
 gunicorn
-oauth2client
+oauth2client>=1.5.2,<4.0.0
 google-api-python-client
 ipython
 kaptan
