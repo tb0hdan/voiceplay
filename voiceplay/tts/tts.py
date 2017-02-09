@@ -2,13 +2,10 @@
 """ VoicePlay Text to Speech engine module """
 
 import platform
-import sys
-if sys.version_info.major == 2:
-    from Queue import Queue  # pylint:disable=import-error
-elif sys.version_info.major == 3:
-    from queue import Queue  # pylint:disable=import-error
-
 import time
+
+# works after installing `future` package
+from queue import Queue  # pylint:disable=import-error
 
 from voiceplay import __title__
 from voiceplay.logger import logger

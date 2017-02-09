@@ -7,14 +7,11 @@ import logging
 import pylast
 import random
 random.seed()
-import sys
 import time
 
 from copy import deepcopy
-if sys.version_info.major == 2:
-    from Queue import Queue  # pylint:disable=import-error
-elif sys.version_info.major == 3:
-    from queue import Queue  # pylint:disable=import-error
+# works after installing `future` package
+from queue import Queue  # pylint:disable=import-error
 
 from tqdm import tqdm
 

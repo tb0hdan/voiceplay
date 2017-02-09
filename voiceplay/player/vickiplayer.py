@@ -2,15 +2,13 @@
 """ VickiPlayer module """
 
 import re
-import sys
-if sys.version_info.major == 2:
-    from Queue import Queue  # pylint:disable=import-error
-elif sys.version_info.major == 3:
-    from queue import Queue  # pylint:disable=import-error
-
 import time
 import threading
+
 from functools import cmp_to_key
+# works after installing `future` package
+from queue import Queue  # pylint:disable=import-error
+
 from voiceplay.logger import logger
 from voiceplay.utils.loader import PluginLoader
 from voiceplay.utils.helpers import ThreadGroup, cmp

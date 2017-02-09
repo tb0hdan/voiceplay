@@ -6,6 +6,7 @@ filemagic
 flake8
 Flask-Classy
 Flask-RESTful
+future
 gntp
 gunicorn
 oauth2client

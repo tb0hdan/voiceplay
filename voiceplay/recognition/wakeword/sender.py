@@ -1,15 +1,13 @@
 #-*- coding: utf-8 -*-
 """ VoicePlay wakeword sender module """
 
-import socket
-import sys
-if sys.version_info.major == 2:
-    from Queue import Queue  # pylint:disable=import-error
-elif sys.version_info.major == 3:
-    from queue import Queue  # pylint:disable=import-error
-
 import os
+import socket
 import time
+
+# works after installing `future` package
+from queue import Queue  # pylint:disable=import-error
+
 import voiceplay.extlib.snowboydetect.snowboydecoder as snowboydecoder
 
 from voiceplay.logger import logger
