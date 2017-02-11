@@ -7,6 +7,7 @@ import logging
 import pylast
 import random
 random.seed()
+import sys
 import time
 
 from copy import deepcopy
@@ -18,6 +19,7 @@ from tqdm import tqdm
 from voiceplay.config import Config
 from voiceplay.database import voiceplaydb
 from voiceplay.logger import logger
+from voiceplay.utils.helpers import debug_traceback
 
 
 def lfm_retry(retry_count=1):
@@ -41,7 +43,8 @@ def lfm_retry(retry_count=1):
                         voiceplaydb.set_lastfm_method(func_name, rargs, json.dumps(result))
                     break
                 except Exception as exc:
-                    logger.debug('Method/function %r failed with %r, retrying...', func_name, exc)
+                    message = 'Method/function %r failed with %r, retrying...' % (func_name, exc)
+                    debug_traceback(sys.exc_info(), __file__, message=message)
             return result
         return func_wrapper
     return lfm_retry_func
