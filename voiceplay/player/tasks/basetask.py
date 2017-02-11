@@ -3,11 +3,12 @@
 
 import os
 import re
+import sys
 from functools import cmp_to_key
 from voiceplay.datasources.track.basesource import TrackSource
 from voiceplay.logger import logger
 from voiceplay.utils.loader import PluginLoader
-from voiceplay.utils.helpers import track_to_hash, cmp
+from voiceplay.utils.helpers import debug_traceback, track_to_hash, cmp
 from voiceplay.utils.models import BaseLfmModel
 
 class BasePlayerTask(BaseLfmModel):
@@ -110,7 +111,7 @@ class BasePlayerTask(BaseLfmModel):
                 results = []
                 message = 'Source %r search failed with %r\n' % (source, exc)
                 message += 'Continuing using next source provider...'
-                cls.logger.debug(message)
+                debug_traceback(sys.exc_info(), __file__, message=message)
             tracks = [track for track in results if cls.track_filter_fn(trackname, track)]
             if tracks and download:
                 cls.logger.debug('Getting track using %r', source.__name__)

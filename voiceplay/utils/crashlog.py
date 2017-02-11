@@ -39,6 +39,6 @@ def exc2encode(exc_info, fname):
 def send_traceback(exc_info, fname):
     from voiceplay.config import Config
     url = Config.cfg_data().get('bugtracker_url')
-    data = exc2encode(exc_info)
+    data = exc2encode(exc_info, fname)
     r = requests.post(url, data=data)
     logger.debug('Crashlog sent to %s with response code %s', url, r.status_code)
