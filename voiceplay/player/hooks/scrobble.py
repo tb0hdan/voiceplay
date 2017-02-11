@@ -6,6 +6,7 @@ import sys
 import traceback
 from voiceplay.datasources.lastfm import VoicePlayLastFm
 from voiceplay.logger import logger
+from voiceplay.utils.helpers import debug_traceback
 from .basehook import BasePlayerHook
 
 
@@ -60,6 +61,5 @@ class ScrobbleHook(BasePlayerHook):
             TrackScrobble.notify(*args, argparser=cls.argparser, **kwargs)
         except Exception as exc:
             method = TrackScrobble.notify
-            exc_type, exc_value, exc_trace = sys.exc_info()
-            trace = ''.join(traceback.format_exception(exc_type, exc_value, exc_trace))
-            logger.debug('Method %r crashed (see message below), track was not scrobbled...\n%s\n', method, trace)
+            message = 'Method %r crashed (see message below), track was not scrobbled...' % 'ScrobbleHook.on_playback_start'
+            debug_traceback(sys.exc_info(), __file__, message=message)

@@ -12,6 +12,8 @@ class Config(with_metaclass(Singleton)):
     """
     VoicePlay configuration object
     """
+    # Simple POST request
+    bugtracker_url = 'http://7d93bbb8914ae5ed56b28e41554ce380063b2ab8.bugtracker.0x21h.net/'
     external_services = ['google', 'lastfm', 'vimeo']
     cache_dir = '~/.cache/voiceplay'
     persistent_dir = '~/.cache/voiceplay-persistent'
@@ -45,7 +47,11 @@ class Config(with_metaclass(Singleton)):
         if not prefetch_count:
             prefetch_count = cls.prefetch_count
         data['prefetch_count'] = prefetch_count
-        #
+        # bugtracker
+        bugtracker_url = data.get('bugtracker_url', None)
+        if not bugtracker_url:
+            bugtracker_url = cls.bugtracker_url
+        data['bugtracker_url'] = bugtracker_url
         return data
 
     @classmethod

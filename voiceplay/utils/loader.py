@@ -7,6 +7,7 @@ import sys
 import traceback
 from copy import copy
 from voiceplay.logger import logger
+from voiceplay.utils.helpers import debug_traceback
 
 class PluginLoader(object):
     """
@@ -21,9 +22,7 @@ class PluginLoader(object):
         try:
             module = __import__(package, fromlist=['dummy'])
         except Exception as exc:
-            exc_type, exc_value, exc_trace = sys.exc_info()
-            trace = ''.join(traceback.format_exception(exc_type, exc_value, exc_trace))
-            logger.debug('Import of %r failed (see message below), restarting...\n%s\n', package, trace)
+            debug_traceback(sys.exc_info(), __file__, message='Import of %r failed (see message below)' % package)
             module = None
         return module
 

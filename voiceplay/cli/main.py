@@ -3,6 +3,7 @@
 
 from voiceplay.logger import logger
 from voiceplay.utils.updatecheck import check_update
+from voiceplay.utils.crashlog import send_traceback
 from .argparser.argparser import MyArgumentParser
 
 
@@ -18,7 +19,10 @@ def main(noblock=False):
         logger.error(message)
     parser = MyArgumentParser()
     parser.configure()
-    parser.parse(noblock=noblock)
+    try:
+        parser.parse(noblock=noblock)
+    except Exception as _:
+        send_traceback(sys.exc_info(), __file__)
 
 if __name__ == '__main__':
     main()

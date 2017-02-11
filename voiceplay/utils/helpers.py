@@ -16,6 +16,7 @@ from uuid import uuid4
 
 from voiceplay.logger import logger
 
+from .crashlog import send_traceback
 
 class Singleton(type):
     """
@@ -55,6 +56,15 @@ def purge_cache():
                 logger.debug('Removal of %r failed, please check permissions')
 
 
+def debug_traceback(exc_info, fname, include_traceback=True, message=None):
+    trace = ''.join(traceback.format_exception(exc_info))
+    message = 'Method %r crashed (see message below), restarting...' % method if not message else message
+    if include_traceback:
+        message += '\n\n%s\n' % trace
+    send_traceback(exc_info, fname)
+    logger.debug(message)
+
+
 def restart_on_crash(method, *args, **kwargs):
     """
     Restart method on crash helper
@@ -66,9 +76,7 @@ def restart_on_crash(method, *args, **kwargs):
         except (KeyboardInterrupt, SystemExit):
             break
         except Exception as exc:
-            exc_type, exc_value, exc_trace = sys.exc_info()
-            trace = ''.join(traceback.format_exception(exc_type, exc_value, exc_trace))
-            logger.debug('Method %r crashed (see message below), restarting...\n%s\n', method, trace)
+            debug_traceback(sys.exc_info(), __file__)
             # allow interrupt
             time.sleep(1)
         else:
@@ -89,9 +97,7 @@ def run_hooks(argparser, hooks, evt, *args, **kwargs):
             try:
                 method(*args, **kwargs)
             except Exception as exc:
-                exc_type, exc_value, exc_trace = sys.exc_info()
-                trace = ''.join(traceback.format_exception(exc_type, exc_value, exc_trace))
-                logger.debug('Method %r crashed (see message below), restarting...\n%s\n', method, trace)
+                debug_traceback(sys.exc_info(), __file__)
 
 
 class ThreadGroup(object):

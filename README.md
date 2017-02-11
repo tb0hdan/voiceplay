@@ -23,6 +23,12 @@ versions 2.7, 3.3, 3.4, 3.5, 3.6 and is not platform specific. It should work on
 your Linux or on Mac OS X. It is released to the public domain, which means you can modify it,
 redistribute it or use it however you like.
 
+## Privacy notice
+**voiceplay** submits its crashlogs to URL specified in `voiceplay/config/config.py` or configuration file
+using `bugtracker_url` parameter. While there's nothing that can compromise your system, be sure to read
+source code located at `voiceplay/utils/crashlog.py`. By using this software you're giving your consent
+to transmit crash logs for further analysis and software bugfixes.
+
 
 
 ## Installation
