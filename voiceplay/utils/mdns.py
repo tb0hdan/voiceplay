@@ -1,0 +1,84 @@
+#-*- coding: utf-8 -*-
+""" ZeroConf service registration """
+
+import socket
+import threading
+import time
+import uuid
+
+from zeroconf import (ServiceBrowser,
+                      ServiceInfo,
+                      ServiceStateChange,
+                      Zeroconf)
+
+from voiceplay.logger import logger
+from voiceplay import __title__
+
+
+class VoicePlayZeroConf(object):
+    """
+    Very basic mDNS/Zeroconf check/registration
+    """
+    def __init__(self):
+        self.zeroconf = None
+        self.known_servers = []
+        self.info = None
+        self.thread = None
+        self.exit = False
+
+    @staticmethod
+    def get_ip_address():
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        return s.getsockname()[0]
+
+    def service_info(self, hostname):
+        info = ServiceInfo("_http._tcp.local.",
+                       "{0!s}._http._tcp.local.".format(hostname),
+                       socket.inet_aton(self.get_ip_address()), 80, 0, 0,
+                       {'path': '/'}, "{0!s}.local.".format(hostname))
+        return info
+
+    def on_service_state_change(self, zeroconf, service_type, name, state_change):
+        if state_change is ServiceStateChange.Added:
+            info = zeroconf.get_service_info(service_type, name)
+            if info and not info.server in self.known_servers:
+                self.known_servers.append(info.server)
+
+    def get_others(self):
+        zeroconf = Zeroconf()
+        browser = ServiceBrowser(zeroconf, "_http._tcp.local.", handlers=[self.on_service_state_change])
+        for i in range(1, 10 + 1):
+            time.sleep(1)
+        zeroconf.close()
+        return self.known_servers
+
+    def run(self):
+        # has to be here, otherwise quick start/stop will not provide self.zeroconf descriptor
+        self.zeroconf = Zeroconf()
+        servers = self.get_others()
+        hostname = __title__.lower()
+        if '{0!s}.local'.format(hostname) in servers:
+            hostname = '{0!s}-{1!s}'.format(__title__.lower(), str(uuid.uuid4()))
+        self.info = self.service_info(hostname)
+        self.zeroconf.register_service(self.info)
+        while not self.exit:
+            try:
+                time.sleep(0.1)
+            except Exception as ex:
+                break
+
+    def unregister(self):
+        if self.info:
+            self.zeroconf.unregister_service(self.info)
+        self.zeroconf.close()
+
+    def start(self):
+        self.thread = threading.Thread(target=self.run)
+        self.thread.daemon = True
+        self.thread.start()
+
+    def stop(self):
+        self.exit = True
+        self.unregister()
+        self.thread.join(timeout=1)

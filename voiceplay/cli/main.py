@@ -1,6 +1,8 @@
 #-*- coding: utf-8 -*-
 """ VoicePlay CLI module """
 
+import sys
+
 from voiceplay.logger import logger
 from voiceplay.utils.updatecheck import check_update
 from voiceplay.utils.crashlog import send_traceback

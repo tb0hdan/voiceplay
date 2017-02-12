@@ -24,6 +24,7 @@ from voiceplay.utils.helpers import purge_cache, ThreadGroup, cmp
 from voiceplay.utils.models import BaseCfgModel
 from voiceplay.utils.command import Command
 from voiceplay.config.configurator import ConfigDialog
+from voiceplay.utils.mdns import VoicePlayZeroConf
 
 
 class Help(object):
@@ -153,14 +154,14 @@ class MyArgumentParser(object):
 
     def webapp_loop(self, debug=False, queue=None):
         """
-        Run wakeword listener loop
+        Run webapp/zeroconf loop
         """
         from voiceplay.webapp import WrapperApplication
         app = WrapperApplication()
         app.debug = debug
-        p = multiprocessing.Process(target=app.run, args=(queue,))
-        p.start()
-        return p
+        p1 = multiprocessing.Process(target=app.run, args=(queue,))
+        p1.start()
+        return [p1]
 
     def parse(self, argv=None, noblock=False):
         """
@@ -182,11 +183,13 @@ class MyArgumentParser(object):
         #
         vicki = Vicki(debug=result.debug)
         vicki.player.player.set_argparser(result)
-        proc = None
+        procs = None
         queue = multiprocessing.Queue()
         if result.webapp:
             # non-blocking
-            proc = self.webapp_loop(debug=result.debug, queue=queue)
+            procs = self.webapp_loop(debug=result.debug, queue=queue)
+            zc = VoicePlayZeroConf()
+            zc.start()
         if result.console:
             vicki.player.start()
             self.player_console(vicki, queue=queue)
@@ -198,6 +201,7 @@ class MyArgumentParser(object):
             self.ipython_console()
         else:
             self.vicki_loop(vicki)
-        if proc:
-            proc.terminate()
+        if procs:
+            zc.stop()
+            [proc.terminate() for proc in procs]
         purge_cache()
