@@ -1,4 +1,4 @@
-.PHONY: docs snowboy vlcpython
+.PHONY: cloc docs snowboy vlcpython
 
 ifeq ($(shell uname),Darwin)
     SED = sed -E
@@ -9,6 +9,9 @@ else
 endif
 
 VERSION = $(shell cat voiceplay/__init__.py|grep '__version__'|$(SED) "s/((.+)=|'|\ )//g")
+
+cloc:
+	@cloc --exclude-dir=.idea,extlib,vlcpython,snowboy ./
 
 submodules:
 	@git submodule init
