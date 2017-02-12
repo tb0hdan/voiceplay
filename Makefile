@@ -10,8 +10,6 @@ endif
 
 VERSION = $(shell cat voiceplay/__init__.py|grep '__version__'|$(SED) "s/((.+)=|'|\ )//g")
 
-cloc:
-	@cloc --exclude-dir=.idea,extlib,vlcpython,snowboy ./
 
 submodules:
 	@git submodule init
@@ -66,6 +64,9 @@ test:
 
 coverage:
 	@py.test -c ./tests/etc/pytest.ini --cov=./voiceplay --cov-config=./tests/etc/coveragerc tests/
+
+cloc:
+	@cloc --exclude-dir=.idea,extlib,vlcpython,snowboy ./
 
 clean:
 	@rm -rf build/ dist/ voiceplay.egg-info/ voiceplay/extlib; git checkout voiceplay/extlib
