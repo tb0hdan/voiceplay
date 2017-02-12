@@ -63,7 +63,7 @@ setup(name='voiceplay',
                         'google-api-python-client', 'ipython', 'kaptan', 'monotonic', 'gunicorn',
                         'musicbrainzngs', 'mutagen', 'piprot', 'pocketsphinx', 'pony',
                         'pylast', 'pylint', 'pytest', 'pytest-coverage', 'PyVimeo', 'rl',
-                        'SpeechRecognition', 'tqdm', 'youtube-dl'] + system_specific_packages,
+                        'SpeechRecognition', 'tqdm', 'youtube-dl', 'zeroconf'] + system_specific_packages,
       entry_points={'console_scripts': [
                         'voiceplay=voiceplay.cli:main']},
       classifiers=[

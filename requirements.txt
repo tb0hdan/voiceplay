@@ -31,3 +31,4 @@ SpeechRecognition
 Sphinx
 tqdm
 youtube-dl
+zeroconf
