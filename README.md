@@ -307,6 +307,10 @@ https://github.com/MycroftAI/mycroft-core
 
 https://github.com/tajddin/voiceplay
 
+## Home automation
+
+https://github.com/home-assistant/home-assistant
+
 
 # COPYRIGHT
 
