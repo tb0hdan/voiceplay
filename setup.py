@@ -22,7 +22,7 @@ if os.path.exists('README.rst'):
 else:
     readme = ''
 
-system_specific_packages = ['gntp', 'pyobjc'] if platform.system() == 'Darwin' else ['pyfestival', 'Skype4Py']
+system_specific_packages = ['pyobjc'] if platform.system() == 'Darwin' else ['pyfestival', 'Skype4Py']
 
 # hook to pip install for package sideloading
 # broken pyaudio package
@@ -59,7 +59,7 @@ setup(name='voiceplay',
       long_description=readme,
       install_requires=['Babel', 'beautifulsoup4', 'colorama', 'dailymotion', 'filemagic', 'flake8',
                         'oauth2client>=1.5.2,<4.0.0', 'requests', 'lxml', 'flask-classy', 'flask-restful',
-                        'future',
+                        'future', 'gntp',
                         'google-api-python-client', 'ipython', 'kaptan', 'monotonic', 'gunicorn',
                         'musicbrainzngs', 'mutagen', 'piprot', 'pocketsphinx', 'pony',
                         'pylast', 'pylint', 'pytest', 'pytest-coverage', 'PyVimeo', 'rl',

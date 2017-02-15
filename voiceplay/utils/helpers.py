@@ -59,7 +59,7 @@ def purge_cache():
 def debug_traceback(exc_info, fname, include_traceback=True, message=None):
     typ, value, tb = exc_info
     trace = ''.join(traceback.format_exception(typ, value, tb))
-    message = 'Method %r crashed (see message below), restarting...' % method if not message else message
+    message = 'Method crashed (see message below), restarting...' if not message else message
     if include_traceback:
         message += '\n\n%s\n' % trace
     send_traceback(exc_info, fname)

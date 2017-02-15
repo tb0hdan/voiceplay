@@ -69,7 +69,7 @@ Vagrant.configure("2") do |config|
      # for SpeechRecognition module/flac encoder
      dpkg --add-architecture i386
      apt-get update
-     apt-get install -y linux-firmware alsa-tools mc
+     apt-get install -y linux-firmware alsa-tools mc libssl-dev
      apt-get install -y python-all-dev python-setuptools build-essential
      apt-get install -y libav-tools festival festival-dev portaudio19-dev vlc
      apt-get install -y pocketsphinx-utils swig libmagic1 libpulse-dev libreadline-dev
@@ -80,7 +80,7 @@ Vagrant.configure("2") do |config|
      apt-get install -y libc6:i386 libncurses5:i386 libstdc++6:i386
      easy_install pip
      pip install pyfestival requests
-     pip install -U voiceplay
+     pip install -U voiceplay urllib3[secure]
      # Fix audio ( https://wiki.ubuntu.com/Audio/UpgradingAlsa/DKMS )
      wget -q https://code.launchpad.net/~ubuntu-audio-dev/+archive/ubuntu/alsa-daily/+files/oem-audio-hda-daily-dkms_0.201701270732~ubuntu14.04.1_all.deb
      dpkg -i ./oem-audio-hda-daily-dkms*.deb

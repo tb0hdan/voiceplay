@@ -33,6 +33,7 @@ class OSDNotification(object):
         if platform.system() == 'Darwin' and icon:
             cls.darwin_notify(track, icon)
         elif platform.system() == 'Linux' and icon:
+            cls.darwin_notify(track, icon)
             cls.linux_notify(track, icon)
 
     @classmethod

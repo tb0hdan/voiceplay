@@ -1,4 +1,4 @@
-.PHONY: cloc docs snowboy vlcpython
+.PHONY: cloc docs snowboy vlcpython vagrant
 
 ifeq ($(shell uname),Darwin)
     SED = sed -E
@@ -51,13 +51,16 @@ tag:
 	@git push origin v$(VERSION)
 
 # Reboot step is required for audio drivers to catch up after installation
-vagrant_rebuild:
+vagrant:
 	@vagrant destroy -f
 	@vagrant box update
 	@vagrant up
 	@vagrant ssh -c 'sudo reboot'
 	@sleep 30; vagrant ssh -c 'amixer set Master 100%'
 	@vagrant ssh -c 'sudo alsactl store'
+
+vagrant_rebuild:	vagrant
+	@vagrant package --output voiceplay.box
 
 test:
 	@py.test -c ./tests/etc/pytest.ini -v tests/
