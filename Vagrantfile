@@ -82,7 +82,7 @@ Vagrant.configure("2") do |config|
      pip install pyfestival requests
      pip install -U voiceplay urllib3[secure]
      # Fix audio ( https://wiki.ubuntu.com/Audio/UpgradingAlsa/DKMS )
-     wget -q https://code.launchpad.net/~ubuntu-audio-dev/+archive/ubuntu/alsa-daily/+files/oem-audio-hda-daily-dkms_0.201701270732~ubuntu14.04.1_all.deb
+     wget -q https://code.launchpad.net/~ubuntu-audio-dev/+archive/ubuntu/alsa-daily/+files/oem-audio-hda-daily-dkms_0.201702150732~ubuntu14.04.1_all.deb
      dpkg -i ./oem-audio-hda-daily-dkms*.deb
      gpasswd -a vagrant audio
      gpasswd -a vagrant pulse
@@ -96,5 +96,6 @@ Vagrant.configure("2") do |config|
      tar -xjpf ./cmu_us_clb_arctic-0.95-release.tar.bz2 -C /usr/share/festival/voices/english
      ln -s /usr/share/festival/voices/english/cmu_us_clb_arctic /usr/share/festival/voices/english/cmu_us_clb_arctic_clunits
      echo "(set! voice_default 'voice_cmu_us_clb_arctic_clunits)" >> /etc/festival.scm
+     rm /var/cache/apt/archives/*.deb
   SHELL
 end

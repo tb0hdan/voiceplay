@@ -4,6 +4,7 @@
 # std
 import json
 import os
+import platform
 import sys
 import socket
 
@@ -26,6 +27,7 @@ def exc2encode(exc_info, fname):
     result['hostname'] = socket.gethostname()
     result['filename'] = os.path.abspath(fname)
     result['version'] = __version__
+    result['uname'] = ' '.join(platform.uname())
     # BUGGED!
     result['value'] = repr(exc_info[1])
     result['fcode'] = repr(exc_info[2].tb_frame.f_code)
