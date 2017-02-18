@@ -8,6 +8,7 @@ import os
 import multiprocessing
 import subprocess
 import sys
+import time
 import threading
 
 from functools import cmp_to_key
@@ -124,10 +125,11 @@ class MyArgumentParser(object):
         console.add_handler('current_track', vicki.player.play_from_parser)
         helper.register(console)
         console.set_queue(queue)
-        th = ThreadGroup()
+        th = ThreadGroup(restart=False)
         th.targets = [console.run_bg_queue]
         th.start_all()
         console.run_console()
+        console.set_exit()
         th.stop_all()
 
     def vicki_loop(self, vicki, noblock=False):

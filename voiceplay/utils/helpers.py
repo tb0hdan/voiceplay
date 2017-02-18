@@ -168,6 +168,10 @@ class SingleQueueDispatcher(object):
     TTL = 30
     def __init__(self, queue=None):
         self.queue = queue
+        self.exit = False
+
+    def set_exit(self):
+        self.exit = True
 
     def send_and_wait(self, message):
         uuid = uuid4()
@@ -176,7 +180,7 @@ class SingleQueueDispatcher(object):
                     'message': message}
         self.queue.put(full_msg)
         exit_stamp = int(time.time()) + self.TTL
-        while int(time.time()) <= exit_stamp:
+        while int(time.time()) <= exit_stamp and not self.exit:
             if not self.queue.empty():
                 full_msg = self.queue.get()
                 # purge expired messages
@@ -195,7 +199,7 @@ class SingleQueueDispatcher(object):
 
     def get_full_message(self):
         message = {}
-        while True:
+        while not self.exit:
             if not self.queue.empty():
                 message = self.queue.get()
                 break

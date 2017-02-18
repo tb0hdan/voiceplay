@@ -25,9 +25,15 @@ class Console(object):
         self.banner = banner
         self.commands = {}
         self.queue = None
+        self.dispatcher = None
 
     def set_queue(self, queue=None):
         self.queue = queue
+
+    def set_exit(self):
+        self.exit = True
+        if self.dispatcher:
+            self.dispatcher.set_exit()
 
     def add_handler(self, keyword, method, aliases=None):
         """
@@ -140,16 +146,19 @@ class Console(object):
     def run_bg_queue(self):
         if not self.queue:
             return
-        dispatcher = SingleQueueDispatcher(queue=self.queue)
+        self.dispatcher = SingleQueueDispatcher(queue=self.queue)
         while not self.exit:
-            full_message = dispatcher.get_full_message()
+            full_message = self.dispatcher.get_full_message()
             message = full_message.get('message')
             uuid = full_message.get('uuid')
+            if not message:
+                time.sleep(0.1)
+                continue
             # do last.fm style normalization, i.e. replace + with space
             message = message.replace('+', ' ')
             print (message)
             result, should_be_printed = self.parse_command(message)
-            dispatcher.put_message(uuid, result)
+            self.dispatcher.put_message(uuid, result)
             if should_be_printed:
                     print (result)
             time.sleep(0.1)
