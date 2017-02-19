@@ -3,6 +3,7 @@
 
 import re
 
+from voiceplay.database import voiceplaydb
 
 class TrackNormalizer(object):
     """
@@ -45,6 +46,11 @@ class TrackNormalizer(object):
         Track filter, accepts list of tracks, returns those that are ok
         """
         return filter(cls.track_ok, tracks)
+
+    @classmethod
+    def is_locally_blacklisted(cls, track):
+        return voiceplaydb.get_track_status(track) == 'banned'
+
 
 def normalize(trackname):
     """

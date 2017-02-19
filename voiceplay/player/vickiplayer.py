@@ -108,6 +108,9 @@ class VickiPlayer(object):
                 self.player.shutdown()
                 self.shutdown_flag = True
                 self.exit_task = True
+            # pass other messages
+            elif command.COMMAND in [command.LOVE, command.BAN]:
+                self.p_queue.put(orig_message)
         else:
             self.exit_task = True
             if message.startswith('play'):

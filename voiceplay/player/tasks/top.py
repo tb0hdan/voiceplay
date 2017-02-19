@@ -17,6 +17,7 @@ from voiceplay.utils.requestor import WSRequestor
 
 from voiceplay.webapp.baseresource import APIV1Resource
 from voiceplay.utils.helpers import SingleQueueDispatcher
+from voiceplay.utils.track import TrackNormalizer
 from .basetask import BasePlayerTask
 
 
@@ -72,7 +73,7 @@ class RS500Requestor(WSRequestor):
         for page in range(1, 10 + 1):
             tracks = self.get_tracks(self.base_url + '?json=true&page={0}&limit=50'.format(page), cookies)
             all_tracks += tracks
-        return all_tracks
+        return filter(lambda item: not TrackNormalizer.is_locally_blacklisted(item), all_tracks)
 
 
 class BB100Requestor(WSRequestor):
@@ -102,7 +103,7 @@ class BB100Requestor(WSRequestor):
                     break
             if title and artist:
                 all_tracks.append(u'{0!s} - {1!s}'.format(artist, title))
-        return all_tracks
+        return filter(lambda item: not TrackNormalizer.is_locally_blacklisted(item), all_tracks)
 
 
 class RedditMusicRequestor(WSRequestor):
@@ -125,7 +126,7 @@ class RedditMusicRequestor(WSRequestor):
                 continue
             track = re.sub('\s\[(.+)$', '', track)
             all_tracks.append(track)
-        return all_tracks
+        return filter(lambda item: not TrackNormalizer.is_locally_blacklisted(item), all_tracks)
 
 
 class TopTracksTask(BasePlayerTask):

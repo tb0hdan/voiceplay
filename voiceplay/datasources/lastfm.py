@@ -20,6 +20,7 @@ from voiceplay.config import Config
 from voiceplay.database import voiceplaydb
 from voiceplay.logger import logger
 from voiceplay.utils.helpers import debug_traceback
+from voiceplay.utils.track import TrackNormalizer
 
 
 def lfm_retry(retry_count=1):
@@ -92,8 +93,8 @@ class VoicePlayLastFm(object):
         """
         artist = self.get_corrected_artist(artist)
         aobj = pylast.Artist(artist, self.network)
-        tracks = aobj.get_top_tracks()
-        return self.trackarize(tracks)
+        tracks = self.trackarize(aobj.get_top_tracks())
+        return filter(lambda item: not TrackNormalizer.is_locally_blacklisted(item), tracks)
 
     @lfm_retry(retry_count=3)
     def get_station(self, query):
@@ -131,7 +132,9 @@ class VoicePlayLastFm(object):
         artist = self.get_corrected_artist(artist)
         tracks = pylast.Album(artist, album.title(), self.network).get_tracks()
         for track in tracks:
-            result.append(track.artist.name + ' - ' + track.title)
+            pretty_track = track.artist.name + ' - ' + track.title
+            if not TrackNormalizer.is_locally_blacklisted(pretty_track):
+                result.append(pretty_track)
         return result
 
     @lfm_retry(retry_count=3)
@@ -272,7 +275,12 @@ class StationCrawl(object):
         logger.debug(genre)
         for track in self.lfm.get_station(genre):
             artist = track.split(' - ')[0]
+            # check station blacklist
             if self.artist_blacklisted_for_genre(artist, genre):
+                continue
+            # check history /banned/ blacklist
+            if TrackNormalizer.is_locally_blacklisted(track):
+                logger.debug('Track %s is blacklisted using "ban" command', track)
                 continue
             self.playlist_queue.put(track)
             for atmp in self.similar_artists(artist, genre):

@@ -59,8 +59,8 @@ class NewTask(BasePlayerTask):
         for album in albums:
             for release in mbapi.get_recordings(album):
                 title = release.get('title', '')
-                if title and TrackNormalizer.track_ok(title):
-                    tracks.append(u'{0!s} - {1!s}'.format(artist, title))
+                if title and TrackNormalizer.track_ok(title) and not TrackNormalizer.is_locally_blacklisted(pretty_track):
+                    tracks.append(pretty_track)
 
         releases = mbapi.get_releases(artist_mbid, rtypes=['single'])
         for release in releases:
@@ -69,9 +69,9 @@ class NewTask(BasePlayerTask):
                 continue
             if year >= int(date) >= starting_year:
                 title = release.get('title', '')
-                # TODO: move this out to track blacklists
-                if title and TrackNormalizer.track_ok(title):
-                    tracks.append(u'{0!s} - {1!s}'.format(artist, title))
+                pretty_track = u'{0!s} - {1!s}'.format(artist, title)
+                if title and TrackNormalizer.track_ok(title) and not TrackNormalizer.is_locally_blacklisted(pretty_track):
+                    tracks.append(pretty_track)
         return tracks
 
 

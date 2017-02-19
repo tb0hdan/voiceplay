@@ -19,6 +19,28 @@ class CurrentTrackResource(APIV1Resource):
             result = {'status': 'ok', 'message': message}
         return result
 
+class LoveTrackResource(APIV1Resource):
+    route_base = '/api/v1/tracks/love'
+    queue = None
+    def get(self):
+        result = {'status': 'timeout', 'message': ''}
+        if self.queue:
+            dispatcher = SingleQueueDispatcher(queue=self.queue)
+            message = dispatcher.send_and_wait('love')
+            result = {'status': 'ok', 'message': message}
+        return result
+
+class BanTrackResource(APIV1Resource):
+    route_base = '/api/v1/tracks/ban'
+    queue = None
+    def get(self):
+        result = {'status': 'timeout', 'message': ''}
+        if self.queue:
+            dispatcher = SingleQueueDispatcher(queue=self.queue)
+            message = dispatcher.send_and_wait('ban')
+            result = {'status': 'ok', 'message': message}
+        return result
+
 
 class CurrentTrackTask(BasePlayerTask):
     """
@@ -42,8 +64,8 @@ class LoveTrackTask(BasePlayerTask):
     """
     Love current track
     """
-    __group__ = ['love', 'like']
-    __regexp__ = ['^love$', '^like(.+)?$']
+    __group__ = ['love', 'like', 'unban']
+    __regexp__ = ['^love(.+)?$', '^like(.+)?$', '^unban(.+)?$']
     __priority__ = 210
 
     @classmethod
@@ -56,4 +78,24 @@ class LoveTrackTask(BasePlayerTask):
         if current_track:
             voiceplaydb.set_track_status(current_track, 'loved')
             cls.say('Track %s was marked as loved' % current_track)
+        return None
+
+class BanTrackTask(BasePlayerTask):
+    """
+    Ban current track
+    """
+    __group__ = ['ban', 'hate', 'dislike']
+    __regexp__ = ['^ban(.+)?$', '^hate(.+)?$', '^dislike(.+)?$']
+    __priority__ = 220
+
+    @classmethod
+    def process(cls, regexp, message):
+        """
+        Run task - get current track and set status to 'ban'
+        """
+        cls.logger.debug('Message: %r matches %r, running %r', message, regexp, cls.__name__)
+        current_track = cls.get_current_track()
+        if current_track:
+            voiceplaydb.set_track_status(current_track, 'banned')
+            cls.say('Track %s was marked as banned' % current_track)
         return None
