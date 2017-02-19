@@ -3,22 +3,10 @@
 
 import json
 from distutils.version import LooseVersion
-from pip.commands.search import SearchCommand, transform_hits
 
 from voiceplay import __version__, __title__
 from voiceplay.database import voiceplaydb
-
-
-def search_packages(package_name):
-    versions = []
-    search = SearchCommand()
-    pypi = search.search(package_name,
-                         search.parse_args([package_name])[0])
-    for hit in transform_hits(pypi):
-        if hit['name'] == package_name:
-            versions = hit['versions']
-            break
-    return versions
+from .piphelper import PIP
 
 
 def check_update(my_version=__version__, suppress_uptodate=False):
@@ -26,7 +14,7 @@ def check_update(my_version=__version__, suppress_uptodate=False):
     low_title = __title__.lower()
     packages = voiceplaydb.get_cached_service('check_update')
     if not packages:
-        packages = search_packages(low_title)
+        packages = PIP.search_packages(low_title)
         if packages:
             voiceplaydb.set_cached_service('check_update', json.dumps(packages))
     else:

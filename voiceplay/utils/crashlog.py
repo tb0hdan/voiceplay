@@ -14,6 +14,7 @@ import requests
 # local
 from voiceplay import __version__
 from voiceplay.logger import logger
+from .piphelper import PIP
 
 
 def exc2encode(exc_info, fname):
@@ -28,6 +29,7 @@ def exc2encode(exc_info, fname):
     result['filename'] = os.path.abspath(fname)
     result['version'] = __version__
     result['uname'] = ' '.join(platform.uname())
+    result['packages'] = PIP.freeze()
     # BUGGED!
     result['value'] = repr(exc_info[1])
     result['fcode'] = repr(exc_info[2].tb_frame.f_code)
