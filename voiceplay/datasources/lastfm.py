@@ -60,7 +60,7 @@ class VoicePlayLastFm(object):
             self.network = pylast.LastFMNetwork(api_key=cfg_data['lastfm']['key'],
                                             api_secret=cfg_data['lastfm']['secret'],
                                             username=cfg_data['lastfm']['username'],
-                                            password_hash=pylast.md5(cfg_data['lastfm']['password']))
+                                            password_hash=cfg_data['lastfm']['password'])
             self.scrobble_enabled = True
         except Exception as exc:
             # last.fm network registration failed, possibly due to scrobbling/API issue, try data only

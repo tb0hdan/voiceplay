@@ -1,14 +1,19 @@
 #-*- coding: utf-8 -*-
 """ Configuration dialog module """
 
-import colorama
-import kaptan
+# std
 import os
 
+# 3rd
+import colorama
+import kaptan
+import pylast
+
+# from's
 from copy import deepcopy
 
+# local
 from voiceplay.utils.helpers import unbreakable_input
-
 from .config import Config
 
 
@@ -48,6 +53,8 @@ class ConfigDialog(object):
                                                 colorama.Style.RESET_ALL)
                     print ('Please paste {0!s} and press Enter (CTRL+C to repeat)'.format(msg))
                     data = unbreakable_input()
+                if service == 'lastfm' and key == 'password':
+                    data = pylast.md(data)
                 new_config[service][key] = data
         export_data = self.export(new_config)
         dirname = os.path.dirname(fname)
