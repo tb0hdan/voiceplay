@@ -16,7 +16,12 @@ from voiceplay.player.hooks.trackhistory import TrackHistory, TrackHistoryHook
 from voiceplay.player.tasks.album import Album, AlbumTask
 from voiceplay.player.tasks.artist import Artist, SingleArtistTask, SingleTrackArtistTask
 from voiceplay.player.tasks.basetask import BasePlayerTask
-from voiceplay.player.tasks.current_track import CurrentTrackResource, CurrentTrackTask
+from voiceplay.player.tasks.actions import (CurrentTrackResource,
+                                            CurrentTrackTask,
+                                            LoveTrackResource,
+                                            LoveTrackTask,
+                                            BanTrackResource,
+                                            BanTrackTask)
 from voiceplay.player.tasks.difm import (DIFMResource,
                                          DIFMClient,
                                          DIFMTask)
