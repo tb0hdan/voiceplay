@@ -16,6 +16,10 @@ class Command(object):
     CLEAR = 'clear'
     CLEAR_ALIASES = ['cls', 'clr']
     COMMAND = None
+    LOVE = 'love'
+    LOVE_ALIASES = ['unban', 'love', 'like']
+    BAN = 'ban'
+    BAN_ALIASES = ['ban', 'hate', 'dislike']
 
     def __init__(self, message=None):
         self.command_sets = {self.STOP: ['stop', 'stock', 'top', 'cancel'],
@@ -24,9 +28,11 @@ class Command(object):
                              self.RESUME: ['resume'],
                              self.SHUFFLE: ['shuffle'],
                              self.SHUTDOWN: self.SHUTDOWN_ALIASES,
-                             self.CLEAR: self.CLEAR_ALIASES
+                             self.CLEAR: self.CLEAR_ALIASES,
+                             self.LOVE: self.LOVE_ALIASES,
+                             self.BAN: self.BAN_ALIASES
                             }
-        self.CONTROLS = [self.PAUSE, self.SHUFFLE, self.NEXT, self.STOP, self.RESUME]
+        self.CONTROLS = [self.PAUSE, self.SHUFFLE, self.NEXT, self.STOP, self.RESUME, self.LOVE, self.BAN]
         self.COMMAND = self.__parse(message=message)
 
     def __parse(self, message=None):

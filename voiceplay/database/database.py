@@ -85,7 +85,8 @@ class VoicePlayDB(object):
                 tracks.playcount = playcount
                 return playcount
             else:
-                tracks = PlayedTracks(track=trackname, created_at=dt, updated_at=dt, playcount=1)
+                tracks = PlayedTracks(track=trackname, created_at=dt, updated_at=dt, playcount=1,
+                                      status='neutral')
                 return 1
 
     def get_played_tracks(self):
@@ -145,6 +146,33 @@ class VoicePlayDB(object):
             dt = self.get_dt()
             cache = ServiceCache(service_name=service_name, created_at=dt, updated_at=dt, content=content)
             commit()
+
+    def set_track_status(self, trackname, status):
+        """
+        Update track status:
+        love/neutral/ban
+        """
+        if not status in ['loved', 'neutral', 'banned']:
+            return
+        with db_session:
+            track = PlayedTracks.get(track=trackname)
+            if track and track.status != status:
+                track.status = status
+            elif not track:
+                dt = self.get_dt()
+                PlayedTracks(track=trackname, created_at=dt, updated_at=dt, playcount=1, status=status)
+
+    def get_track_status(self, trackname):
+        """
+        Get track status
+        """
+        with db_session:
+            track = PlayedTracks.get(track=trackname)
+            if track:
+                status = track.status
+            else:
+                status = 'neutral'
+        return status
 
 
 voiceplaydb = VoicePlayDB()

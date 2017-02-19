@@ -27,6 +27,8 @@ class PlayedTracks(db.Entity):
     created_at = Required(datetime)
     updated_at = Required(datetime)
     playcount = Required(int)
+    # loved/banned/neutral
+    status = Required(str)
 
 
 class LastFmCache(db.Entity):
