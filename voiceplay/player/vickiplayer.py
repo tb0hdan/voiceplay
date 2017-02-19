@@ -99,6 +99,7 @@ class VickiPlayer(object):
                 self.player.stop()
                 self.exit_task = True
             elif message == command.NEXT:
+                self.player.resume()
                 self.player.stop()
             elif message == command.PAUSE:
                 self.player.pause()

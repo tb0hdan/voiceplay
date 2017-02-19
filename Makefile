@@ -69,7 +69,7 @@ coverage:
 	@py.test -c ./tests/etc/pytest.ini --cov=./voiceplay --cov-config=./tests/etc/coveragerc tests/
 
 cloc:
-	@cloc --exclude-dir=.idea,extlib,vlcpython,snowboy ./
+	@cloc --exclude-dir=.idea,build,dist,extlib,vlcpython,snowboy ./
 
 clean:
 	@rm -rf build/ dist/ voiceplay.egg-info/ voiceplay/extlib; git checkout voiceplay/extlib
