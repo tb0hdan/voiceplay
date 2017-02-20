@@ -2,7 +2,6 @@
 """ ZeroConf service registration """
 
 import socket
-import threading
 import time
 import uuid
 
@@ -11,7 +10,9 @@ from zeroconf import (ServiceBrowser,
                       ServiceStateChange,
                       Zeroconf)
 
+from voiceplay.config import Config
 from voiceplay.logger import logger
+from voiceplay.utils.helpers import ThreadGroup
 from voiceplay import __title__
 
 
@@ -23,7 +24,7 @@ class VoicePlayZeroConf(object):
         self.zeroconf = None
         self.known_servers = []
         self.info = None
-        self.thread = None
+        self.threads = None
         self.exit = False
 
     @staticmethod
@@ -33,9 +34,10 @@ class VoicePlayZeroConf(object):
         return s.getsockname()[0]
 
     def service_info(self, hostname):
+        port = int(Config.cfg_data().get('webapp_port'))
         info = ServiceInfo("_http._tcp.local.",
                        "{0!s}._http._tcp.local.".format(hostname),
-                       socket.inet_aton(self.get_ip_address()), 80, 0, 0,
+                       socket.inet_aton(self.get_ip_address()), port, 0, 0,
                        {'path': '/'}, "{0!s}.local.".format(hostname))
         return info
 
@@ -74,11 +76,12 @@ class VoicePlayZeroConf(object):
         self.zeroconf.close()
 
     def start(self):
-        self.thread = threading.Thread(target=self.run)
-        self.thread.daemon = True
-        self.thread.start()
+        self.threads = ThreadGroup()
+        self.threads.targets = [self.run]
+        self.threads.start_all()
 
     def stop(self):
         self.exit = True
         self.unregister()
-        self.thread.join(timeout=1)
+        if self.threads:
+            self.threads.stop_all()

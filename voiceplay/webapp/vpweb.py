@@ -1,3 +1,6 @@
+#-*- coding: utf-8 -*-
+""" Voiceplay Web API module """
+
 import multiprocessing
 
 import gunicorn.app.base
@@ -7,13 +10,15 @@ from flask import Flask, request
 from flask_classy import FlaskView
 from flask_restful import Resource, Api
 
+
+from voiceplay.config import Config
 from voiceplay.utils.loader import PluginLoader
 
 from .baseresource import APIV1Resource
 
 
 class WebApp(object):
-    def __init__(self, port=8000, queue=None):
+    def __init__(self, port=None, queue=None):
         self._debug = False
         self._app = Flask(__name__)
         self.api = Api(self._app)
@@ -68,9 +73,9 @@ class StandaloneApplication(gunicorn.app.base.BaseApplication):
 
 
 class WrapperApplication(object):
-    def __init__(self, mode='prod', port=8000):
+    def __init__(self, mode='prod', port=None):
         self.mode = mode
-        self.port = port
+        self.port = port if port else int(Config.cfg_data().get('webapp_port'))
         self._debug = False
 
     @property
@@ -90,14 +95,9 @@ class WrapperApplication(object):
             webapp.run()
         elif self.mode == 'prod':
             options = {
-                'bind': '%s:%s' % ('127.0.0.1', str(self.port)),
+                'bind': '%s:%s' % ('0.0.0.0', str(self.port)),
                 'workers': (multiprocessing.cpu_count() * 2) + 1,
                 'capture_output': True,
                 'loglevel': 'debug' if self.debug else 'info'
             }
             StandaloneApplication(webapp.app, options).run()
-
-
-if __name__ == '__main__':
-    wa = WrapperApplication(mode='prod')
-    wa.run()
