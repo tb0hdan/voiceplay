@@ -69,15 +69,18 @@ class OSDNotification(object):
                 notifications=["Played tracks"],
                 defaultNotifications=["Played tracks"],
         )
-        growl.register()
-        growl.notify(
+        try:
+            growl.register()
+            growl.notify(
                 noteType="Played tracks",
                 title=message,
                 description='',
                 icon=icon,
                 sticky=False,
                 priority=1,
-        )
+            )
+        except Exception as exc:
+            logger.debug('Growl notification failed with: %r', exc)
 
 
 class OSDPlayerHook(BasePlayerHook):
