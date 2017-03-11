@@ -71,7 +71,7 @@ Vagrant.configure("2") do |config|
      apt-get update
      apt-get install -y linux-firmware alsa-tools mc libssl-dev
      apt-get install -y python-all-dev python-setuptools build-essential
-     apt-get install -y libxml2-dev libxslt-dev
+     apt-get install -y libxml2-dev libxslt-dev libffi-dev
      apt-get install -y libav-tools festival festival-dev portaudio19-dev vlc
      apt-get install -y pocketsphinx-utils swig libmagic1 libpulse-dev libreadline-dev
      apt-get install -y libblas-dev liblapack-dev libatlas-dev libatlas-base-dev
