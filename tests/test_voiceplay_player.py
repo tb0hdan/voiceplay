@@ -5,6 +5,7 @@ from voiceplay.player.backend.vlc import (VLCProfileModel,
                                           VLCDIFMProfile,
                                           VLCInstance,
                                           VLCPlayer)
+from voiceplay.player.backend.mpl import MPlayer
 from voiceplay.player.controls.controls import PlayerControlResource
 from voiceplay.player.hooks.basehook import BasePlayerHook
 from voiceplay.player.hooks.blink1 import Blink1Hook
