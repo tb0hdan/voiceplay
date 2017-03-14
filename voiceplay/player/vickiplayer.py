@@ -13,20 +13,27 @@ from voiceplay.logger import logger
 from voiceplay.utils.loader import PluginLoader
 from voiceplay.utils.helpers import ThreadGroup, cmp
 from voiceplay.utils.command import Command
-from .backend.vlc import VLCPlayer
 from .tasks.basetask import BasePlayerTask
+
 
 class VickiPlayer(object):
     """
     Vicki player class
     """
-    def __init__(self, tts=None, debug=False):
+    def __init__(self, tts=None, debug=False, player_backend='vlc'):
         self.debug = debug
         self.tts = tts
         self.queue = Queue()
         self.p_queue = Queue()
         self.prefetch_q = Queue()
-        self.player = VLCPlayer()
+        if player_backend == 'vlc':
+            from .backend.vlc import VLCPlayer
+            self.player = VLCPlayer()
+        elif player_backend == 'mplayer':
+            from .backend.mpl import MPlayer
+            self.player = MPlayer()
+        else:
+            raise NotImplementedError('Specified player backend %r is unknown' % player_backend)
         self.shutdown_flag = False
         self.exit_task = False
         self._argparser = None

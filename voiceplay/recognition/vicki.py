@@ -19,7 +19,7 @@ class Vicki(object):
     """
     Vicki main class
     """
-    def __init__(self, debug=False):
+    def __init__(self, debug=False, player_backend='vlc'):
         self.debug = debug
         self.rec = sr.Recognizer()
         self.tts = TextToSpeech()
@@ -27,7 +27,7 @@ class Vicki(object):
         if self.debug:
             logger.setLevel(logging.DEBUG)
         logger.debug('Vicki init completed')
-        self.player = VickiPlayer(tts=self.tts, debug=self.debug)
+        self.player = VickiPlayer(tts=self.tts, debug=self.debug, player_backend=player_backend)
         self.wakeword_receiver = None
         self.listener = None
         self.recognition_hooks = sorted(PluginLoader().find_classes('voiceplay.player.hooks', BasePlayerHook),

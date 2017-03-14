@@ -78,6 +78,8 @@ class MyArgumentParser(object):
         group.add_argument('-w', '--wakeword', action='store_true',
                            default=False, dest='wakeword',
                            help='Start wakeword listener')
+        self.parser.add_argument('-p', '--player-backend', action='store', default='vlc',
+                                dest='player_backend', help='Player backend [mplayer, vlc]')
         self.parser.add_argument('-W', '--webapp', action='store_true',
                                  default=False, dest='webapp', help='Start web application')
         self.parser.add_argument('-V', '--version', action='version',
@@ -183,7 +185,7 @@ class MyArgumentParser(object):
             print('Configuration not found, please run {0!s} --configure'.format(__title__.lower()))
             return
         #
-        vicki = Vicki(debug=result.debug)
+        vicki = Vicki(debug=result.debug, player_backend=result.player_backend)
         vicki.player.player.set_argparser(result)
         procs = None
         queue = multiprocessing.Queue()
