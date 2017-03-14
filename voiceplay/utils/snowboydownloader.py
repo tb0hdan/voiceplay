@@ -29,17 +29,21 @@ class SnowboyDownloader(object):
             self.version = 'osx-x86_64-1.1.0'
         else:
             # Linux distributions
-            distro, version = platform.linux_distribution()[0], platform.linux_distribution()[1]
-            if distro == 'debian' and LooseVersion(version) >= LooseVersion('8.0'):
+            distro, version, machine = (platform.linux_distribution()[0],
+                                        platform.linux_distribution()[1],
+                                        platform.machine())
+            if distro == 'debian' and LooseVersion(version) >= LooseVersion('8.0') and machine == 'x86_64':
                 self.version = 'ubuntu1404-x86_64-1.1.0'
-            elif distro == 'debian' and LooseVersion(version) < LooseVersion('7.0'):
+            elif distro == 'debian' and LooseVersion(version) < LooseVersion('7.0') and machine == 'x86_64':
                 self.version = 'ubuntu1204-x86_64-1.1.0'
-            elif distro == 'Ubuntu' and LooseVersion(version) >= LooseVersion('14.04'):
+            elif distro == 'Ubuntu' and LooseVersion(version) >= LooseVersion('14.04') and machine == 'x86_64':
                 self.version = 'ubuntu1404-x86_64-1.1.0'
-            elif distro == 'Ubuntu' and LooseVersion(version) < LooseVersion('14.04'):
+            elif distro == 'Ubuntu' and LooseVersion(version) < LooseVersion('14.04') and machine == 'x86_64':
                 self.version = 'ubuntu1204-x86_64-1.1.0'
-            elif distro == 'CentOS Linux' and LooseVersion(version) >= LooseVersion('7.3'):
+            elif distro == 'CentOS Linux' and LooseVersion(version) >= LooseVersion('7.3') and machine == 'x86_64':
                 self.version = 'ubuntu1404-x86_64-1.1.0'
+            elif machine == 'armv7l':  # Raspberry, etc
+                self.version = 'rpi-arm-raspbian-8.0-1.1.0'
             else:
                 raise ValueError('Unsupported distribution, please create ticket at: {0!s}'.format(__issuesurl__))
         self.url = 'https://s3-us-west-2.amazonaws.com/snowboy/snowboy-releases/{0!s}.tar.bz2'.format(self.version)
