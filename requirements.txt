@@ -15,6 +15,7 @@ ipython
 kaptan
 lxml
 monotonic
+-e git+https://github.com/tb0hdan/mplayer.py#egg=mplayer.py-0.7.0beta
 musicbrainzngs
 mutagen
 piprot
