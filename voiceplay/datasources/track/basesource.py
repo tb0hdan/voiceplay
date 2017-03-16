@@ -8,7 +8,7 @@ import sys
 from youtube_dl import YoutubeDL
 
 from voiceplay.logger import logger
-from voiceplay.utils.helpers import track_to_hash
+from voiceplay.utils.cache import MixedCache
 from voiceplay.utils.models import BaseCfgModel
 
 class TrackSource(BaseCfgModel):
@@ -36,7 +36,8 @@ class TrackSource(BaseCfgModel):
         """
         Run track download, use cache to store data
         """
-        template = os.path.join(cls.cfg_data().get('cache_dir'), track_to_hash(trackname)) + '.%(ext)s'
+        cache = MixedCache()
+        template = os.path.join(cls.cfg_data().get('cache_dir'), cache.track_to_hash(trackname)) + '.%(ext)s'
         if isinstance(template, str) and sys.version_info.major == 2:
             template = template.decode('utf-8')
         verbose = logger.level == logging.DEBUG

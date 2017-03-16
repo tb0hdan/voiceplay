@@ -1,7 +1,6 @@
 #-*- coding: utf-8 -*-
 """ Helper functions / methods / classes """
 
-import hashlib
 import os
 import sys
 import threading
@@ -10,7 +9,6 @@ import traceback
 
 from builtins import input
 
-from glob import glob
 from uuid import uuid4
 
 
@@ -30,30 +28,6 @@ class Singleton(type):
         if cls not in cls.cls_instances:
             cls.cls_instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
         return cls.cls_instances[cls]
-
-
-def track_to_hash(track):
-    """
-    Hash track name using SHA1
-    """
-    return hashlib.sha1(track.encode('utf-8')).hexdigest()
-
-
-def purge_cache():
-    """
-    Purge file storage cache
-    """
-    from voiceplay.config import Config
-    from voiceplay.logger import logger
-    logger.debug('Purging cache...')
-    cache_dir =  Config.cfg_data().get('cache_dir', '')
-    if os.path.exists(cache_dir) and os.path.isdir(cache_dir):
-        files = glob(os.path.join(cache_dir, '*'))
-        for fname in files:
-            try:
-                os.remove(fname)
-            except Exception as exc:
-                logger.debug('Removal of %r failed, please check permissions')
 
 
 def debug_traceback(exc_info, fname, include_traceback=True, message=None):

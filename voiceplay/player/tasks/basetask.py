@@ -8,7 +8,8 @@ from functools import cmp_to_key
 from voiceplay.datasources.track.basesource import TrackSource
 from voiceplay.logger import logger
 from voiceplay.utils.loader import PluginLoader
-from voiceplay.utils.helpers import debug_traceback, track_to_hash, cmp
+from voiceplay.utils.cache import MixedCache
+from voiceplay.utils.helpers import debug_traceback, cmp
 from voiceplay.utils.models import BaseLfmModel
 
 class BasePlayerTask(BaseLfmModel):
@@ -66,6 +67,7 @@ class BasePlayerTask(BaseLfmModel):
         """
         Add tracks to prefetch to queue (speeds up playback)
         """
+        cache = MixedCache()
         prefetch = cls.cfg_data()['prefetch_count']
         cnt = 1
         total = len(tracklist)
@@ -79,7 +81,7 @@ class BasePlayerTask(BaseLfmModel):
                 prefs.append(tracklist[idx + 1])
             if prefs:
                 for item in prefs:
-                    full_path = os.path.join(cls.cfg_data().get('cache_dir'), track_to_hash(item)) + '.mp3'
+                    full_path = os.path.join(cls.cfg_data().get('cache_dir'), cache.track_to_hash(item)) + '.mp3'
                     if not os.path.exists(full_path) and cls.prefetch_callback and callable(cls.prefetch_callback):  # pylint:disable=no-member
                         cls.logger.debug('Adding %r to prefetch queue', item.encode('utf-8'))
                         cls.prefetch_callback(item)  # pylint:disable=no-member
@@ -132,9 +134,10 @@ class BasePlayerTask(BaseLfmModel):
         """
         Playback track in form: Artist - Title
         """
+        cache = MixedCache()
         trackname = cls.track_normalizer(trackname)
         cls.logger.debug('PFT: ' + trackname)
-        full_path = os.path.join(cls.cfg_data().get('cache_dir'), track_to_hash(trackname)) + '.mp3'
+        full_path = os.path.join(cls.cfg_data().get('cache_dir'), cache.track_to_hash(trackname)) + '.mp3'
         if not os.path.exists(full_path):
             cls.logger.debug('Track %r is not cached at %r', trackname, full_path)
             full_path, _ = cls.search_full_track(trackname, download=True)

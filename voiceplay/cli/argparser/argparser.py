@@ -21,7 +21,8 @@ from voiceplay.cli.console.console import Console
 from voiceplay.utils.loader import PluginLoader
 from voiceplay.player.tasks.basetask import BasePlayerTask
 from voiceplay.player.hooks.basehook import BasePlayerHook
-from voiceplay.utils.helpers import purge_cache, ThreadGroup, cmp
+from voiceplay.utils.cache import MixedCache
+from voiceplay.utils.helpers import ThreadGroup, cmp
 from voiceplay.utils.models import BaseCfgModel
 from voiceplay.utils.command import Command
 from voiceplay.config.configurator import ConfigDialog
@@ -208,4 +209,5 @@ class MyArgumentParser(object):
         if procs:
             zc.stop()
             [proc.terminate() for proc in procs]
-        purge_cache()
+        cache = MixedCache()
+        cache.purge_cache()

@@ -1,10 +1,9 @@
 import unittest
 from tests import mytestrunner
+from voiceplay.utils.cache import MixedCache
 from voiceplay.utils.helpers import (Singleton,
                                      ThreadGroup,
                                      SingleQueueDispatcher,
-                                     track_to_hash,
-                                     purge_cache,
                                      restart_on_crash,
                                      run_hooks,
                                      cmp,
