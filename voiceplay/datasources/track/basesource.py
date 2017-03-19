@@ -52,4 +52,5 @@ class TrackSource(BaseCfgModel):
         with YoutubeDL(ydl_opts) as ydl:
             ydl.download([url])
             audio_file = re.sub('\.[^\.]+$', '.mp3', cls.target_filename)
+            cache.copy_to_cache(audio_file)
         return audio_file

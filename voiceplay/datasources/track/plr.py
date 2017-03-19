@@ -81,4 +81,6 @@ class PleerSource(TrackSource):
             ftype = magic.id_filename(filename)
             if ftype.startswith('HTML'):
                 filename = None
+        if filename:
+            cache.copy_to_cache(filename)
         return filename

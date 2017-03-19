@@ -83,8 +83,12 @@ class BasePlayerTask(BaseLfmModel):
                 for item in prefs:
                     full_path = os.path.join(cls.cfg_data().get('cache_dir'), cache.track_to_hash(item)) + '.mp3'
                     if not os.path.exists(full_path) and cls.prefetch_callback and callable(cls.prefetch_callback):  # pylint:disable=no-member
-                        cls.logger.debug('Adding %r to prefetch queue', item.encode('utf-8'))
-                        cls.prefetch_callback(item)  # pylint:disable=no-member
+                        # try to get from remote cache first
+                        if not cache.get_from_cache(full_path):
+                            cls.logger.debug('Adding %r to prefetch queue', item.encode('utf-8'))
+                            cls.prefetch_callback(item)  # pylint:disable=no-member
+                        else:
+                            logger.debug('Using remotely cached version of %r', item.encode('utf-8'))
             yield tracklist[idx]
 
     @classmethod
@@ -142,7 +146,7 @@ class BasePlayerTask(BaseLfmModel):
             cls.logger.debug('Track %r is not cached at %r', trackname, full_path)
             full_path, _ = cls.search_full_track(trackname, download=True)
         else:
-            cls.logger.debug('Using cache for %r at %r', trackname, full_path)
+            cls.logger.debug('Using *LOCAL* cache for %r at %r', trackname, full_path)
         cls.play(full_path, trackname)  # pylint:disable=no-member
 
     @classmethod

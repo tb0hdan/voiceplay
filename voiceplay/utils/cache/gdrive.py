@@ -1,4 +1,7 @@
+import argparse
+
 import io
+import logging
 import httplib2
 import os
 
@@ -11,6 +14,8 @@ from oauth2client import tools
 from oauth2client.file import Storage
 
 from voiceplay import __title__
+from voiceplay.config import Config
+from voiceplay.logger import logger
 
 # https://developers.google.com/drive/v3/web/quickstart/python#step_1_turn_on_the_api_name
 
@@ -20,7 +25,10 @@ class GDrive(object):
     GDrive access
     """
     SCOPES = 'https://www.googleapis.com/auth/drive.appfolder'
-    CLIENT_SECRET_FILE = 'client_secret.json'
+    CLIENT_SECRET_FILE = os.path.join(Config().cfg_data().get('persistent_dir'),
+                                      'client_secret.json')
+    STORED_CREDENTIALS = os.path.join(Config().cfg_data().get('persistent_dir'),
+                                      'stored_credentials.json')
 
     def __init__(self):
         self._credentials = None
@@ -45,17 +53,16 @@ class GDrive(object):
         Returns:
             Credentials, the obtained credential.
         """
-        credential_path = './quickstart.json'
+        credential_path = self.STORED_CREDENTIALS
         store = Storage(credential_path)
         credentials = store.get()
         if not credentials or credentials.invalid:
-            flow = client.flow_from_clientsecrets(CLIENT_SECRET_FILE, SCOPES)
+            flow = client.flow_from_clientsecrets(self.CLIENT_SECRET_FILE, self.SCOPES)
             flow.user_agent = __title__
-            #if flags:
-            #    credentials = tools.run_flow(flow, store, flags)
-            #else: # Needed only for compatibility with Python 2.6
-            credentials = tools.run(flow, store)
-            print('Storing credentials to ' + credential_path)
+            args = ['--logging_level', 'DEBUG'] if logger.level == logging.DEBUG else []
+            flags = argparse.ArgumentParser(parents=[tools.argparser]).parse_args(args)
+            credentials = tools.run_flow(flow, store, flags)
+            logger.debug('Storing credentials to %r', credential_path)
         return credentials
 
     def get_service(self):
@@ -66,25 +73,28 @@ class GDrive(object):
         return service
 
     def search(self, query="mimeType='audio/mpeg'"):
+        files = []
         page_token = None
         while True:
             response = self.service.files().list(q=query,
                                         fields='nextPageToken, files(id, name)',
                                         spaces='appDataFolder',
                                         pageToken=page_token).execute()
-            for file in response.get('files', []):
-                # Process change
-                print ('Found file: %s (%s)' % (file.get('name'), file.get('id')))
-                download(file.get('id'), file.get('name'))
+            for remote_file in response.get('files', []):
+                file_id = remote_file.get('id')
+                file_name = remote_file.get('name')
+                logger.debug('Found file: %s (%s)', file_name, file_id)
+                files.append([file_name, file_id])
             page_token = response.get('nextPageToken', None)
             if page_token is None:
                 break
+        return files
 
-    def download(self, file_id, fname):
+    def download(self, file_id, file_name):
         request = self.service.files().get_media(fileId=file_id)
         r = requests.get(request.uri, headers={'Authorization': 'Bearer {0!s}'.format(self.credentials.access_token)},
                      stream=True)
-        with open(fname, 'wb') as fd:
+        with open(file_name, 'wb') as fd:
             for chunk in r.iter_content(chunk_size=8196):
                 fd.write(chunk)
 
@@ -99,4 +109,4 @@ class GDrive(object):
         file = self.service.files().create(body=file_metadata,
                                     media_body=media,
                                     fields='id').execute()
-        print ('File ID: %s' % file.get('id'))
+        logger.debug('File ID: %s', file.get('id'))

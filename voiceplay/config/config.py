@@ -16,7 +16,7 @@ class Config(with_metaclass(Singleton)):
     bugtracker_url = 'http://7d93bbb8914ae5ed56b28e41554ce380063b2ab8.bugtracker.0x21h.net/'
     external_services = ['google', 'lastfm', 'vimeo']
     cache_dir = '~/.cache/voiceplay'
-    persistent_dir = '~/.cache/voiceplay-persistent'
+    persistent_dir = '~/.config/voiceplay'
     config_search_order = ['config.yaml', os.path.expanduser('~/.config/voiceplay/config.yaml')]
     prefetch_count = 3
     webapp_port = 8000
@@ -35,6 +35,14 @@ class Config(with_metaclass(Singleton)):
         """
         TODO: extend config class with __getattr__
         """
+        # persistent_dir
+        persistent_dir = data.get('persistent_dir', None)
+        if not persistent_dir:
+            persistent_dir = cls.persistent_dir
+        persistent_dir = os.path.expanduser(persistent_dir)
+        if not os.path.exists(persistent_dir):
+            os.makedirs(persistent_dir)
+        data['persistent_dir'] = persistent_dir
         # cache_dir
         cache_dir = data.get('cache_dir', None)
         if not cache_dir:
