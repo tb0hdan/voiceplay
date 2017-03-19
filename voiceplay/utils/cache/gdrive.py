@@ -126,3 +126,6 @@ class GDrive(object):
         TODO: Make this configurable, 1G for the time being should be ok
         """
         return self.get_available_space() - 1 * 1024 * 1024 * 1024
+
+    def health_check(self):
+        return True

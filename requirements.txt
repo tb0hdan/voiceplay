@@ -2,6 +2,7 @@ Babel
 beautifulsoup4
 colorama
 dailymotion
+dropbox
 filemagic
 flake8
 Flask-Classy

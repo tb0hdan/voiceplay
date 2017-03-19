@@ -273,7 +273,9 @@ class StationCrawl(object):
         sm_artists = []
         # seed data
         logger.debug(genre)
-        for track in self.lfm.get_station(genre):
+        tracks = self.lfm.get_station(genre)
+        random.shuffle(tracks)
+        for track in tracks:
             artist = track.split(' - ')[0]
             # check station blacklist
             if self.artist_blacklisted_for_genre(artist, genre):
