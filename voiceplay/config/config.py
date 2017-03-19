@@ -18,7 +18,8 @@ class Config(with_metaclass(Singleton)):
     cache_dir = '~/.cache/voiceplay'
     persistent_dir = '~/.config/voiceplay'
     config_search_order = ['config.yaml', os.path.expanduser('~/.config/voiceplay/config.yaml')]
-    prefetch_count = 3
+    # 3 -> 9 due to pretty fast remote HTTP cache
+    prefetch_count = 9
     webapp_port = 8000
 
     def __init__(self, cfg_file=None):
