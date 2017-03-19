@@ -24,7 +24,7 @@ class GDrive(object):
     """
     GDrive access
     """
-    SCOPES = 'https://www.googleapis.com/auth/drive.appfolder'
+    SCOPES = 'https://www.googleapis.com/auth/drive.appfolder https://www.googleapis.com/auth/drive.metadata.readonly'
     CLIENT_SECRET_FILE = os.path.join(Config().cfg_data().get('persistent_dir'),
                                       'client_secret.json')
     STORED_CREDENTIALS = os.path.join(Config().cfg_data().get('persistent_dir'),
@@ -99,6 +99,9 @@ class GDrive(object):
                 fd.write(chunk)
 
     def upload(self, fname):
+        if self.get_safe_available_space() <= 0:
+            logger.error('GDrive: No free space available!')
+            return
         file_metadata = {
             'name' : os.path.basename(fname),
             'parents': [ 'appDataFolder']
@@ -110,3 +113,15 @@ class GDrive(object):
                                     media_body=media,
                                     fields='id').execute()
         logger.debug('File ID: %s', file.get('id'))
+
+    def get_available_space(self):
+        # https://developers.google.com/drive/v3/reference/about/get
+        # https://developers.google.com/drive/v3/web/query-parameters
+        response = self.service.about().get(fields='storageQuota').execute().get('storageQuota')
+        return int(response.get('limit')) - int(response.get('usage'))
+
+    def get_safe_available_space(self):
+        """
+        TODO: Make this configurable, 1G for the time being should be ok
+        """
+        return self.get_available_space() - 1 * 1024 * 1024 * 1024
