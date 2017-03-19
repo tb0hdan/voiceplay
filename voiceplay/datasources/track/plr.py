@@ -64,6 +64,10 @@ class PleerSource(TrackSource):
         """
         cache = MixedCache()
         filename = os.path.join(cls.cfg_data().get('cache_dir'), cache.track_to_hash(track_name)) + '.mp3'
+        # Try remote HTTP cache first
+        result = cache.get_from_cache(filename)
+        if result:
+            return result
         track_id = track_url.replace('http://pleer.net/en/download/page/', '')
         url = 'http://pleer.net/site_api/files/get_url'
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0',

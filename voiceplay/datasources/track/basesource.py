@@ -48,6 +48,10 @@ class TrackSource(BaseCfgModel):
                     'logger': logger,
                     'progress_hooks': [cls.download_hook]}
 
+        # Try remote HTTP cache first
+        result = cache.get_from_cache(os.path.join(cls.cfg_data().get('cache_dir'), cache.track_to_hash(trackname)) + '.mp3')
+        if result:
+            return result
         logger.debug('Using source url %s', url)
         with YoutubeDL(ydl_opts) as ydl:
             ydl.download([url])
