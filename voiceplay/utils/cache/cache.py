@@ -40,7 +40,7 @@ class MixedCache(object):
         """
         is_cached = None
         cache = cls.CACHE_BACKEND()
-        for file_id, file_name in cache.search():
+        for file_name, file_id in cache.search():
             if file_name == os.path.basename(target_filename):
                 is_cached = file_id
                 logger.debug('File %r already cached at %r', target_filename, cls.CACHE_BACKEND)
@@ -62,4 +62,6 @@ class MixedCache(object):
             cache = cls.CACHE_BACKEND()
             cache.download(is_cached, target_filename)
             logger.debug('File %r was downloaded from %r', target_filename, cls.CACHE_BACKEND)
-        return is_cached
+        else:
+            target_filename = None
+        return target_filename

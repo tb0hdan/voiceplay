@@ -25,14 +25,15 @@ class GDrive(object):
     GDrive access
     """
     SCOPES = 'https://www.googleapis.com/auth/drive.appfolder https://www.googleapis.com/auth/drive.metadata.readonly'
-    CLIENT_SECRET_FILE = os.path.join(Config().cfg_data().get('persistent_dir'),
-                                      'client_secret.json')
-    STORED_CREDENTIALS = os.path.join(Config().cfg_data().get('persistent_dir'),
-                                      'stored_credentials.json')
 
     def __init__(self):
         self._credentials = None
         self._service = None
+        self.CLIENT_SECRET_FILE = os.path.join(Config().cfg_data().get('persistent_dir'),
+                                      'client_secret.json')
+        self.STORED_CREDENTIALS = os.path.join(Config().cfg_data().get('persistent_dir'),
+                                      'stored_credentials.json')
+
 
     @property
     def credentials(self):
@@ -83,11 +84,11 @@ class GDrive(object):
             for remote_file in response.get('files', []):
                 file_id = remote_file.get('id')
                 file_name = remote_file.get('name')
-                logger.debug('Found file: %s (%s)', file_name, file_id)
                 files.append([file_name, file_id])
             page_token = response.get('nextPageToken', None)
             if page_token is None:
                 break
+        logger.debug('GDrive: found %s files', len(files))
         return files
 
     def download(self, file_id, file_name):
