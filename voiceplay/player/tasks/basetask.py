@@ -145,7 +145,9 @@ class BasePlayerTask(BaseLfmModel):
             cls.logger.debug('Using *LOCAL* cache for %r at %r', trackname, full_path)
         cls.play(full_path, trackname)  # pylint:disable=no-member
         # TODO: Fix this for `previous` command
-        os.remove(full_path)
+        if os.path.dirname(full_path) == cls.cfg_data().get('cache_dir'):
+            cls.logger.debug('Removing cached file at %r', full_path)
+            os.remove(full_path)
 
     @classmethod
     def play_url(cls, url, description):
