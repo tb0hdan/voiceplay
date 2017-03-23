@@ -33,6 +33,7 @@ class GDrive(object):
                                       'client_secret.json')
         self.STORED_CREDENTIALS = os.path.join(Config().cfg_data().get('persistent_dir'),
                                       'stored_credentials.json')
+        self.healthy = True
 
 
     @property
@@ -102,6 +103,7 @@ class GDrive(object):
     def upload(self, fname):
         if self.get_safe_available_space() <= 0:
             logger.error('GDrive: No free space available!')
+            self.healthy = False
             return
         file_metadata = {
             'name' : os.path.basename(fname),
@@ -128,4 +130,4 @@ class GDrive(object):
         return self.get_available_space() - 1 * 1024 * 1024 * 1024
 
     def health_check(self):
-        return True
+        return self.healthy

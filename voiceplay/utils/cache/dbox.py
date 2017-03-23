@@ -18,6 +18,7 @@ class DBox(object):
     def __init__(self):
         self._dbx = None
         self.ACCESS_TOKEN = Config().cfg_data().get('dropbox',{}).get('access_token')
+        self.healthy = True
 
     @property
     def dbx(self):
@@ -39,6 +40,7 @@ class DBox(object):
     def upload(self, file_name):
         if self.get_safe_available_space() <= 0:
             logger.error('DBox: No free space available!')
+            self.healthy = False
             return
         fpath = os.path.join(os.path.sep, os.path.basename(file_name))
         self.dbx.files_upload(open(file_name, 'r').read(), fpath)
@@ -55,4 +57,4 @@ class DBox(object):
         return self.get_available_space() - 1 * 1024 * 1024 * 1024
 
     def health_check(self):
-        return True
+        return self.healthy
