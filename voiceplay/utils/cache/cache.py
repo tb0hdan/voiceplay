@@ -1,3 +1,5 @@
+#-*- coding: utf-8 -*-
+""" Cache module """
 
 import hashlib
 import os

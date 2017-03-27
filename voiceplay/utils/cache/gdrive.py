@@ -1,3 +1,6 @@
+#-*- coding: utf-8 -*-
+""" Google Drive module """
+
 import argparse
 
 import io
@@ -101,9 +104,7 @@ class GDrive(object):
                 fd.write(chunk)
 
     def upload(self, fname):
-        if self.get_safe_available_space() <= 0:
-            logger.error('GDrive: No free space available!')
-            self.healthy = False
+        if not self.health_check():
             return
         file_metadata = {
             'name' : os.path.basename(fname),
@@ -130,4 +131,8 @@ class GDrive(object):
         return self.get_available_space() - 1 * 1024 * 1024 * 1024
 
     def health_check(self):
-        return self.healthy
+        status = True
+        if self.get_safe_available_space() <= 0:
+            logger.error('GDrive: No free space available!')
+            status = False
+        return status
