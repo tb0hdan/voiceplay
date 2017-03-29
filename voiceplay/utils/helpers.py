@@ -178,10 +178,12 @@ class SingleQueueDispatcher(object):
                 message = self.queue.get()
                 break
             time.sleep(0.01)
+        logger.debug('SQD get: %r', message)
         return message
 
     def put_message(self, uuid, message):
         full_msg = {'expires': int(time.time()) + self.TTL,
                     'uuid': uuid,
                     'message': message}
+        logger.debug('SQD put: %r', message)
         self.queue.put(full_msg)
