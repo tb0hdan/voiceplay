@@ -5,7 +5,6 @@
 import json
 import os
 import platform
-import sys
 import socket
 
 # 3rd party

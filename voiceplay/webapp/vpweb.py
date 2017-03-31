@@ -6,9 +6,9 @@ import multiprocessing
 import gunicorn.app.base
 from gunicorn.six import iteritems
 
-from flask import Flask, request
+from flask import Flask
 from flask_classy import FlaskView
-from flask_restful import Resource, Api
+from flask_restful import Api
 
 
 from voiceplay.config import Config

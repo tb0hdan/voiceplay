@@ -11,7 +11,6 @@ from zeroconf import (ServiceBrowser,
                       Zeroconf)
 
 from voiceplay.config import Config
-from voiceplay.logger import logger
 from voiceplay.utils.helpers import ThreadGroup
 from voiceplay import __title__
 

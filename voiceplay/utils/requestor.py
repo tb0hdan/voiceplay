@@ -1,11 +1,8 @@
 import json
-import os
 import random
 random.seed()
-import time
 
 from voiceplay.logger import logger
-from voiceplay.config import Config
 from voiceplay.database import voiceplaydb
 from .models import BaseCfgModel
 

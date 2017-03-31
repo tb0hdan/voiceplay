@@ -3,7 +3,8 @@
 
 import os
 from apiclient.discovery import build  # pylint:disable=import-error
-from apiclient.errors import HttpError  # pylint:disable=import-error
+# TODO: Catch and handle this accordingly
+#from apiclient.errors import HttpError  # pylint:disable=import-error
 from oauth2client.client import GoogleCredentials
 from voiceplay.utils.score import VideoScoreCalculator
 

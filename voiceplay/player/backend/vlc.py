@@ -4,7 +4,6 @@
 import re
 import sys
 import time
-import traceback
 
 from distutils.version import LooseVersion
 from functools import cmp_to_key

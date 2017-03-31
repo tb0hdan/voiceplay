@@ -4,7 +4,6 @@
 import os
 import random
 random.seed()
-from voiceplay.logger import logger
 from voiceplay.webapp.baseresource import APIV1Resource
 from voiceplay.utils.helpers import SingleQueueDispatcher
 from .basetask import BasePlayerTask

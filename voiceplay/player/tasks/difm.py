@@ -2,7 +2,6 @@
 """ DI.FM playback task module """
 """ See https://github.com/Bitcrusher/Digitally-Imported-XBMC-plugin for updates """
 
-import json
 import os
 import random
 random.seed()
@@ -12,13 +11,9 @@ import requests
 from future.standard_library import install_aliases
 install_aliases()
 
-from urllib.parse import quote
-
 import tempfile
-import time
 
 from voiceplay.datasources.playlists import library_guesser
-from voiceplay.logger import logger
 from voiceplay.utils.requestor import WSRequestor
 from voiceplay.webapp.baseresource import APIV1Resource
 from voiceplay.utils.helpers import SingleQueueDispatcher

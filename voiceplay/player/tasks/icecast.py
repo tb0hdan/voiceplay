@@ -1,7 +1,6 @@
 #-*- coding: utf-8 -*-
 """ IceCast directory search """
 
-import json
 import random
 random.seed()
 import re
@@ -11,10 +10,8 @@ from future.standard_library import install_aliases
 install_aliases()
 from urllib.parse import quote  # pylint:disable=no-name-in-module,import-error
 
-import time
 from bs4 import BeautifulSoup
 
-from voiceplay.logger import logger
 from voiceplay.webapp.baseresource import APIV1Resource
 from voiceplay.utils.helpers import SingleQueueDispatcher
 from .basetask import BasePlayerTask

@@ -46,11 +46,12 @@ class MBAPI(object):
         return alist
 
     @classmethod
-    def get_releases(cls, mbid, rtypes=['album']):
+    def get_releases(cls, mbid, rtypes=None):
         """
         @param: Artist mbid
         """
         limit = 100
+        rtypes = ['album'] if not rtypes else rtypes
         result = musicbrainzngs.browse_releases(artist=mbid,
                                                 release_type=rtypes,
                                                 limit=limit)

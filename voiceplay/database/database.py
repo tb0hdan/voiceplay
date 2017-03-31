@@ -3,9 +3,7 @@
 
 import datetime
 import os
-import time
-from pony.orm import db_session, select, commit
-from voiceplay.logger import logger
+from pony.orm import db_session, commit
 from voiceplay.config import Config
 from .entities import (db,
                       Artist,

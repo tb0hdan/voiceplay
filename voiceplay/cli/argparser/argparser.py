@@ -4,17 +4,14 @@
 from __future__ import print_function
 
 import argparse
-import os
 import multiprocessing
 import subprocess
 import sys
-import time
 import threading
 
 from functools import cmp_to_key
 
 from voiceplay import __version__, __title__
-from voiceplay.logger import logger
 from voiceplay.recognition.vicki import Vicki
 from voiceplay.recognition.wakeword.receiver import ThreadedRequestHandler, WakeWordReceiver
 from voiceplay.cli.console.console import Console

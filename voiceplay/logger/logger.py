@@ -5,7 +5,6 @@ TODO: use configuration file
 """
 
 import logging
-import sys
 
 from voiceplay import __title__
 logging.basicConfig()

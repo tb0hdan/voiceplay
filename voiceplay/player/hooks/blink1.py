@@ -5,7 +5,6 @@ import multiprocessing
 import subprocess
 import time
 
-from voiceplay.logger import logger
 from .basehook import BasePlayerHook
 
 

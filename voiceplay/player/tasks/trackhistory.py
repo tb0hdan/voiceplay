@@ -1,7 +1,6 @@
 #-*- coding: utf-8 -*-
 """ Track history task module """
 
-import os
 import random
 random.seed()
 import re

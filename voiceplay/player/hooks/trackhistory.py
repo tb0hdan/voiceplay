@@ -1,8 +1,6 @@
 #-*- coding: utf-8 -*-
 """ Track history hook module """
 
-import os
-import requests
 from voiceplay.database import voiceplaydb
 from voiceplay.logger import logger
 from .basehook import BasePlayerHook

@@ -1,4 +1,4 @@
-.PHONY: cloc docs snowboy vlcpython vagrant
+.PHONY: cloc docs pylint snowboy vlcpython vagrant
 
 ifeq ($(shell uname),Darwin)
     SED = sed -E
@@ -9,7 +9,7 @@ else
 endif
 
 VERSION = $(shell cat voiceplay/__init__.py|grep '__version__'|$(SED) "s/((.+)=|'|\ )//g")
-
+CPU_COUNT = $(shell python -c 'import multiprocessing; print multiprocessing.cpu_count() * 2 + 1')
 
 submodules:
 	@git submodule init
@@ -39,6 +39,9 @@ py2app:	deps
 pypi:	deps
 	@python setup.py build sdist
 	@twine upload dist/*
+
+pylint:
+	@pylint -j $(CPU_COUNT) --ignore extlib voiceplay; exit 0
 
 dmg:	py2app
 	@hdiutil create -srcfolder dist/voiceplay.app ./voiceplay.dmg

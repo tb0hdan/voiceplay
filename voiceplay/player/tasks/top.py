@@ -2,17 +2,13 @@
 """ Top tracks module """
 
 import json
-import os
 import random
 random.seed()
 import re
 import requests
-import time
 
 from bs4 import BeautifulSoup
 
-from voiceplay.config import Config
-from voiceplay.logger import logger
 from voiceplay.utils.requestor import WSRequestor
 
 from voiceplay.webapp.baseresource import APIV1Resource

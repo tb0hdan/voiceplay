@@ -1,9 +1,7 @@
 #-*- coding: utf-8 -*-
 """ Last.FM scrobbling module """
 
-import os
 import sys
-import traceback
 from voiceplay.datasources.lastfm import VoicePlayLastFm
 from voiceplay.logger import logger
 from voiceplay.utils.helpers import debug_traceback

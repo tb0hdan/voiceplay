@@ -13,11 +13,9 @@ install_aliases()
 
 from urllib.parse import quote  # pylint:disable=no-name-in-module,import-error
 
-import time
 
 from bs4 import BeautifulSoup
 
-from voiceplay.logger import logger
 from voiceplay.webapp.baseresource import APIV1Resource
 from voiceplay.utils.helpers import SingleQueueDispatcher
 from .basetask import BasePlayerTask

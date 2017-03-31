@@ -3,15 +3,15 @@
 
 import argparse
 
-import io
 import logging
+
 import httplib2
 import os
 
 import requests
 
 from apiclient import discovery
-from apiclient.http import MediaIoBaseDownload, MediaFileUpload
+from apiclient.http import MediaFileUpload
 from oauth2client import client
 from oauth2client import tools
 from oauth2client.file import Storage

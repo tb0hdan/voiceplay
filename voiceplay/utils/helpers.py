@@ -1,7 +1,6 @@
 #-*- coding: utf-8 -*-
 """ Helper functions / methods / classes """
 
-import os
 import sys
 import threading
 import time

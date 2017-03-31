@@ -4,9 +4,7 @@
 import inspect
 import os
 import sys
-import traceback
 from copy import copy
-from voiceplay.logger import logger
 from voiceplay.utils.helpers import debug_traceback
 
 class PluginLoader(object):

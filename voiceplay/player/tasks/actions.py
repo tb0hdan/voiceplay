@@ -1,7 +1,6 @@
 #-*- coding: utf-8 -*-
 """ Track actions task module """
 
-import re
 from voiceplay.database import voiceplaydb
 from voiceplay.webapp.baseresource import APIV1Resource
 from voiceplay.utils.helpers import SingleQueueDispatcher
