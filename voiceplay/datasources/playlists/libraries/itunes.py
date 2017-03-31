@@ -17,7 +17,7 @@ class iTunesLibrary(object):
                 else:
                     tracks.append(tmp)
                     tmp = {}
-        result = [chunk for chunk in filter(lambda x: x.get('Artist', None) is not None, tracks)]
+        result = [chunk for chunk in [x for x in tracks if x.get('Artist', None)]]
         return result
 
     @staticmethod

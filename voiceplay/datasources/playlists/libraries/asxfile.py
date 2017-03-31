@@ -16,7 +16,7 @@ class ASXFileLibrary(object):
             for el in element.iter():
                 if el.tag == 'title':
                     tracks.append(el.text)
-        result = [chunk for chunk in filter(lambda x: x, tracks)]
+        result = [chunk for chunk in [t for t in tracks if t]]
         return result
 
     def parse(self, library_file):

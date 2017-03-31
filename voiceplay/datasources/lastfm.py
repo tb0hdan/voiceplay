@@ -94,7 +94,7 @@ class VoicePlayLastFm(object):
         artist = self.get_corrected_artist(artist)
         aobj = pylast.Artist(artist, self.network)
         tracks = self.trackarize(aobj.get_top_tracks())
-        return filter(lambda item: not TrackNormalizer.is_locally_blacklisted(item), tracks)
+        return [item for item in tracks if not TrackNormalizer.is_locally_blacklisted(item)]
 
     @lfm_retry(retry_count=3)
     def get_station(self, query):

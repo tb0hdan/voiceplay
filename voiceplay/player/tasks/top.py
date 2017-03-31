@@ -69,7 +69,7 @@ class RS500Requestor(WSRequestor):
         for page in range(1, 10 + 1):
             tracks = self.get_tracks(self.base_url + '?json=true&page={0}&limit=50'.format(page), cookies)
             all_tracks += tracks
-        return filter(lambda item: not TrackNormalizer.is_locally_blacklisted(item), all_tracks)
+        return [item for item in all_tracks if not TrackNormalizer.is_locally_blacklisted(item)]
 
 
 class BB100Requestor(WSRequestor):
@@ -99,7 +99,7 @@ class BB100Requestor(WSRequestor):
                     break
             if title and artist:
                 all_tracks.append(u'{0!s} - {1!s}'.format(artist, title))
-        return filter(lambda item: not TrackNormalizer.is_locally_blacklisted(item), all_tracks)
+        return [item for item in all_tracks if not TrackNormalizer.is_locally_blacklisted(item)]
 
 
 class RedditMusicRequestor(WSRequestor):
@@ -122,7 +122,7 @@ class RedditMusicRequestor(WSRequestor):
                 continue
             track = re.sub('\s\[(.+)$', '', track)
             all_tracks.append(track)
-        return filter(lambda item: not TrackNormalizer.is_locally_blacklisted(item), all_tracks)
+        return [item for item in all_tracks if not TrackNormalizer.is_locally_blacklisted(item)]
 
 
 class TopTracksTask(BasePlayerTask):

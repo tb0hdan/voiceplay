@@ -98,7 +98,7 @@ class TuneInClient(object):
         """
         data = requests.get(stream_url, headers=self.headers)
         streams = data.json().get('Streams')
-        streams = filter(lambda param: param.get('HasPlaylist', False) is False, streams)
+        streams = [param for param in streams if param.get('HasPlaylist', False) is False]
         streams = sorted(streams, key=lambda param: param.get('Bandwidth'), reverse=True)
         url = []
         if streams:

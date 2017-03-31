@@ -1,6 +1,6 @@
 #-*- coding: utf-8 -*-
-""" DI.FM playback task module """
-""" See https://github.com/Bitcrusher/Digitally-Imported-XBMC-plugin for updates """
+""" DI.FM playback task module
+See https://github.com/Bitcrusher/Digitally-Imported-XBMC-plugin for updates """
 
 import os
 import random
