@@ -7,7 +7,6 @@ class IndexView(FlaskView):
 
     @route('/')
     @route('/index.html')
-    @staticmethod
-    def index():
+    def index(self):  # pylint:disable=no-self-use
         timestamp = int(time.time())
         return render_template('my_index.html', timestamp=timestamp)
