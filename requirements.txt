@@ -1,5 +1,6 @@
 Babel
 beautifulsoup4
+codeclimate-test-reporter
 colorama
 dailymotion
 dropbox

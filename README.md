@@ -5,6 +5,9 @@ voiceplay - Client-side first music centered voice controlled player
 [![PyPI version](https://img.shields.io/pypi/v/voiceplay.svg)](https://pypi.python.org/pypi/voiceplay)
 [![PyPI Python versions](https://img.shields.io/pypi/pyversions/voiceplay.svg)](https://pypi.python.org/pypi/voiceplay)
 [![PyPI license](https://img.shields.io/pypi/l/voiceplay.svg)](https://pypi.python.org/pypi/voiceplay)
+[![Code Climate](https://codeclimate.com/github/tb0hdan/voiceplay/badges/gpa.svg)](https://codeclimate.com/github/tb0hdan/voiceplay)
+[![Test Coverage](https://codeclimate.com/github/tb0hdan/voiceplay/badges/coverage.svg)](https://codeclimate.com/github/tb0hdan/voiceplay/coverage)
+[![Issue Count](https://codeclimate.com/github/tb0hdan/voiceplay/badges/issue_count.svg)](https://codeclimate.com/github/tb0hdan/voiceplay)
 
 
 - [DESCRIPTION](#description)

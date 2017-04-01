@@ -71,6 +71,9 @@ test:
 coverage:
 	@py.test -c ./tests/etc/pytest.ini --cov=./voiceplay --cov-config=./tests/etc/coveragerc tests/
 
+coverage_ci:	coverage
+	@codeclimate-test-reporter
+
 cloc:
 	@cloc --exclude-dir=.idea,build,dist,extlib,vlcpython,snowboy ./
 
