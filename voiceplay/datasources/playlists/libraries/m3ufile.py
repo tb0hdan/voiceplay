@@ -9,7 +9,8 @@ class M3UFileLibrary(object):
     def __init__(self):
         pass
 
-    def m3u_parser(self, data):
+    @staticmethod
+    def m3u_parser(data):
         tracks = []
         for line in data.splitlines():
             track = line.strip()

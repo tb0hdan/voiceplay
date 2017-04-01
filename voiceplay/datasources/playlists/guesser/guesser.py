@@ -1,4 +1,9 @@
-from ..libraries import *
+from ..libraries import (iTunesLibrary,
+                         ShazamDownloadLibrary,
+                         TextFileLibrary,
+                         PLSFileLibrary,
+                         M3UFileLibrary,
+                         ASXFileLibrary)
 
 def library_guesser(filename, url_only=False):
     result = None

@@ -67,9 +67,9 @@ class VideoScoreCalculator(object):
             return result
         return  wrapper
 
-
     @log
-    def concert_and_studio_penalty(self, video_metadata, query):
+    @staticmethod
+    def concert_and_studio_penalty(video_metadata, query):
         known_studios = ['o2 arena', 'capital summertime', 'dancing with the stars',
                          'the ellen degeneres', 'on today show', 'make room concert',
                          'on letterman', 'at farm aid', 'ancienne belgium', 'honda stage',
@@ -86,7 +86,8 @@ class VideoScoreCalculator(object):
         return score
 
     @log
-    def album_in_title(self, video_metadata, query):
+    @staticmethod
+    def album_in_title(video_metadata, query):
         album = video_metadata[0].lower()
         if 'full album' in query.lower():
             score = 0
@@ -97,7 +98,8 @@ class VideoScoreCalculator(object):
         return score
 
     @log
-    def acoustic_in_title(self, video_metadata, query):
+    @staticmethod
+    def acoustic_in_title(video_metadata, query):
         title = video_metadata[0].lower()
         if 'acoustic' in query.lower():
             score = 0
@@ -108,7 +110,8 @@ class VideoScoreCalculator(object):
         return score
 
     @log
-    def preview_in_title(self, video_metadata, query):
+    @staticmethod
+    def preview_in_title(video_metadata, query):
         title = video_metadata[0].lower()
         if 'preview' in query.lower():
             score = 0
@@ -119,7 +122,8 @@ class VideoScoreCalculator(object):
         return score
 
     @log
-    def remix_in_title(self, video_metadata, query):
+    @staticmethod
+    def remix_in_title(video_metadata, query):
         title = video_metadata[0].lower()
         if 'remix' in query.lower():
             score = 0
@@ -130,7 +134,8 @@ class VideoScoreCalculator(object):
         return score
 
     @log
-    def mashup_penalty(self, video_metadata, query):
+    @staticmethod
+    def mashup_penalty(video_metadata, query):
         title = video_metadata[0].lower()
         if 'mashup' in query.lower():
             score = 0
@@ -141,7 +146,8 @@ class VideoScoreCalculator(object):
         return score
 
     @log
-    def megamix_penalty(self, video_metadata, query):
+    @staticmethod
+    def megamix_penalty(video_metadata, query):
         title = video_metadata[0].lower()
         if 'megamix' in query.lower():
             score = 0
@@ -152,7 +158,8 @@ class VideoScoreCalculator(object):
         return score
 
     @log
-    def behind_scenes_penalty(self, video_metadata, query):
+    @staticmethod
+    def behind_scenes_penalty(video_metadata, query):
         title = video_metadata[0].lower()
         if 'behind the scenes' in query.lower() or 'making of' in query.lower():
             score = 0
@@ -163,7 +170,8 @@ class VideoScoreCalculator(object):
         return score
 
     @log
-    def cover_in_title(self, video_metadata, query):
+    @staticmethod
+    def cover_in_title(video_metadata, query):
         title = video_metadata[0].lower()
         if 'cover' in query.lower():
             score = 0
@@ -174,7 +182,8 @@ class VideoScoreCalculator(object):
         return score
 
     @log
-    def guitar_lesson_in_title(self, video_metadata, query):
+    @staticmethod
+    def guitar_lesson_in_title(video_metadata, query):
         title = video_metadata[0].lower()
         if 'guitar lesson' in query.lower():
             score = 0
@@ -186,7 +195,8 @@ class VideoScoreCalculator(object):
 
 
     @log
-    def with_tabs_in_title(self, video_metadata, query):
+    @staticmethod
+    def with_tabs_in_title(video_metadata, query):
         title = video_metadata[0].lower()
         if 'with tabs' in query.lower():
             score = 0
@@ -197,7 +207,8 @@ class VideoScoreCalculator(object):
         return score
 
     @log
-    def at_in_title(self, video_metadata, query):
+    @staticmethod
+    def at_in_title(video_metadata, query):
         title = video_metadata[0].lower()
         if '@' in query.lower():
             score = 0
@@ -208,7 +219,8 @@ class VideoScoreCalculator(object):
         return score
 
     @log
-    def prefer_licensed(self, video_metadata, query):
+    @staticmethod
+    def prefer_licensed(video_metadata, query):
         metadata = video_metadata[2]
         metadata = metadata.get('metadata', {}).get('contentDetails', {}).get('licensedContent', None)
         if metadata == False:
@@ -218,7 +230,8 @@ class VideoScoreCalculator(object):
         return score
 
     @log
-    def prefer_processed(self, video_metadata, query):
+    @staticmethod
+    def prefer_processed(video_metadata, query):
         metadata = video_metadata[2]
         metadata = metadata.get('metadata', {}).get('status', {}).get('uploadStatus', None)
         if metadata != 'processed':
@@ -228,7 +241,8 @@ class VideoScoreCalculator(object):
         return score
 
     @log
-    def prefer_vevo(self, video_metadata, query):
+    @staticmethod
+    def prefer_vevo(video_metadata, query):
         metadata = video_metadata[2]
         metadata = metadata.get('channelTitle', None)
         if metadata.lower().endswith('vevo'):
@@ -238,7 +252,8 @@ class VideoScoreCalculator(object):
         return score
 
     @log
-    def prefer_music_video(self, video_metadata, query):
+    @staticmethod
+    def prefer_music_video(video_metadata, query):
         title = video_metadata[0].lower()
         if 'music video' in title:
             score = 35
@@ -248,7 +263,8 @@ class VideoScoreCalculator(object):
 
 
     @log
-    def live_in_title(self, video_metadata, query):
+    @staticmethod
+    def live_in_title(video_metadata, query):
         title = video_metadata[0].lower()
         if re.match(r'.+\(?.+live?.+?\)?', query.lower(), flags=re.I) is not None:
             score = 0
@@ -259,7 +275,8 @@ class VideoScoreCalculator(object):
         return score
 
     @log
-    def teaser_in_title(self, video_metadata, query):
+    @staticmethod
+    def teaser_in_title(video_metadata, query):
         title = video_metadata[0].lower()
         if re.match(r'.+\(?.+teaser?.+?\)?', query.lower(), flags=re.I) is not None:
             score = 0
@@ -270,7 +287,8 @@ class VideoScoreCalculator(object):
         return score
 
     @log
-    def audio_in_title(self, video_metadata, query):
+    @staticmethod
+    def audio_in_title(video_metadata, query):
         title = video_metadata[0].lower()
         if re.match(r'.+\(?.+audio?.+?\)?', query.lower(), flags=re.I) is not None:
             score = 0
@@ -281,7 +299,8 @@ class VideoScoreCalculator(object):
         return score
 
     @log
-    def lyrics_in_title(self, video_metadata, query):
+    @staticmethod
+    def lyrics_in_title(video_metadata, query):
         title = video_metadata[0].lower()
         if re.match(r'.+\(?.+lyric?.+?\)?', query.lower(), flags=re.I) is not None:
             score = 0
@@ -292,7 +311,8 @@ class VideoScoreCalculator(object):
         return score
 
     @log
-    def prefer_official(self, video_metadata, query):
+    @staticmethod
+    def prefer_official(video_metadata, query):
         title = video_metadata[0].lower()
         if 'official' in query.lower():
             score = 0
@@ -303,7 +323,8 @@ class VideoScoreCalculator(object):
         return score
 
     @log
-    def prefer_official_video(self, video_metadata, query):
+    @staticmethod
+    def prefer_official_video(video_metadata, query):
         title = video_metadata[0].lower()
         if 'official video' in query.lower():
             score = 0
@@ -314,7 +335,8 @@ class VideoScoreCalculator(object):
         return score
 
     @log
-    def prefer_original(self, video_metadata, query):
+    @staticmethod
+    def prefer_original(video_metadata, query):
         title = video_metadata[0].lower()
         if 'original' in query.lower():
             score = 0
@@ -325,7 +347,8 @@ class VideoScoreCalculator(object):
         return score
 
     @log
-    def prefer_no_parody(self, video_metadata, query):
+    @staticmethod
+    def prefer_no_parody(video_metadata, query):
         title = video_metadata[0].lower()
         if 'parody' in query.lower():
             score = 0
@@ -336,7 +359,8 @@ class VideoScoreCalculator(object):
         return score
 
     @log
-    def prefer_no_karaoke(self, video_metadata, query):
+    @staticmethod
+    def prefer_no_karaoke(video_metadata, query):
         title = video_metadata[0].lower()
         if 'karaoke' in query.lower():
             score = 0
@@ -347,7 +371,8 @@ class VideoScoreCalculator(object):
         return score
 
     @log
-    def prefer_no_trailer(self, video_metadata, query):
+    @staticmethod
+    def prefer_no_trailer(video_metadata, query):
         title = video_metadata[0].lower()
         if 'trailer' in query.lower():
             score = 0
@@ -358,7 +383,8 @@ class VideoScoreCalculator(object):
         return score
 
     @log
-    def prefer_no_tutorial(self, video_metadata, query):
+    @staticmethod
+    def prefer_no_tutorial(video_metadata, query):
         title = video_metadata[0].lower()
         # TODO: Extend this
         if 'tutorial' in query.lower():
@@ -370,7 +396,8 @@ class VideoScoreCalculator(object):
         return score
 
     @log
-    def prefer_no_makeup(self, video_metadata, query):
+    @staticmethod
+    def prefer_no_makeup(video_metadata, query):
         title = video_metadata[0].lower()
         # TODO: Extend this
         if 'makeup' in query.lower():
@@ -382,7 +409,8 @@ class VideoScoreCalculator(object):
         return score
 
     @log
-    def prefer_no_chipmunks(self, video_metadata, query):
+    @staticmethod
+    def prefer_no_chipmunks(video_metadata, query):
         title = video_metadata[0].lower()
         # TODO: Extend this
         if 'chipmunks' in query.lower():
@@ -394,7 +422,8 @@ class VideoScoreCalculator(object):
         return score
 
     @log
-    def prefer_startswith(self, video_metadata, query):
+    @staticmethod
+    def prefer_startswith(video_metadata, query):
         title = video_metadata[0].lower()
         query = query.lower()
         query = query.split('-')[0]
@@ -406,13 +435,15 @@ class VideoScoreCalculator(object):
 
 
     @log
-    def prefer_popular(self, video_metadata, query):
+    @staticmethod
+    def prefer_popular(video_metadata, query):
         ratio = int(video_metadata[2].get('satisfaction', 0))
         score = int(log10(1 + 100 / ( 1 + 100 - ratio)) * 5)
         return score
 
     @log
-    def prefer_shorter(self, video_metadata, query):
+    @staticmethod
+    def prefer_shorter(video_metadata, query):
         duration = video_metadata[2].get('metadata', {}).get('contentDetails', {}).get('duration', {})
         duration = DateMan.iso2hms(duration)
         duration = duration.split(':')

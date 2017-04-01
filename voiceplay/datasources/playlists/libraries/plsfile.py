@@ -9,7 +9,8 @@ class PLSFileLibrary(object):
     def __init__(self):
         pass
 
-    def pls_parser(self, data, url_only=False):
+    @staticmethod
+    def pls_parser(data, url_only=False):
         tracks = []
         for line in data.splitlines():
             track = line.strip()

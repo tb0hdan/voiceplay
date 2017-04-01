@@ -40,7 +40,8 @@ class Help(object):
             return self.main_page(), True
         return None, False
 
-    def main_page(self):
+    @staticmethod
+    def main_page():
         message = """{0} {1}\nTo get help about {2} commands type:
 \t"<tab>" to get a list of possible help topics
 \t"clear" to clear screen
@@ -133,7 +134,8 @@ class MyArgumentParser(object):
         console.set_exit()
         th.stop_all()
 
-    def vicki_loop(self, vicki, noblock=False):
+    @staticmethod
+    def vicki_loop(vicki, noblock=False):
         """
         Run Vicki loop
         """
@@ -148,7 +150,8 @@ class MyArgumentParser(object):
         threads.start_all()
         vicki.run_forever_new(server, noblock=noblock)
 
-    def wakeword_loop(self):
+    @staticmethod
+    def wakeword_loop():
         """
         Run wakeword listener loop
         """

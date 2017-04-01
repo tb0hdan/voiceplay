@@ -87,7 +87,8 @@ class VoicePlayDB(object):
                                       status='neutral')
                 return 1
 
-    def get_played_tracks(self):
+    @staticmethod
+    def get_played_tracks():
         """
         Get list of playback history
         """
@@ -160,7 +161,8 @@ class VoicePlayDB(object):
                 dt = self.get_dt()
                 PlayedTracks(track=trackname, created_at=dt, updated_at=dt, playcount=1, status=status)
 
-    def get_track_status(self, trackname):
+    @staticmethod
+    def get_track_status(trackname):
         """
         Get track status
         """
