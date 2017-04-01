@@ -1,6 +1,8 @@
 #-*- coding: utf-8 -*-
 """ Helper functions / methods / classes """
 
+import os
+import signal
 import sys
 import threading
 import time
@@ -186,3 +188,19 @@ class SingleQueueDispatcher(object):
                     'message': message}
         logger.debug('SQD put: %r', message)
         self.queue.put(full_msg)
+
+
+class SignalHandler(object):
+    """
+    """
+    def __init__(self):
+        pass
+
+    def register(self):
+        logger.debug('%s: %s: %s', self.__class__.__name__, 'my pid is', os.getpid())
+        signal.signal(signal.SIGHUP, self.receive_signal)
+        signal.signal(signal.SIGUSR1, self.receive_signal)
+        signal.signal(signal.SIGUSR2, self.receive_signal)
+
+    def receive_signal(self, signum, stack):
+        logger.debug('%s: %s: %s', self.__class__.__name__, 'Received:', signum)

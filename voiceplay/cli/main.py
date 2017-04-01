@@ -6,6 +6,7 @@ import sys
 from voiceplay.logger import logger
 from voiceplay.utils.updatecheck import check_update
 from voiceplay.utils.crashlog import send_traceback
+from voiceplay.utils.helpers import SignalHandler
 from .argparser.argparser import MyArgumentParser
 
 
@@ -16,10 +17,12 @@ def main(noblock=False):
     :param noblock: Disable server thread lock-up, requires extra care to run
     :type noblock: bool
     """
+    signal_handler = SignalHandler()
+    signal_handler.register()
     message = check_update(suppress_uptodate=True)
     if message:
         logger.error(message)
-    parser = MyArgumentParser()
+    parser = MyArgumentParser(signal_handler=signal_handler)
     parser.configure()
     try:
         parser.parse(noblock=noblock)

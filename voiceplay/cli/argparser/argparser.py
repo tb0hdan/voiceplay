@@ -56,8 +56,9 @@ class MyArgumentParser(object):
     """
     Parse command line arguments
     """
-    def __init__(self):
+    def __init__(self, signal_handler=None):
         self.parser = argparse.ArgumentParser(description=__title__, prog=__title__)
+        self.signal_handler = signal_handler
 
     def configure(self):
         """
