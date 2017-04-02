@@ -22,9 +22,9 @@ class PleerSource(TrackSource):
     """
     Pleer.net track source
     """
-    __baseurl__ =  'http://pleer.net/en/download/page/'
+    __baseurl__ = 'http://pleer.net/en/download/page/'
     __priority__ = 10
-    chunk_size=8196
+    chunk_size = 8196
 
     @classmethod
     def search(cls, query, max_results=25):

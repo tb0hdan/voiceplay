@@ -21,7 +21,7 @@ def capture_std():
         sys.stdout, sys.stderr = out
         yield out
     finally:
-        sys.stdout,sys.stderr = std_out, std_err
+        sys.stdout, sys.stderr = std_out, std_err
         out[0] = out[0].getvalue()
         out[1] = out[1].getvalue()
 

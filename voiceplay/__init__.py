@@ -2,7 +2,7 @@
 """ get version, etc """
 
 __title__ = 'VoicePlay'
-__description__  = 'Client-side first music centered voice controlled player'
+__description__ = 'Client-side first music centered voice controlled player'
 __version__ = '0.2.5.7'
 __author__ = 'Bohdan Turkynewych'
 __author_email__ = 'tb0hdan@gmail.com'

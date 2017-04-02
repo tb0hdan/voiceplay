@@ -20,7 +20,7 @@ class DBox(object):
     """
     def __init__(self):
         self._dbx = None
-        self.ACCESS_TOKEN = Config().cfg_data().get('dropbox',{}).get('access_token')
+        self.ACCESS_TOKEN = Config().cfg_data().get('dropbox', {}).get('access_token')
 
     @property
     def dbx(self):

@@ -72,7 +72,7 @@ class MixedCache(object):
         """
         from voiceplay.config import Config
         logger.debug('Purging cache...')
-        cache_dir =  Config.cfg_data().get('cache_dir', '')
+        cache_dir = Config.cfg_data().get('cache_dir', '')
         if os.path.exists(cache_dir) and os.path.isdir(cache_dir):
             files = glob(os.path.join(cache_dir, '*'))
             for fname in files:
