@@ -9,7 +9,7 @@ class TrackNormalizer(object):
     """
     Normalize tracks, check their status, etc
     """
-    keywords = ['karaoke', 'djfm toronto ids', 'djfm ids']
+    keywords = ['karaoke', 'djfm toronto ids', 'djfm ids', 'djfm ottawa', '@paulburyradio']
 
     @classmethod
     def track_ok(cls, track):

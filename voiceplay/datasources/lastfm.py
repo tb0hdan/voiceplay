@@ -200,16 +200,36 @@ class VoicePlayLastFm(object):
             result.append(artist.item.name)
         return result[:limit]
 
+    def get_recent_tracks(self, limit=20):
+        """
+        Get list of recently played tracks
+        """
+        tracklist = []
+        user = self.network.get_user(self.network.username)
+        for track in user.get_recent_tracks(limit=limit):
+            artist = track.track.get_artist().name
+            title = track.track.get_title()
+            if sys.version_info.major == 2:
+                artist = artist.encode('utf8')
+                title = title.encode('utf8')
+            tracklist.append('{0!s} - {1!s}'.format(artist, title))
+        return tracklist
+
     def scrobble(self, artist, track):
         """
         Scrobble track
         """
-        if self.scrobble_enabled:
-            logger.debug('Scrobbling track: %s - %s', artist, track)
-            timestamp = int(time.mktime(datetime.datetime.now().timetuple()))
-            self.network.scrobble(artist=artist, title=track, timestamp=timestamp)
-        else:
-            logger.debug('Scrobbling disabled, track %s - %s not sent', artist, track)
+        full_track = '{0!s} - {1!s}'.format(artist, track)
+        if not self.scrobble_enabled:
+            logger.debug('Scrobbling disabled, track %r not sent', full_track)
+            return
+        recent_tracks = self.get_recent_tracks(limit=1)
+        if full_track in recent_tracks:
+            logger.debug('Scrobbling skipped, track %r already scrobbled', full_track)
+            return
+        logger.debug('Scrobbling track: %r', full_track)
+        timestamp = int(time.mktime(datetime.datetime.now().timetuple()))
+        self.network.scrobble(artist=artist, title=track, timestamp=timestamp)
 
     @staticmethod
     def trackarize(array):
