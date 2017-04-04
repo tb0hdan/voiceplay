@@ -83,7 +83,8 @@ Vagrant.configure("2") do |config|
      pip install pyfestival requests
      pip install -U voiceplay urllib3[secure]
      # Fix audio ( https://wiki.ubuntu.com/Audio/UpgradingAlsa/DKMS )
-     wget -q https://code.launchpad.net/~ubuntu-audio-dev/+archive/ubuntu/alsa-daily/+files/oem-audio-hda-daily-dkms_0.201702150732~ubuntu14.04.1_all.deb
+     # https://code.launchpad.net/~ubuntu-audio-dev/+archive/ubuntu/alsa-daily/+packages
+     wget -q https://code.launchpad.net/~ubuntu-audio-dev/+archive/ubuntu/alsa-daily/+files/oem-audio-hda-daily-dkms_0.201704020301~ubuntu14.04.1_all.deb
      dpkg -i ./oem-audio-hda-daily-dkms*.deb
      gpasswd -a vagrant audio
      gpasswd -a vagrant pulse

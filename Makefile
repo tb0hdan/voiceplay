@@ -63,6 +63,7 @@ vagrant:
 	@vagrant ssh -c 'sudo alsactl store'
 
 vagrant_rebuild:	vagrant
+	@rm -f voiceplay.box
 	@vagrant package --output voiceplay.box
 
 test:
