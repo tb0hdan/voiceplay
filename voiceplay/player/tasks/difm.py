@@ -39,7 +39,7 @@ class DIFMClient(WSRequestor):
     cache_file = 'difm_cache.dat'
 
     def get_all(self):
-        response = requests.get('http://listen.di.fm/public2', headers=self.headers)
+        response = requests.get('http://listen.di.fm/public3', headers=self.headers)
         return response.json()
 
     def search_and_extract(self, query):
@@ -66,6 +66,9 @@ class DIFMClient(WSRequestor):
             playlist_file.write(requests.get(playlist, headers=self.headers).text)
         playlist_url, description = library_guesser(fname, url_only=True)[0], library_guesser(fname)[0]
         os.remove(fname)
+        # Free vs Premium hack
+        if playlist_url:
+            playlist_url = playlist_url + '_aacplus'
         return playlist_url, description
 
 
