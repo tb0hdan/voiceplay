@@ -1,14 +1,13 @@
 #-*- coding: utf-8 -*-
 """ Vimeo track source module """
 
-
 import json
 import sys
 
-from urllib.parse import quote
-
 from future.standard_library import install_aliases
 install_aliases()
+
+from urllib.parse import quote
 
 import vimeo
 from .basesource import TrackSource

@@ -5,12 +5,13 @@ import json
 import os
 import sys
 
-from urllib.parse import quote
 
 import requests
 
 from future.standard_library import install_aliases
 install_aliases()
+
+from urllib.parse import quote
 
 from bs4 import BeautifulSoup
 from magic import Magic

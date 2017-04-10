@@ -6,10 +6,10 @@ import random
 random.seed()
 import re
 
-from urllib.parse import quote  # pylint:disable=no-name-in-module,import-error
-
 from future.standard_library import install_aliases
 install_aliases()
+
+from urllib.parse import quote  # pylint:disable=no-name-in-module,import-error
 
 import requests
 
