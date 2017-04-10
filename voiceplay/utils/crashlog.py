@@ -17,6 +17,9 @@ from .piphelper import PIP
 
 
 def exc2encode(exc_info, fname):
+    """
+    Exception encoder
+    """
     # type, value, traceback
     result = {}
     # Probably ok
@@ -40,6 +43,9 @@ def exc2encode(exc_info, fname):
 
 
 def send_traceback(exc_info, fname):
+    """
+    Simple bugtracker submission method
+    """
     from voiceplay.config import Config
     url = Config.cfg_data().get('bugtracker_url')
     data = exc2encode(exc_info, fname)

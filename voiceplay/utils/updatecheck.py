@@ -10,6 +10,9 @@ from .piphelper import PIP
 
 
 def check_update(my_version=__version__, suppress_uptodate=False):
+    """
+    Check for application update and notify user
+    """
     result = ''
     low_title = __title__.lower()
     packages = voiceplaydb.get_cached_service('check_update')

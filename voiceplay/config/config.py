@@ -1,8 +1,10 @@
 #-*- coding: utf-8 -*-
 """ Configuration reader module """
 
-import kaptan
 import os
+
+import kaptan
+
 from six import with_metaclass
 
 from voiceplay.utils.helpers import Singleton

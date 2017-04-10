@@ -11,11 +11,17 @@ from voiceplay.utils.score import VideoScoreCalculator
 from .basesource import TrackSource
 
 class YoutubeSource(TrackSource):
+    """
+    Youtube track source (used as last resort)
+    """
     __baseurl__ = 'https://youtu.be/'
     __priority__ = 40
 
     @classmethod
     def youtube(cls):
+        """
+        Prepare YouTube API object
+        """
         credentials = GoogleCredentials.from_stream(os.path.expanduser('~/.config/voiceplay/credentials.json'))
         return build('youtube', 'v3', credentials=credentials)
 

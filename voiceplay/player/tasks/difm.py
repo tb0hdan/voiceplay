@@ -6,12 +6,12 @@ import os
 import random
 random.seed()
 import re
-import requests
+import tempfile
 
 from future.standard_library import install_aliases
 install_aliases()
 
-import tempfile
+import requests
 
 from voiceplay.datasources.playlists import library_guesser
 from voiceplay.utils.requestor import WSRequestor
@@ -21,9 +21,15 @@ from .basetask import BasePlayerTask
 
 
 class DIFMResource(APIV1Resource):
+    """
+    DI.FM API endpoint
+    """
     route_base = '/api/v1/play/di/<station>'
     queue = None
     def post(self, station):
+        """
+        HTTP POST handler
+        """
         result = {'status': 'timeout', 'message': ''}
         if self.queue and station:
             dispatcher = SingleQueueDispatcher(queue=self.queue)
@@ -39,10 +45,16 @@ class DIFMClient(WSRequestor):
     cache_file = 'difm_cache.dat'
 
     def get_all(self):
+        """
+        Get all available stations
+        """
         response = requests.get('http://listen.di.fm/public3', headers=self.headers)
         return response.json()
 
     def search_and_extract(self, query):
+        """
+        Search station and extract its info
+        """
         all_stations = self.get_check_all()
         playlist = ''
         # try full match first

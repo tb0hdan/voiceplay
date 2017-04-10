@@ -15,6 +15,9 @@ from .dbox import DBox
 
 
 class BaseCache(object):
+    """
+    Parent cache class with common methods
+    """
     @classmethod
     def is_remote_cached(cls, target_filename):
         """
@@ -31,6 +34,9 @@ class BaseCache(object):
 
     @classmethod
     def copy_to_cache(cls, target_filename):
+        """
+        Transfer file to cache (if it is not cached, of course)"
+        """
         is_cached = cls.is_remote_cached(target_filename)
         if not is_cached:
             cache = cls.CACHE_BACKEND()
@@ -39,6 +45,9 @@ class BaseCache(object):
 
     @classmethod
     def get_from_cache(cls, target_filename):
+        """
+        Get file from cache
+        """
         is_cached = cls.is_remote_cached(target_filename)
         if is_cached:
             cache = cls.CACHE_BACKEND()
@@ -50,19 +59,31 @@ class BaseCache(object):
 
     @classmethod
     def health_check(cls):
+        """
+        Cache health check (space availability)
+        """
         cb = cls.CACHE_BACKEND()
         return cb.health_check()
 
 
 class DBoxCache(BaseCache):
+    """
+    Cache using Dropbox
+    """
     CACHE_BACKEND = DBox
 
 
 class GDriveCache(BaseCache):
+    """
+    Cache using Google Drive
+    """
     CACHE_BACKEND = GDrive
 
 
 class MixedCache(object):
+    """
+    Multi-backend cache
+    """
     CACHE_BACKENDS = [DBoxCache, GDriveCache]
 
     @staticmethod
@@ -90,6 +111,9 @@ class MixedCache(object):
 
     @classmethod
     def get_from_cache(cls, file_name):
+        """
+        Iterate over available cache backends, search for file, return first matching copy
+        """
         random.shuffle(cls.CACHE_BACKENDS)
         fname = None
         for cb in cls.CACHE_BACKENDS:
@@ -102,6 +126,10 @@ class MixedCache(object):
 
     @classmethod
     def copy_to_cache(cls, file_name):
+        """
+        Iterate over available cache backends, upload to first one. Primitive load balancing
+        is implemented by randomizing backend list.
+        """
         random.shuffle(cls.CACHE_BACKENDS)
         for cb in cls.CACHE_BACKENDS:
             if not cb.health_check():

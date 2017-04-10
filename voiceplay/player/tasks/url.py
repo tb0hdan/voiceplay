@@ -14,9 +14,15 @@ from .basetask import BasePlayerTask
 
 
 class URLPlaybackResource(APIV1Resource):
+    """
+    URL playback API endpoint
+    """
     route_base = '/api/v1/play/url'
     queue = None
     def post(self):
+        """
+        HTTP POST handler
+        """
         result = {'status': 'timeout', 'message': ''}
         if self.queue and request.form['data']:
             url = request.form['data']
@@ -41,6 +47,9 @@ class URLTask(BasePlayerTask):
 
     @classmethod
     def add_to_list(cls):
+        """
+        Add URL to playlist
+        """
         if cls.title and cls.new_url:
             cls.tracklist.append([cls.new_url, cls.title])
             cls.title = None
@@ -48,6 +57,9 @@ class URLTask(BasePlayerTask):
 
     @classmethod
     def url_hook(cls, *args, **kwargs):
+        """
+        URL hook for youtube_dl
+        """
         message = args[0]
         if not message.startswith('http') and not message.startswith('['):
             cls.add_to_list()

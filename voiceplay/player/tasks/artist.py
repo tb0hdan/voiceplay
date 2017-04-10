@@ -11,9 +11,15 @@ from .basetask import BasePlayerTask
 
 
 class Artist(APIV1Resource):
+    """
+    Artist API endpoint
+    """
     route_base = '/api/v1/play/artist/<artist>/<query>'
     queue = None
     def post(self, artist, query):
+        """
+        HTTP POST handler
+        """
         result = {'status': 'timeout', 'message': ''}
         if self.queue and artist and query:
             dispatcher = SingleQueueDispatcher(queue=self.queue)

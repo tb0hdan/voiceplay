@@ -13,9 +13,15 @@ from .basetask import BasePlayerTask
 
 
 class Station(APIV1Resource):
+    """
+    Station API endpoint
+    """
     route_base = '/api/v1/play/station/<station>'
     queue = None
     def get(self, station):
+        """
+        HTTP GET handler
+        """
         result = {'status': 'timeout', 'message': ''}
         if self.queue and station:
             dispatcher = SingleQueueDispatcher(queue=self.queue)

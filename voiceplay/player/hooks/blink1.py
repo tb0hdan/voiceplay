@@ -18,6 +18,9 @@ class Blink1Hook(BasePlayerHook):
 
     @classmethod
     def slow_blink(cls):
+        """
+        blink slowly
+        """
         while True:
             subprocess.call(['blink1-tool', '--blue', '--chase=1'])
             time.sleep(0.5)

@@ -6,5 +6,6 @@ from flask_restful import Resource
 
 class APIV1Resource(Resource):
     """
+    API Resource dummy
     """
     pass

@@ -3,13 +3,14 @@
 
 import json
 import os
-import requests
 import sys
+
+from urllib.parse import quote
+
+import requests
 
 from future.standard_library import install_aliases
 install_aliases()
-
-from urllib.parse import quote
 
 from bs4 import BeautifulSoup
 from magic import Magic
@@ -17,6 +18,7 @@ from magic import Magic
 from voiceplay.utils.cache import MixedCache
 
 from .basesource import TrackSource
+
 
 class PleerSource(TrackSource):
     """

@@ -8,9 +8,15 @@ from .basetask import BasePlayerTask
 
 
 class CurrentTrackResource(APIV1Resource):
+    """
+    Current track API endpoint
+    """
     route_base = '/api/v1/tracks/current'
     queue = None
     def get(self):
+        """
+        HTTP GET handler
+        """
         result = {'status': 'timeout', 'message': ''}
         if self.queue:
             dispatcher = SingleQueueDispatcher(queue=self.queue)
@@ -19,9 +25,15 @@ class CurrentTrackResource(APIV1Resource):
         return result
 
 class LoveTrackResource(APIV1Resource):
+    """
+    Love track API endpoint
+    """
     route_base = '/api/v1/tracks/love'
     queue = None
     def get(self):
+        """
+        HTTP GET handler
+        """
         result = {'status': 'timeout', 'message': ''}
         if self.queue:
             dispatcher = SingleQueueDispatcher(queue=self.queue)
@@ -30,9 +42,15 @@ class LoveTrackResource(APIV1Resource):
         return result
 
 class BanTrackResource(APIV1Resource):
+    """
+    Ban track API endpoint
+    """
     route_base = '/api/v1/tracks/ban'
     queue = None
     def get(self):
+        """
+        HTTP GET handler
+        """
         result = {'status': 'timeout', 'message': ''}
         if self.queue:
             dispatcher = SingleQueueDispatcher(queue=self.queue)

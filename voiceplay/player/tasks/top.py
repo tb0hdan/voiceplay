@@ -18,9 +18,15 @@ from .basetask import BasePlayerTask
 
 
 class TopTracksResource(APIV1Resource):
+    """
+    Top tracks API endpoint
+    """
     route_base = '/api/v1/play/top/<query>'
     queue = None
     def post(self, query):
+        """
+        HTTP POST handler
+        """
         result = {'status': 'timeout', 'message': ''}
         if self.queue and query:
             dispatcher = SingleQueueDispatcher(queue=self.queue)

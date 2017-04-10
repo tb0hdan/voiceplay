@@ -12,6 +12,9 @@ from pip.commands.search import SearchCommand, transform_hits
 
 @contextlib.contextmanager
 def capture_std():
+    """
+    STDOUT capture
+    """
     std_out, std_err = sys.stdout, sys.stderr
     try:
         if sys.version_info.major == 3:
@@ -32,6 +35,9 @@ class PIP(object):
     """
     @staticmethod
     def search_packages(package_name):
+        """
+        query pip package repository
+        """
         versions = []
         search = SearchCommand()
         pypi = search.search(package_name,
@@ -44,6 +50,9 @@ class PIP(object):
 
     @staticmethod
     def freeze():
+        """
+        pip freeze equivalent
+        """
         freeze = FreezeCommand()
         with capture_std() as std:
             freeze.run(freeze.parse_args([])[0], '')

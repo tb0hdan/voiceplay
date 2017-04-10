@@ -10,9 +10,15 @@ from .basetask import BasePlayerTask
 
 
 class LocalLibrary(APIV1Resource):
+    """
+    Local file library API endpoint
+    """
     route_base = '/api/v1/play/locallibrary'
     queue = None
     def post(self):
+        """
+        HTTP POST handler
+        """
         result = {'status': 'timeout', 'message': ''}
         if self.queue:
             dispatcher = SingleQueueDispatcher(queue=self.queue)

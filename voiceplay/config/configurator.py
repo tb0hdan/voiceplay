@@ -4,13 +4,13 @@
 # std
 import os
 
+# from's
+from copy import deepcopy
+
 # 3rd
 import colorama
 import kaptan
 import pylast
-
-# from's
-from copy import deepcopy
 
 # local
 from voiceplay.utils.helpers import unbreakable_input

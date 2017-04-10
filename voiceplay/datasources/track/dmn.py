@@ -2,12 +2,16 @@
 """ DailyMotion track source module """
 from __future__ import division
 
-from dailymotion import Dailymotion
 from math import trunc
+
+from dailymotion import Dailymotion
 
 from .basesource import TrackSource
 
 class DailyMotionSource(TrackSource):
+    """
+    DailyMotion track source
+    """
     __baseurl__ = 'http://www.dailymotion.com/video/'
     __priority__ = 30
 

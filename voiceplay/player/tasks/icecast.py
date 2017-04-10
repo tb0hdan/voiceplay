@@ -4,11 +4,13 @@
 import random
 random.seed()
 import re
-import requests
+
+from urllib.parse import quote  # pylint:disable=no-name-in-module,import-error
 
 from future.standard_library import install_aliases
 install_aliases()
-from urllib.parse import quote  # pylint:disable=no-name-in-module,import-error
+
+import requests
 
 from bs4 import BeautifulSoup
 
@@ -18,9 +20,15 @@ from .basetask import BasePlayerTask
 
 
 class IceCastResource(APIV1Resource):
+    """
+    IceCast API endpoint
+    """
     route_base = '/api/v1/play/icecast/<station>'
     queue = None
     def post(self, station):
+        """
+        HTTP POST handler
+        """
         result = {'status': 'timeout', 'message': ''}
         if self.queue and station:
             dispatcher = SingleQueueDispatcher(queue=self.queue)
@@ -30,6 +38,9 @@ class IceCastResource(APIV1Resource):
 
 
 class IcecastClient(object):
+    """
+    IceCast directory client
+    """
     headers = {'User-Agent': random.choice(['Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:50.0) Gecko/20100101 Firefox/50.0',
                                             'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36',
                                             'Mozilla/5.0 (MSIE 10.0; Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2486.0 Safari/537.36 Edge/13.10586',
@@ -66,7 +77,9 @@ class IcecastClient(object):
 
 
 class IcecastTask(BasePlayerTask):
-
+    """
+    IceCast directory task
+    """
     __group__ = ['play']
     __regexp__ = ['^play (.+) station from icecast$']
     __priority__ = 130

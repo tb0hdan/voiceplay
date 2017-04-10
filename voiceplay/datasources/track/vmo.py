@@ -1,19 +1,23 @@
 #-*- coding: utf-8 -*-
 """ Vimeo track source module """
 
+
 import json
-
-from future.standard_library import install_aliases
-install_aliases()
-
 import sys
 
 from urllib.parse import quote
 
+from future.standard_library import install_aliases
+install_aliases()
+
 import vimeo
 from .basesource import TrackSource
 
+
 class VimeoSource(TrackSource):
+    """
+    Vimeo track source
+    """
     __baseurl__ = 'https://vimeo.com/'
     __priority__ = 20
 

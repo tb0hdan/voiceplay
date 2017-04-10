@@ -15,9 +15,15 @@ from .basetask import BasePlayerTask
 
 
 class NewTracksResource(APIV1Resource):
+    """
+    New track API endpoint
+    """
     route_base = '/api/v1/play/new_tracks/<artist>'
     queue = None
     def post(self, artist):
+        """
+        HTTP POST handler
+        """
         result = {'status': 'timeout', 'message': ''}
         if self.queue and artist:
             dispatcher = SingleQueueDispatcher(queue=self.queue)

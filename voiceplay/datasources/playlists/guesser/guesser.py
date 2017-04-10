@@ -1,3 +1,6 @@
+#-*- coding: utf-8 -*-
+""" Playlist guesser module """
+
 from ..libraries import (iTunesLibrary,
                          ShazamDownloadLibrary,
                          TextFileLibrary,
@@ -6,6 +9,10 @@ from ..libraries import (iTunesLibrary,
                          ASXFileLibrary)
 
 def library_guesser(filename, url_only=False):
+    """
+    Playlist type guesser
+    File only mode so far
+    """
     result = None
     if filename:
         if filename.lower().endswith('.xml'):

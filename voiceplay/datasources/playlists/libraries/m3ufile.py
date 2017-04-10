@@ -1,16 +1,18 @@
 #-*- coding: utf-8 -*-
+""" M3U playlist module """
+
 
 import re
 
 class M3UFileLibrary(object):
-    '''
+    """
     Very basic and silly extended M3U parser
-    '''
-    def __init__(self):
-        pass
-
+    """
     @staticmethod
     def m3u_parser(data):
+        """
+        .m3u file parser
+        """
         tracks = []
         for line in data.splitlines():
             track = line.strip()
@@ -22,6 +24,9 @@ class M3UFileLibrary(object):
         return tracks
 
     def parse(self, library_file):
+        """
+        Process M3U playlist, return items
+        """
         tracks = []
         with open(library_file, 'rb') as m3u_file:
             data = m3u_file.read()

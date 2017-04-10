@@ -12,9 +12,15 @@ from .basetask import BasePlayerTask
 
 
 class LocalHistoryResource(APIV1Resource):
+    """
+    Local history playback API endpoint
+    """
     route_base = '/api/v1/play/localhistory'
     queue = None
     def post(self):
+        """
+        HTTP POST handler
+        """
         result = {'status': 'timeout', 'message': ''}
         if self.queue:
             dispatcher = SingleQueueDispatcher(queue=self.queue)

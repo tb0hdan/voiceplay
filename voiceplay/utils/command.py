@@ -36,6 +36,9 @@ class Command(object):
         self.COMMAND = self.__parse(message=message)
 
     def __parse(self, message=None):
+        """
+        Parse player command
+        """
         result = None
         if not message:
             return result

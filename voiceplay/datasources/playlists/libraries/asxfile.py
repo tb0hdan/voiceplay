@@ -1,4 +1,5 @@
 #-*- coding: utf-8 -*-
+""" ASX playlist module """
 
 from lxml import etree
 
@@ -8,6 +9,9 @@ class ASXFileLibrary(object):
     '''
     @staticmethod
     def etree_parser(tree):
+        """
+        ASX (XML) parser using ElementTree
+        """
         tmp = {}
         tracks = []
         for element in tree.iter():
@@ -20,8 +24,9 @@ class ASXFileLibrary(object):
         return result
 
     def parse(self, library_file):
-        '''
-        '''
+        """
+        Process ASX playlist, return items
+        """
         result = None
         with open(library_file, 'rb') as xml_file:
             tree = etree.parse(xml_file)

@@ -3,12 +3,13 @@
 
 from __future__ import print_function
 
-import colorama
-import rl
 import sys
 import time
 
 from builtins import input
+
+import colorama
+import rl
 
 from voiceplay import __title__
 from voiceplay.utils.helpers import SingleQueueDispatcher
@@ -28,9 +29,15 @@ class Console(object):
         self.dispatcher = None
 
     def set_queue(self, queue=None):
+        """
+        Pass command queue
+        """
         self.queue = queue
 
     def set_exit(self):
+        """
+        Set exit flag
+        """
         self.exit = True
         if self.dispatcher:
             self.dispatcher.set_exit()
@@ -144,6 +151,9 @@ class Console(object):
                 break
 
     def run_bg_queue(self):
+        """
+        Run API commands background queue poller
+        """
         if not self.queue:
             return
         self.dispatcher = SingleQueueDispatcher(queue=self.queue)

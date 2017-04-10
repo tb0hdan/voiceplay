@@ -2,10 +2,11 @@
 """ VoicePlay speech handler """
 
 import logging
-import speech_recognition as sr
 import time
 
 from functools import cmp_to_key
+
+import speech_recognition as sr
 
 from voiceplay.logger import logger
 from voiceplay.tts.tts import TextToSpeech

@@ -32,6 +32,9 @@ class Singleton(type):
 
 
 def debug_traceback(exc_info, fname, include_traceback=True, message=None):
+    """
+    Get full traceback, show if debugging is enabled
+    """
     typ, value, tb = exc_info
     trace = ''.join(traceback.format_exception(typ, value, tb))
     message = 'Method crashed (see message below), restarting...' if not message else message
@@ -123,10 +126,19 @@ class ThreadGroup(object):
         for thread in self.threads:
             thread.join(timeout=self.timeout)
 
+
 def cmp(x, y):
+    """
+    CMP function introduced for compatibility
+    TODO: get rid of this one
+    """
     return (x > y) - (x < y)
 
+
 def unbreakable_input():
+    """
+    Ignore keyboard interrupts and return value (used in configuration dialog)
+    """
     while True:
         try:
             data = input()
@@ -146,9 +158,15 @@ class SingleQueueDispatcher(object):
         self.exit = False
 
     def set_exit(self):
+        """
+        Set exit flag
+        """
         self.exit = True
 
     def send_and_wait(self, message):
+        """
+        Send message and wait for response
+        """
         uuid = uuid4()
         full_msg = {'expires': int(time.time()) + self.TTL,
                     'uuid': uuid,
@@ -173,6 +191,9 @@ class SingleQueueDispatcher(object):
         return message
 
     def get_full_message(self):
+        """
+        Get message from queue
+        """
         message = {}
         while not self.exit:
             if not self.queue.empty():
@@ -183,6 +204,9 @@ class SingleQueueDispatcher(object):
         return message
 
     def put_message(self, uuid, message):
+        """
+        Put message into queue
+        """
         full_msg = {'expires': int(time.time()) + self.TTL,
                     'uuid': uuid,
                     'message': message}
@@ -192,15 +216,22 @@ class SingleQueueDispatcher(object):
 
 class SignalHandler(object):
     """
+    Signal handling class
     """
     def __init__(self):
         pass
 
     def register(self):
+        """
+        Register signal traps
+        """
         logger.debug('%s: %s: %s', self.__class__.__name__, 'my pid is', os.getpid())
         signal.signal(signal.SIGHUP, self.receive_signal)
         signal.signal(signal.SIGUSR1, self.receive_signal)
         signal.signal(signal.SIGUSR2, self.receive_signal)
 
     def receive_signal(self, signum, stack):
+        """
+        A do-nothing signal trap
+        """
         logger.debug('%s: %s: %s', self.__class__.__name__, 'Received:', signum)

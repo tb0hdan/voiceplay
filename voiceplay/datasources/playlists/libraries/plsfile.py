@@ -1,16 +1,18 @@
 #-*- coding: utf-8 -*-
+""" PLS playlist module """
+
 
 import re
 
 class PLSFileLibrary(object):
-    '''
+    """
     Very basic and silly PLS parser
-    '''
-    def __init__(self):
-        pass
-
+    """
     @staticmethod
     def pls_parser(data, url_only=False):
+        """
+        .pls file parser
+        """
         tracks = []
         for line in data.splitlines():
             track = line.strip()
@@ -27,6 +29,9 @@ class PLSFileLibrary(object):
         return tracks
 
     def parse(self, library_file, url_only=False):
+        """
+        Process PLS playlist, return items
+        """
         tracks = []
         with open(library_file, 'rb') as pls_file:
             data = pls_file.read()

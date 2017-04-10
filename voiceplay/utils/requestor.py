@@ -1,3 +1,6 @@
+#-*- coding: utf-8 -*-
+""" HTTP Requestor module """
+
 import json
 import random
 random.seed()

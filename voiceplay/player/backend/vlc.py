@@ -201,6 +201,9 @@ class VLCInstance(object):
 
     @staticmethod
     def create_instance(debug=False, profile='default'):
+        """
+        Create VLC instance
+        """
         from voiceplay.extlib.vlcpython.vlc import Instance
         if profile == 'difm':
             profile = VLCDIFMProfile
@@ -225,16 +228,17 @@ class VLCInstance(object):
 
 class VLCPlayer(object):
     """
+    VLC Player wrapper class
     """
     argparser = None
     debug = False
     player = None
 
-    def __init__(self):
-        pass
-
     @classmethod
     def play(cls, path, track, block=True):
+        """
+        play file/url using VLC
+        """
         logger.debug('VLCPlayer.play.argparser: %r', cls.argparser)
         restore = False
         if path and re.match('^http://(.+)\.di\.fm\:?(?:[0-9]+)?/(.+)$', path):
@@ -253,19 +257,31 @@ class VLCPlayer(object):
 
     @classmethod
     def resume(cls):
+        """
+        Resume playback
+        """
         cls.player.resume()
 
     @classmethod
     def pause(cls):
+        """
+        Pause playback
+        """
         cls.player.pause()
 
     @classmethod
     def stop(cls):
+        """
+        Stop playback
+        """
         if cls.player:
             cls.player.stop()
 
     @classmethod
     def start(cls, debug=False):
+        """
+        Start player
+        """
         logger.debug('VLCPlayer.start.argparser: %r', cls.argparser)
         cls.debug = debug
         if not cls.player:
@@ -273,21 +289,36 @@ class VLCPlayer(object):
 
     @classmethod
     def shutdown(cls):
+        """
+        Shutdown player
+        """
         cls.player.shutdown()
         cls.player = None
 
     @classmethod
     def get_volume(cls):
+        """
+        Get playback volume (software mixer)
+        """
         return cls.player.volume
 
     @classmethod
     def set_volume(cls, volume):
+        """
+        Set playback volume (software mixer)
+        """
         cls.player.volume = volume
 
     @classmethod
     def current_track(cls):
+        """
+        Return track that is being currently played
+        """
         return cls.player.current_track
 
     @classmethod
     def set_argparser(cls, argparser):
+        """
+        Set argument parser for VLC wrapper (additional configuration)
+        """
         cls.argparser = argparser

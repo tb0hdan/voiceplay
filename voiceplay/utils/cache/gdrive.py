@@ -4,10 +4,9 @@
 import argparse
 
 import logging
-
-import httplib2
 import os
 
+import httplib2
 import requests
 
 from apiclient import discovery
@@ -41,12 +40,18 @@ class GDrive(object):
 
     @property
     def credentials(self):
+        """
+        Google API credentials object
+        """
         if not self._credentials:
             self._credentials = self.get_credentials()
         return self._credentials
 
     @property
     def service(self):
+        """
+        Google API service object
+        """
         if not self._service:
             self._service = self.get_service()
         return self._service
@@ -71,6 +76,9 @@ class GDrive(object):
         return credentials
 
     def get_service(self):
+        """
+        Return Google Drive API service using Google API
+        """
         service = None
         if self.credentials:
             http = self.credentials.authorize(httplib2.Http())
@@ -78,6 +86,9 @@ class GDrive(object):
         return service
 
     def search(self, query="mimeType='audio/mpeg'"):
+        """
+        Search for files using their MIME types
+        """
         files = []
         page_token = None
         while True:
@@ -96,6 +107,9 @@ class GDrive(object):
         return files
 
     def download(self, file_id, file_name):
+        """
+        Download file from Google Drive
+        """
         request = self.service.files().get_media(fileId=file_id)
         r = requests.get(request.uri, headers={'Authorization': 'Bearer {0!s}'.format(self.credentials.access_token)},
                      stream=True)
@@ -104,6 +118,9 @@ class GDrive(object):
                 fd.write(chunk)
 
     def upload(self, fname):
+        """
+        Upload file to Google Drive
+        """
         if not self.health_check():
             return
         file_metadata = {
@@ -119,6 +136,9 @@ class GDrive(object):
         logger.debug('File ID: %s', file.get('id'))
 
     def get_available_space(self):
+        """
+        Return available space (bytes)
+        """
         # https://developers.google.com/drive/v3/reference/about/get
         # https://developers.google.com/drive/v3/web/query-parameters
         response = self.service.about().get(fields='storageQuota').execute().get('storageQuota')
@@ -131,6 +151,9 @@ class GDrive(object):
         return self.get_available_space() - 1 * 1024 * 1024 * 1024
 
     def health_check(self):
+        """
+        Cache backend health check
+        """
         status = True
         if self.get_safe_available_space() <= 0:
             logger.error('GDrive: No free space available!')

@@ -4,7 +4,6 @@
 import datetime
 import json
 import logging
-import pylast
 import random
 random.seed()
 import sys
@@ -13,6 +12,9 @@ import time
 from copy import deepcopy
 # works after installing `future` package
 from queue import Queue  # pylint:disable=import-error
+
+
+import pylast
 
 from tqdm import tqdm
 
@@ -28,7 +30,13 @@ def lfm_retry(retry_count=1):
     Retry + cache decorator
     """
     def lfm_retry_func(func):
+        """
+        retry function
+        """
         def func_wrapper(*args, **kwargs):
+            """
+            function wrapper
+            """
             rargs = list(args)
             rargs.pop(0)
             rargs = str(rargs) + str(kwargs)
@@ -255,6 +263,7 @@ class VoicePlayLastFm(object):
 
 class StationCrawl(object):
     """
+    Last.FM station crawler (recursive search)
     """
     playlist_get_timeout = 60
     artist_genre_blacklist = {'black metal': ['Justin Bieber', 'Selena Gomez', 'One Direction',
@@ -272,6 +281,9 @@ class StationCrawl(object):
         self.session_playlist = []
 
     def artist_blacklisted_for_genre(self, artist, genre):
+        """
+        Check if artist is blacklisted for specific genre
+        """
         blacklisted = False
         blacklisted_artists = self.artist_genre_blacklist.get(genre.lower(), [])
         if artist.encode('utf-8') in blacklisted_artists:
@@ -280,6 +292,9 @@ class StationCrawl(object):
         return blacklisted
 
     def similar_artists(self, artist, genre):
+        """
+        Find similar artists for artist/genre combination
+        """
         sm_artists = []
         similar = self.lfm.get_similar_artists(artist)
         iterator = tqdm(similar) if logger.level == logging.DEBUG else similar
@@ -290,6 +305,9 @@ class StationCrawl(object):
         return sm_artists
 
     def for_genre(self, genre):
+        """
+        Search tracks for a specific genre and add them to playlist
+        """
         sm_artists = []
         # seed data
         logger.debug(genre)
@@ -321,9 +339,15 @@ class StationCrawl(object):
                     [self.playlist_queue.put(tr) for tr in self.lfm.get_top_tracks(aname)[:3]]
 
     def put_genre(self, genre):
+        """
+        Add genre to queue
+        """
         self.genre_queue.put(genre)
 
     def genre_loop(self):
+        """
+        Poll queue for newly added genres
+        """
         while not self.exit:
             if self.genre_queue.empty():
                 time.sleep(0.01)
@@ -333,6 +357,9 @@ class StationCrawl(object):
                 self.for_genre(item)
 
     def playlist_loop(self):
+        """
+        Poll playlist for newly added tracks
+        """
         while not self.exit:
             if self.playlist_queue.empty():
                 time.sleep(0.01)
@@ -346,10 +373,16 @@ class StationCrawl(object):
                     self.session_playlist = session_playlist
 
     def set_exit(self, status):
+        """
+        Set exit flag
+        """
         self.exit = status
 
     @property
     def playlist(self):
+        """
+        Return current playlist
+        """
         start = time.time()
         while time.time() - start <= self.playlist_get_timeout:
             if not self.session_playlist:

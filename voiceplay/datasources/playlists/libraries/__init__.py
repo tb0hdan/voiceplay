@@ -1,3 +1,6 @@
+#-*- coding: utf-8 -*-
+""" Playlist libraries package """
+
 from .itunes import iTunesLibrary
 from .shazam import ShazamDownloadLibrary
 from .textfile import TextFileLibrary

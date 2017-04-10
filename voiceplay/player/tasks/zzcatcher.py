@@ -9,9 +9,15 @@ from .basetask import BasePlayerTask
 
 
 class ZZCatcherResource(APIV1Resource):
+    """
+    ZZCatcher (magical) API endpoint
+    """
     route_base = '/api/v1/play/zzcatch/<query>'
     queue = None
     def post(self, query):
+        """
+        HTTP POST handler
+        """
         result = {'status': 'timeout', 'message': ''}
         if self.queue and query:
             dispatcher = SingleQueueDispatcher(queue=self.queue)

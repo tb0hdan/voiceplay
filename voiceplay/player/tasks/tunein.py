@@ -6,13 +6,13 @@ import json
 import random
 random.seed()
 import re
-import requests
+
+from urllib.parse import quote  # pylint:disable=no-name-in-module,import-error
 
 from future.standard_library import install_aliases
 install_aliases()
 
-from urllib.parse import quote  # pylint:disable=no-name-in-module,import-error
-
+import requests
 
 from bs4 import BeautifulSoup
 
@@ -22,9 +22,15 @@ from .basetask import BasePlayerTask
 
 
 class TuneInResource(APIV1Resource):
+    """
+    TuneIn API endpoint
+    """
     route_base = '/api/v1/play/tunein/<station>'
     queue = None
     def post(self, station):
+        """
+        HTTP POST handler
+        """
         result = {'status': 'timeout', 'message': ''}
         if self.queue and station:
             dispatcher = SingleQueueDispatcher(queue=self.queue)

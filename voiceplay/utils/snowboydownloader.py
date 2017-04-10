@@ -3,11 +3,13 @@
 
 import os
 import platform
-import requests
 import shutil
 import tarfile
 import tempfile
 from distutils.version import LooseVersion
+
+import requests
+
 from voiceplay import __issuesurl__
 
 
