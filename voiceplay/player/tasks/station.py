@@ -4,11 +4,10 @@
 import random
 random.seed()
 import re
-import threading
 
 from voiceplay.datasources.lastfm import StationCrawl
 from voiceplay.webapp.baseresource import APIV1Resource
-from voiceplay.utils.helpers import SingleQueueDispatcher
+from voiceplay.utils.helpers import SingleQueueDispatcher, ThreadGroup
 from .basetask import BasePlayerTask
 
 
@@ -46,20 +45,17 @@ class StationTask(BasePlayerTask):
         """
         sc = StationCrawl()
         sc.put_genre(station)
-        t1 = threading.Thread(target=sc.genre_loop)
-        t1.daemon = True
-        t1.start()
-        t2 = threading.Thread(target=sc.playlist_loop)
-        t2.daemon = True
-        t2.start()
+
+        tg = ThreadGroup(restart=False)
+        tg.targets = [sc.genre_loop, sc.playlist_loop]
+        tg.start_all()
 
         already_played = []
         while True:
             for track in cls.tracks_with_prefetch(sc.playlist):
                 if cls.get_exit():  # pylint:disable=no-member
                     sc.set_exit(True)
-                    t1.join(timeout=1)
-                    t2.join(timeout=1)
+                    tg.stop_all()
                     break
                 cls.play_full_track(track)
                 already_played.append(track)

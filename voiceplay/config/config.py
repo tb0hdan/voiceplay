@@ -1,6 +1,7 @@
 #-*- coding: utf-8 -*-
 """ Configuration reader module """
 
+import multiprocessing
 import os
 
 import kaptan
@@ -23,6 +24,7 @@ class Config(with_metaclass(Singleton)):
     # 3 -> 9 due to pretty fast remote HTTP cache
     prefetch_count = 9
     webapp_port = 8000
+    cpu_count = multiprocessing.cpu_count()
 
     def __init__(self, cfg_file=None):
         self.config = kaptan.Kaptan(handler="yaml")
@@ -69,7 +71,14 @@ class Config(with_metaclass(Singleton)):
         if not webapp_port:
             webapp_port = cls.webapp_port
         data['webapp_port'] = webapp_port
+        # cpu_count
+        cpu_count = data.get('cpu_count', None)
+        if not cpu_count:
+            cpu_count = cls.cpu_count
+        data['cpu_count'] = cpu_count
+        #
         return data
+
 
     @classmethod
     def cfg_data(cls):
