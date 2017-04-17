@@ -121,7 +121,7 @@ class ThreadGroup(object):
                 args = (target, args) if args else (target,)
                 target = restart_on_crash
             # attempt to normalize args format
-            else:
+            elif args:
                 args = (args,)
             thread = threading.Thread(name=name, target=target, args=args)
             thread.daemon = self.daemon
