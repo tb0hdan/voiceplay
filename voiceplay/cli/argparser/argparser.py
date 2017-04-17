@@ -7,7 +7,6 @@ import argparse
 import multiprocessing
 import subprocess
 import sys
-import threading
 
 from functools import cmp_to_key
 
@@ -155,8 +154,10 @@ class MyArgumentParser(object):
         """
         Run wakeword listener loop
         """
-        thread = threading.Thread(target=subprocess.call, args=(['python', '-m', 'voiceplay.recognition.wakeword.sender'],))
-        thread.start()
+        th = ThreadGroup()
+        th.targets = [[subprocess.call, ['python', '-m', 'voiceplay.recognition.wakeword.sender']]]
+        th.start_all()
+        return th
 
     def webapp_loop(self, debug=False, queue=None):
         """
@@ -189,6 +190,7 @@ class MyArgumentParser(object):
         #
         vicki = Vicki(debug=result.debug, player_backend=result.player_backend)
         vicki.player.player.set_argparser(result)
+        th = None
         procs = None
         queue = multiprocessing.Queue()
         if result.webapp:
@@ -201,8 +203,8 @@ class MyArgumentParser(object):
             self.player_console(vicki, queue=queue)
             vicki.player.shutdown()
         elif result.wakeword:
-            self.vicki_loop(vicki, noblock=True)
-            self.wakeword_loop()
+            th = self.wakeword_loop()
+            self.vicki_loop(vicki)
         elif result.console_devel:
             self.ipython_console()
         else:
@@ -210,5 +212,7 @@ class MyArgumentParser(object):
         if procs:
             zc.stop()
             [proc.terminate() for proc in procs]
+        if th:
+            th.stop_all()
         cache = MixedCache()
         cache.purge_cache()

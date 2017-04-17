@@ -109,11 +109,20 @@ class ThreadGroup(object):
         Start all thread targets using restart_on_crash helper
         """
         for target in self._targets:
-            args = ()
+            if isinstance(target, list):
+                # FIXME: Check for string args as well
+                # works for subprocess.call only so far
+                args = target[1:][0]
+                target = target[0]
+            else:
+                args = ()
             name = repr(target)
             if self.restart:
-                args = (target,)
+                args = (target, args) if args else (target,)
                 target = restart_on_crash
+            # attempt to normalize args format
+            else:
+                args = (args,)
             thread = threading.Thread(name=name, target=target, args=args)
             thread.daemon = self.daemon
             thread.start()

@@ -24,10 +24,10 @@ def main(noblock=False):
         logger.error(message)
     parser = MyArgumentParser(signal_handler=signal_handler)
     parser.configure()
-    try:
-        parser.parse(noblock=noblock)
-    except Exception as _:
-        send_traceback(sys.exc_info(), __file__)
+    #try:
+    parser.parse(noblock=noblock)
+    #except Exception as _:
+    #    send_traceback(sys.exc_info(), __file__)
 
 if __name__ == '__main__':
     main()
