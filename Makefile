@@ -53,6 +53,11 @@ tag:
 	@git tag -a v$(VERSION) -m 'v$(VERSION)'
 	@git push origin v$(VERSION)
 
+# make tag_delete tag=v0.2.0
+tag_delete:
+	@git tag -d $(tag)
+	@git push origin :refs/tags/$(tag)
+
 # Reboot step is required for audio drivers to catch up after installation
 vagrant:
 	@vagrant destroy -f
