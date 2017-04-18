@@ -100,7 +100,7 @@ class MixedCache(object):
                 try:
                     os.remove(fname)
                 except Exception as exc:
-                    logger.debug('Removal of %r failed, please check permissions')
+                    logger.debug('Removal of %r failed, please check permissions', exc)
 
     @staticmethod
     def track_to_hash(track):

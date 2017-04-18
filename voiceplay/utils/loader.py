@@ -19,7 +19,7 @@ class PluginLoader(object):
         """
         try:
             module = __import__(package, fromlist=['dummy'])
-        except Exception as exc:
+        except Exception as _:
             debug_traceback(sys.exc_info(), __file__, message='Import of %r failed (see message below)' % package)
             module = None
         return module

@@ -6,10 +6,10 @@ import os
 from pony.orm import db_session, commit
 from voiceplay.config import Config
 from .entities import (db,
-                      Artist,
-                      PlayedTracks,
-                      LastFmCache,
-                      ServiceCache)
+                       Artist,
+                       PlayedTracks,
+                       LastFmCache,
+                       ServiceCache)
 
 
 class VoicePlayDB(object):
@@ -24,7 +24,7 @@ class VoicePlayDB(object):
         else:
             try:
                 os.makedirs(os.path.expanduser(Config.persistent_dir))
-            except Exception as exc:
+            except Exception as _:
                 pass
             self.filename = os.path.expanduser(os.path.join(Config.persistent_dir, 'sqlite.db'))
 
@@ -83,7 +83,7 @@ class VoicePlayDB(object):
                 tracks.playcount = playcount
                 return playcount
             else:
-                tracks = PlayedTracks(track=trackname, created_at=dt, updated_at=dt, playcount=1,
+                tracks = PlayedTracks(track=trackname, created_at=created_at, updated_at=dt, playcount=1,
                                       status='neutral')
                 return 1
 
@@ -117,7 +117,7 @@ class VoicePlayDB(object):
         """
         with db_session:
             dt = self.get_dt()
-            cache = LastFmCache(method_args=method + args, created_at=dt, updated_at=dt, content=content)
+            _ = LastFmCache(method_args=method + args, created_at=dt, updated_at=dt, content=content)
             commit()
 
     def get_cached_service(self, service_name, expires=1):
@@ -143,7 +143,7 @@ class VoicePlayDB(object):
         """
         with db_session:
             dt = self.get_dt()
-            cache = ServiceCache(service_name=service_name, created_at=dt, updated_at=dt, content=content)
+            _ = ServiceCache(service_name=service_name, created_at=dt, updated_at=dt, content=content)
             commit()
 
     def set_track_status(self, trackname, status):

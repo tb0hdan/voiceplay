@@ -1,3 +1,6 @@
+#-*- coding: utf-8 -*-
+""" Index page module """
+
 import time
 from flask import render_template
 from flask_classy import FlaskView, route

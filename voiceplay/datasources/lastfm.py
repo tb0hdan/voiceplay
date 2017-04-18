@@ -45,7 +45,7 @@ def lfm_retry(retry_count=1):
             result = json.loads(result) if result else None
             if result:
                 return result
-            for retry in range(1, retry_count + 1):
+            for _ in range(1, retry_count + 1):
                 try:
                     result = func(*args, **kwargs)
                     if result:
@@ -67,11 +67,11 @@ class VoicePlayLastFm(object):
         cfg_data = Config.cfg_data()
         try:
             self.network = pylast.LastFMNetwork(api_key=cfg_data['lastfm']['key'],
-                                            api_secret=cfg_data['lastfm']['secret'],
-                                            username=cfg_data['lastfm']['username'],
-                                            password_hash=cfg_data['lastfm']['password'])
+                                                api_secret=cfg_data['lastfm']['secret'],
+                                                username=cfg_data['lastfm']['username'],
+                                                password_hash=cfg_data['lastfm']['password'])
             self.scrobble_enabled = True
-        except Exception as exc:
+        except Exception as _:
             # last.fm network registration failed, possibly due to scrobbling/API issue, try data only
             self.scrobble_enabled = False
             self.network = pylast.LastFMNetwork(api_key=cfg_data['lastfm']['key'],

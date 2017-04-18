@@ -43,8 +43,8 @@ class WakeWordListener(object):
             try:
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 s.connect((self.ip, int(self.port)))
-                len_sent = s.send(message)
-                response = s.recv(1024)
+                _ = s.send(message)
+                _ = s.recv(1024)
                 self.queue.task_done()
             except Exception as exc:
                 logger.error('TCPAsync worker failed with %r, restarting...', exc)

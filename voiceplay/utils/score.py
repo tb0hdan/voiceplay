@@ -404,9 +404,9 @@ class VideoScoreCalculator(object):
         duration.reverse()
         length = 0
         try:
-            for idx, item in enumerate(duration):
+            for idx, _ in enumerate(duration):
                 length += int(duration[idx]) * math_pow(60, idx)
-        except Exception as exc:
+        except Exception as _:
             logger.error('score:prefer_shorter:%r', duration)
             return 0
         # less than 15 minutes

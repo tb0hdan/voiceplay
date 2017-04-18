@@ -32,7 +32,7 @@ class Vicki(object):
         self.wakeword_receiver = None
         self.listener = None
         self.recognition_hooks = sorted(PluginLoader().find_classes('voiceplay.player.hooks', BasePlayerHook),
-                         key=cmp_to_key(lambda x, y: cmp(x.__priority__, y.__priority__)))
+                                        key=cmp_to_key(lambda x, y: cmp(x.__priority__, y.__priority__)))
 
 
     def wakeword_callback(self, message):

@@ -32,6 +32,9 @@ class YoutubeSource(TrackSource):
         """
         youtube = cls.youtube()
         def run_chunk(videos, vids):
+            """
+            internal method that processes portion of returned results
+            """
             part = 'snippet, contentDetails, status, statistics'
             video_response = youtube.videos().list(id=videos, part=part).execute()
             for item in video_response.get('items', []):

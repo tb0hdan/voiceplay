@@ -1,6 +1,8 @@
 #-*- coding: utf-8 -*-
 """ Configuration dialog module """
 
+from __future__ import print_function
+
 # std
 import os
 
@@ -29,6 +31,9 @@ class ConfigDialog(object):
         self.cfg_data = Config(cfg_file=self.template).cfg_data()
 
     def run(self, fname):
+        """
+        Run configuration dialog
+        """
         fname = os.path.expanduser(fname)
         if os.path.exists(fname):
             print ('Refusing to overwrite existing config at {0!s}'.format(fname))
@@ -66,6 +71,9 @@ class ConfigDialog(object):
 
     @staticmethod
     def export(cfg_data):
+        """
+        Export data from configuration dialog
+        """
         config = kaptan.Kaptan()
         config.import_config(cfg_data)
         return config.export('yaml')

@@ -41,9 +41,9 @@ class VoicePlayZeroConf(object):
         """
         port = int(Config.cfg_data().get('webapp_port'))
         info = ServiceInfo("_http._tcp.local.",
-                       "{0!s}._http._tcp.local.".format(hostname),
-                       socket.inet_aton(self.get_ip_address()), port, 0, 0,
-                       {'path': '/'}, "{0!s}.local.".format(hostname))
+                           "{0!s}._http._tcp.local.".format(hostname),
+                           socket.inet_aton(self.get_ip_address()), port, 0, 0,
+                           {'path': '/'}, "{0!s}.local.".format(hostname))
         return info
 
     def on_service_state_change(self, zeroconf, service_type, name, state_change):
@@ -60,8 +60,8 @@ class VoicePlayZeroConf(object):
         Wait for other services to make themselves visible
         """
         zeroconf = Zeroconf()
-        browser = ServiceBrowser(zeroconf, "_http._tcp.local.", handlers=[self.on_service_state_change])
-        for i in range(1, 10 + 1):
+        _ = ServiceBrowser(zeroconf, "_http._tcp.local.", handlers=[self.on_service_state_change])
+        for _ in range(1, 10 + 1):
             time.sleep(1)
         zeroconf.close()
         return self.known_servers
@@ -81,7 +81,7 @@ class VoicePlayZeroConf(object):
         while not self.exit:
             try:
                 time.sleep(0.1)
-            except Exception as ex:
+            except Exception as _:
                 break
 
     def unregister(self):

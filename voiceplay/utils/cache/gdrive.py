@@ -10,7 +10,7 @@ import httplib2
 import requests
 
 from apiclient import discovery
-from apiclient.http import MediaFileUpload
+from apiclient.http import MediaFileUpload  # pylint:disable=import-error
 from oauth2client import client
 from oauth2client import tools
 from oauth2client.file import Storage
@@ -32,9 +32,9 @@ class GDrive(object):
         self._credentials = None
         self._service = None
         self.CLIENT_SECRET_FILE = os.path.join(Config().cfg_data().get('persistent_dir'),
-                                      'client_secret.json')
+                                               'client_secret.json')
         self.STORED_CREDENTIALS = os.path.join(Config().cfg_data().get('persistent_dir'),
-                                      'stored_credentials.json')
+                                               'stored_credentials.json')
         self.healthy = True
 
 
@@ -93,9 +93,9 @@ class GDrive(object):
         page_token = None
         while True:
             response = self.service.files().list(q=query,
-                                        fields='nextPageToken, files(id, name)',
-                                        spaces='appDataFolder',
-                                        pageToken=page_token).execute()
+                                                 fields='nextPageToken, files(id, name)',
+                                                 spaces='appDataFolder',
+                                                 pageToken=page_token).execute()
             for remote_file in response.get('files', []):
                 file_id = remote_file.get('id')
                 file_name = remote_file.get('name')
@@ -112,7 +112,7 @@ class GDrive(object):
         """
         request = self.service.files().get_media(fileId=file_id)
         r = requests.get(request.uri, headers={'Authorization': 'Bearer {0!s}'.format(self.credentials.access_token)},
-                     stream=True)
+                         stream=True)
         with open(file_name, 'wb') as fd:
             for chunk in r.iter_content(chunk_size=8196):
                 fd.write(chunk)
@@ -124,16 +124,16 @@ class GDrive(object):
         if not self.health_check():
             return
         file_metadata = {
-            'name' : os.path.basename(fname),
-            'parents': [ 'appDataFolder']
+            'name': os.path.basename(fname),
+            'parents': ['appDataFolder']
         }
         media = MediaFileUpload(fname,
-                        mimetype='audio/mpeg',
-                        resumable=True)
-        file = self.service.files().create(body=file_metadata,
-                                    media_body=media,
-                                    fields='id').execute()
-        logger.debug('File ID: %s', file.get('id'))
+                                mimetype='audio/mpeg',
+                                resumable=True)
+        file_obj = self.service.files().create(body=file_metadata,
+                                               media_body=media,
+                                               fields='id').execute()
+        logger.debug('File ID: %s', file_obj.get('id'))
 
     def get_available_space(self):
         """

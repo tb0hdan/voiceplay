@@ -52,7 +52,7 @@ class TrackByNumberTask(BasePlayerTask):
                 numerized = ', '.join(cls.lfm().numerize(tracks))
                 reply = re.sub(r'^(.+)\.\s\d\:\s', '1: ', numerized)
                 cls.say('Here are some top tracks by %s: %s' % (phrase,
-                                                                     reply))
+                                                                reply))
                 # record track numbers
                 cls.store_tracks(tracks)
             else:

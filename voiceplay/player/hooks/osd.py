@@ -64,21 +64,17 @@ class OSDNotification(object):
         """
         import gntp.notifier  # pylint:disable=import-error
 
-        growl = gntp.notifier.GrowlNotifier(
-                applicationName=__title__,
-                notifications=["Played tracks"],
-                defaultNotifications=["Played tracks"],
-        )
+        growl = gntp.notifier.GrowlNotifier(applicationName=__title__,
+                                            notifications=["Played tracks"],
+                                            defaultNotifications=["Played tracks"],)
         try:
             growl.register()
-            growl.notify(
-                noteType="Played tracks",
-                title=message,
-                description='',
-                icon=icon,
-                sticky=False,
-                priority=1,
-            )
+            growl.notify(noteType="Played tracks",
+                         title=message,
+                         description='',
+                         icon=icon,
+                         sticky=False,
+                         priority=1,)
         except Exception as exc:
             logger.debug('Growl notification failed with: %r', exc)
 

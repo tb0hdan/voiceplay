@@ -87,7 +87,7 @@ class VLCInstance(object):
         self.exit = False
         self.paused = False
         self.player_hooks = sorted(PluginLoader().find_classes('voiceplay.player.hooks', BasePlayerHook),
-                         key=cmp_to_key(lambda x, y: cmp(x.__priority__, y.__priority__)))
+                                   key=cmp_to_key(lambda x, y: cmp(x.__priority__, y.__priority__)))
         self._current_track = None
         self.player, self.instance = self.create_instance(debug=debug, profile=profile)
 

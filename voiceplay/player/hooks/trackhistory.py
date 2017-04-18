@@ -36,9 +36,9 @@ class TrackHistoryHook(BasePlayerHook):
         Configure argument parser for this hook
         """
         parser.add_argument('-n', '--no-track-save', action='store_true',
-                                 default=False,
-                                 dest='no_track_save',
-                                 help='Disable track history for this session')
+                            default=False,
+                            dest='no_track_save',
+                            help='Disable track history for this session')
 
     @classmethod
     def on_playback_start(cls, *args, **kwargs):

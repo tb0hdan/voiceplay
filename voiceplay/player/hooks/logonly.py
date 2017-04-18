@@ -17,8 +17,11 @@ class LogOnlyPlayerHook(BasePlayerHook):
         Logging wrapper
         """
         name = inspect.stack()[1][3]
-        logger.debug('{0}.{1}: args: {2!r} kwargs: {3!r}'.format(cls.__name__, name,
-                                           args, kwargs))
+        logger.debug('%s.%s: args: %r kwargs: %r',
+                     cls.__name__,
+                     name,
+                     args,
+                     kwargs)
 
     @classmethod
     def on_recognition_start(cls, *args, **kwargs):

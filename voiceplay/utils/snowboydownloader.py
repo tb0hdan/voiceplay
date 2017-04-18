@@ -67,7 +67,7 @@ class SnowboyDownloader(object):
         archive.extractall(path=self.tmpdir)
         try:
             os.makedirs(dest)
-        except Exception as exc:
+        except Exception as _:
             pass
         shutil.copy(os.path.join(self.tmpdir, self.version, '_snowboydetect.so'), dest)
         if remove:

@@ -54,7 +54,7 @@ def restart_on_crash(method, *args, **kwargs):
             result = method(*args, **kwargs)
         except (KeyboardInterrupt, SystemExit):
             break
-        except Exception as exc:
+        except Exception as _:
             debug_traceback(sys.exc_info(), __file__)
             # allow interrupt
             time.sleep(1)
@@ -75,7 +75,7 @@ def run_hooks(argparser, hooks, evt, *args, **kwargs):
         if method:
             try:
                 method(*args, **kwargs)
-            except Exception as exc:
+            except Exception as _:
                 debug_traceback(sys.exc_info(), __file__)
 
 

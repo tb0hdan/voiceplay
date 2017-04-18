@@ -35,12 +35,18 @@ class Help(object):
         pass
 
     def run_help(self, *args, **kwargs):
+        """
+        Show help data on TAB-TAB while in console mode
+        """
         if args[0].strip() in self.help_aliases:
             return self.main_page(), True
         return None, False
 
     @staticmethod
     def main_page():
+        """
+        Main help topic
+        """
         message = """{0} {1}\nTo get help about {2} commands type:
 \t"<tab>" to get a list of possible help topics
 \t"clear" to clear screen
@@ -49,6 +55,9 @@ Set your preferences in ~/.config/voiceplay/config.yaml\n""".format(__title__, _
         return message
 
     def register(self, console_obj):
+        """
+        Register help handler
+        """
         console_obj.add_handler('help', self.run_help, self.help_aliases)
 
 
@@ -78,7 +87,7 @@ class MyArgumentParser(object):
                            default=False, dest='wakeword',
                            help='Start wakeword listener')
         self.parser.add_argument('-p', '--player-backend', action='store', default='vlc',
-                                dest='player_backend', help='Player backend [mplayer, vlc]')
+                                 dest='player_backend', help='Player backend [mplayer, vlc]')
         self.parser.add_argument('-W', '--webapp', action='store_true',
                                  default=False, dest='webapp', help='Start web application')
         self.parser.add_argument('-V', '--version', action='version',
@@ -91,11 +100,11 @@ class MyArgumentParser(object):
         plugins = sorted(PluginLoader().find_classes('voiceplay.player.tasks', BasePlayerTask),
                          key=cmp_to_key(lambda x, y: cmp(x.__priority__, y.__priority__)))
         plugins += sorted(PluginLoader().find_classes('voiceplay.player.hooks', BasePlayerHook),
-                         key=cmp_to_key(lambda x, y: cmp(x.__priority__, y.__priority__)))
+                          key=cmp_to_key(lambda x, y: cmp(x.__priority__, y.__priority__)))
         for plugin in plugins:
             try:
                 attr = getattr(plugin, 'configure_argparser')
-            except Exception as exc:
+            except Exception as _:
                 attr = None
             if attr:
                 plugin.configure_argparser(self.parser)
@@ -143,7 +152,7 @@ class MyArgumentParser(object):
         ThreadedRequestHandler.callback = vicki.wakeword_callback
         address = ('127.0.0.1', 63455)
         server = WakeWordReceiver(address,
-                                      ThreadedRequestHandler)
+                                  ThreadedRequestHandler)
         threads = ThreadGroup()
         threads.targets = [server.serve_forever]
         threads.start_all()
@@ -159,7 +168,8 @@ class MyArgumentParser(object):
         th.start_all()
         return th
 
-    def webapp_loop(self, debug=False, queue=None):
+    @staticmethod
+    def webapp_loop(debug=False, queue=None):
         """
         Run webapp/zeroconf loop
         """
@@ -183,7 +193,7 @@ class MyArgumentParser(object):
             return
         # Check config here
         try:
-            cfg_data = BaseCfgModel.cfg_data()
+            _ = BaseCfgModel.cfg_data()
         except Exception as _:
             print('Configuration not found, please run {0!s} --configure'.format(__title__.lower()))
             return

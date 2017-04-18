@@ -111,9 +111,9 @@ class SkypeMoodHook(BasePlayerHook):
         Configure argument parser for this hook
         """
         parser.add_argument('-s', '--skype', action='store_true',
-                                 default=False,
-                                 dest='skype',
-                                 help='Enable Skype Mood Text')
+                            default=False,
+                            dest='skype',
+                            help='Enable Skype Mood Text')
 
     @classmethod
     def on_playback_start(cls, *args, **kwargs):

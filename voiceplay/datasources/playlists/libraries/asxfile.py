@@ -12,7 +12,6 @@ class ASXFileLibrary(object):
         """
         ASX (XML) parser using ElementTree
         """
-        tmp = {}
         tracks = []
         for element in tree.iter():
             if element.tag != 'entry':

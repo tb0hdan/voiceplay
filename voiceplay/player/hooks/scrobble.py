@@ -57,7 +57,6 @@ class ScrobbleHook(BasePlayerHook):
         """
         try:
             TrackScrobble.notify(*args, argparser=cls.argparser, **kwargs)
-        except Exception as exc:
-            method = TrackScrobble.notify
+        except Exception as _:
             message = 'Method %r crashed (see message below), track was not scrobbled...' % 'ScrobbleHook.on_playback_start'
             debug_traceback(sys.exc_info(), __file__, message=message)

@@ -36,7 +36,7 @@ class TrackNormalizer(object):
             title = ' '.join([w.capitalize() for w in match.groups()[0].lower().split(' ')])
             trackname = u'{0!s} - {1!s}'.format(artist.strip(), title.strip())
         # radioRoks
-        match = re.match('^@\s(?:Rock|Made)(?:.+)\:\s(.+)$', trackname)
+        match = re.match(r'^@\s(?:Rock|Made)(?:.+)\:\s(.+)$', trackname)
         if match:
             trackname = match.groups()[0]
         return trackname
@@ -49,6 +49,9 @@ class TrackNormalizer(object):
 
     @classmethod
     def is_locally_blacklisted(cls, track):
+        """
+        Check if track is in local blacklist
+        """
         return voiceplaydb.get_track_status(track) == 'banned'
 
 

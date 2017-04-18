@@ -40,10 +40,10 @@ class BasePlayerTask(BaseLfmModel):
         TODO: move this to utils/track.py
         """
         track_is_ok = True
-        regset = ['(\(|\]|\{).?FULL (ALBUM|SET|CONCERT|MOVIE)?.+(\(|\]|\})?',
-                  '(\(|\[|\{)KARAOKE?.+(\)|\]\})',
-                  '(\(|\[).?LIVE (AT|\@|ON).+?(\(|\])',
-                  '\(?(REMIX|BOOTLEG|MASH\-?UP)(.+)\)?']
+        regset = [r'(\(|\]|\{).?FULL (ALBUM|SET|CONCERT|MOVIE)?.+(\(|\]|\})?',
+                  r'(\(|\[|\{)KARAOKE?.+(\)|\]\})',
+                  r'(\(|\[).?LIVE (AT|\@|ON).+?(\(|\])',
+                  r'\(?(REMIX|BOOTLEG|MASH\-?UP)(.+)\)?']
         # allow exact match
         if search_term.lower() == search_result.lower():
             return track_is_ok
@@ -100,8 +100,6 @@ class BasePlayerTask(BaseLfmModel):
         Iterate through multiple sources and search for complete track
         Download file by default
         """
-        vid = None
-        baseurl = None
         sources = sorted(PluginLoader().find_classes('voiceplay.datasources.track', TrackSource),
                          key=cmp_to_key(lambda x, y: cmp(x.__priority__, y.__priority__)))
 

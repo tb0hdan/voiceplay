@@ -41,7 +41,7 @@ class PIP(object):
         versions = []
         search = SearchCommand()
         pypi = search.search(package_name,
-                         search.parse_args([package_name])[0])
+                             search.parse_args([package_name])[0])
         for hit in transform_hits(pypi):
             if hit['name'] == package_name:
                 versions = hit['versions']
