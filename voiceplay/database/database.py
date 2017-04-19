@@ -83,6 +83,7 @@ class VoicePlayDB(object):
                 tracks.playcount = playcount
                 return playcount
             else:
+                created_at = dt
                 tracks = PlayedTracks(track=trackname, created_at=created_at, updated_at=dt, playcount=1,
                                       status='neutral')
                 return 1
