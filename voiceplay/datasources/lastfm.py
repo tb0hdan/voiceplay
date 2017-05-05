@@ -227,6 +227,9 @@ class VoicePlayLastFm(object):
         """
         Scrobble track
         """
+        if sys.version_info.major == 2:
+            artist = artist.encode('utf8')
+            track = track.encode('utf8')
         full_track = '{0!s} - {1!s}'.format(artist, track)
         if not self.scrobble_enabled:
             logger.debug('Scrobbling disabled, track %r not sent', full_track)
