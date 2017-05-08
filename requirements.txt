@@ -13,7 +13,7 @@ gntp
 gunicorn
 oauth2client>=1.5.2,<4.0.0
 google-api-python-client
-ipython
+ipython>=5.0.0,<6.0.0
 kaptan
 lxml
 monotonic
