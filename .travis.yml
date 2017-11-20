@@ -13,8 +13,7 @@ python:
   - "3.6"
 # command to install dependencies
 install:
-  - pip install pyfestival
-  - pip install -r requirements.txt
+  - make travisdeps
 # command to run tests
 script: make coverage_ci
 after_success:

@@ -1,5 +1,9 @@
 .PHONY: cloc docs pylint snowboy vlcpython vagrant
 
+PYVERSION = $(shell python -c "import sys; print ('%s.%s' % (sys.version_info.major,sys.version_info.minor))")
+VERSION = $(shell cat voiceplay/__init__.py|grep '__version__'|$(SED) "s/((.+)=|'|\ )//g")
+CPU_COUNT = $(shell python -c 'import multiprocessing; print multiprocessing.cpu_count() * 2 + 1')
+
 ifeq ($(shell uname),Darwin)
     SED = sed -E
     SEDINPLACE = $(SED) -i '' -e
@@ -8,8 +12,16 @@ else
     SEDINPLACE = $(SED) -i -e
 endif
 
-VERSION = $(shell cat voiceplay/__init__.py|grep '__version__'|$(SED) "s/((.+)=|'|\ )//g")
-CPU_COUNT = $(shell python -c 'import multiprocessing; print multiprocessing.cpu_count() * 2 + 1')
+ifeq ($(PYVERSION),3.3)
+    PYLAST = 'pylast>=1.7.0,<2.0.0'
+else
+    PYLAST = 'pylast'
+endif
+
+
+travisdeps:
+	@pip install pyfestival $(PYLAST)
+	@pip install -r requirements.txt
 
 submodules:
 	@git submodule init
