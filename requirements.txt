@@ -1,5 +1,6 @@
 Babel
 beautifulsoup4
+coverage>=4.0,<4.4
 codeclimate-test-reporter
 colorama
 dailymotion
@@ -27,7 +28,7 @@ PyAudio
 pylast
 pylint
 pytest
-pytest-coverage>=4.0,<4.4
+pytest-coverage
 PyVimeo
 rl
 SpeechRecognition
