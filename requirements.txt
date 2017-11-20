@@ -27,7 +27,7 @@ PyAudio
 pylast
 pylint
 pytest
-pytest-coverage
+pytest-coverage>=4.0,<4.4
 PyVimeo
 rl
 SpeechRecognition
